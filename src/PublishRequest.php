@@ -1,0 +1,59 @@
+<?php
+
+declare(strict_types=1);
+
+namespace RoadRunner\Centrifugo;
+
+use RoadRunner\Centrifugo\DTO;
+use RoadRunner\Centrifugo\Payload\PublishResponse;
+use Spiral\RoadRunner\WorkerInterface;
+
+/**
+ * @see https://centrifugal.dev/docs/server/proxy#publish-proxy
+ */
+final class PublishRequest extends AbstractRequest
+{
+    public function __construct(
+        WorkerInterface $worker,
+        public readonly string $client,
+        public readonly string $transport,
+        public readonly string $protocol,
+        public readonly string $encoding,
+        public readonly string $user,
+        public readonly string $channel,
+        public readonly array $meta,
+        public readonly array $data,
+        public readonly array $headers
+    ) {
+        parent::__construct($worker);
+    }
+
+    public function respond(object $response): void
+    {
+        \assert($response instanceof PublishResponse);
+
+        $result = $this->mapResponse($response);
+        $response = $this->getResponseObject();
+        $response->setResult($result);
+
+        $this->sendResponse($response);
+    }
+
+    protected function getResponseObject(): DTO\PublishResponse
+    {
+        return new DTO\PublishResponse();
+    }
+
+    private function mapResponse(PublishResponse $response): DTO\PublishResult
+    {
+        $result = new DTO\PublishResult();
+
+        $result->setSkipHistory($response->skipHistory);
+
+        if ($response->data !== []) {
+            $result->setData(\json_encode($response->data));
+        }
+
+        return $result;
+    }
+}
