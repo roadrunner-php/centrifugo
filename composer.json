@@ -35,7 +35,7 @@
     "scripts": {
         "tests": "phpunit",
         "psalm": "psalm --no-cache",
-        "build": "protoc --proto_path=resources/proto/v1 --php_out=generated resources/proto/v1/proxy.proto"
+        "compile": "protoc --proto_path=resources/proto/v1 --php_out=generated resources/proto/v1/proxy.proto"
     },
     "config": {
         "sort-packages": true
