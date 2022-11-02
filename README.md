@@ -5,7 +5,7 @@
 [![phpunit](https://github.com/roadrunner-php/centrifugo/actions/workflows/phpunit.yml/badge.svg)](https://github.com/roadrunner-php/centrifugo/actions)
 [![psalm](https://github.com/roadrunner-php/centrifugo/actions/workflows/psalm.yml/badge.svg)](https://github.com/roadrunner-php/centrifugo/actions)
 [![Codecov](https://codecov.io/gh/roadrunner-php/centrifugo/branch/master/graph/badge.svg)](https://codecov.io/gh/roadrunner-php/centrifugo/)
-[![Total Downloads](https://poser.pugx.org/roadrunner-php/centrifugo/downloads)](https://packagist.org/roadrunner-php/centrifugo)
+[![Total Downloads](https://poser.pugx.org/roadrunner-php/centrifugo/downloads)](https://packagist.org/packages/roadrunner-php/centrifugo)
 
 This repository contains the codebase PHP bridge using RoadRunner centrifuge plugin.
 
