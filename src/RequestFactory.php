@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace RoadRunner\Centrifugo;
 
+use Google\Protobuf\Internal\Message;
 use RoadRunner\Centrifugo\Exception\InvalidRequestTypeException;
 use Spiral\RoadRunner\Payload as WorkerPayload;
 use Spiral\RoadRunner\WorkerInterface;
@@ -161,15 +162,19 @@ final class RequestFactory
     /**
      * Unmarshal encoded body into GRPC DTO.
      *
-     * @template T of \Google\Protobuf\Internal\Message
+     * @template T of Message
      * @param class-string<T> $class
      * @param non-empty-string $body
      * @return T
+     *
+     * @psalm-suppress UnsafeInstantiation
      */
-    private function unmarshalRequestBody(string $class, string $body): object
+    private function unmarshalRequestBody(string $class, string $body): Message
     {
         /** @var RequestDTO $request */
         $request = new $class();
+        \assert($request instanceof $class);
+
         $request->mergeFromString($body);
 
         return $request;
