@@ -26,8 +26,13 @@ class RefreshRequest extends AbstractRequest
         parent::__construct($worker);
     }
 
+    /**
+     * @param RefreshResponse $response
+     * @psalm-suppress MoreSpecificImplementedParamType
+     */
     public function respond(object $response): void
     {
+        /** @psalm-suppress RedundantConditionGivenDocblockType */
         \assert($response instanceof RefreshResponse);
 
         $result = $this->mapResponse($response);

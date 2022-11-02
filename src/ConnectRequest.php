@@ -33,8 +33,13 @@ final class ConnectRequest extends AbstractRequest
         parent::__construct($worker);
     }
 
+    /**
+     * @param ConnectResponse $response
+     * @psalm-suppress MoreSpecificImplementedParamType
+     */
     public function respond(object $response): void
     {
+        /** @psalm-suppress RedundantConditionGivenDocblockType */
         \assert($response instanceof ConnectResponse);
 
         $result = $this->mapResponse($response);

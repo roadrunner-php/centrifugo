@@ -30,8 +30,13 @@ final class SubscribeRequest extends AbstractRequest
         parent::__construct($worker);
     }
 
+    /**
+     * @param SubscribeResponse $response
+     * @psalm-suppress MoreSpecificImplementedParamType
+     */
     public function respond(object $response): void
     {
+        /** @psalm-suppress RedundantConditionGivenDocblockType */
         \assert($response instanceof SubscribeResponse);
 
         $result = $this->mapResponse($response);

@@ -28,8 +28,13 @@ final class PublishRequest extends AbstractRequest
         parent::__construct($worker);
     }
 
+    /**
+     * @param PublishResponse $response
+     * @psalm-suppress MoreSpecificImplementedParamType
+     */
     public function respond(object $response): void
     {
+        /** @psalm-suppress RedundantConditionGivenDocblockType */
         \assert($response instanceof PublishResponse);
 
         $result = $this->mapResponse($response);

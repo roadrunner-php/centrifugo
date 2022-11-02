@@ -28,8 +28,13 @@ final class RPCRequest extends AbstractRequest
         parent::__construct($worker);
     }
 
+    /**
+     * @param RPCResponse $response
+     * @psalm-suppress MoreSpecificImplementedParamType
+     */
     public function respond(object $response): void
     {
+        /** @psalm-suppress RedundantConditionGivenDocblockType */
         \assert($response instanceof RPCResponse);
 
         $result = $this->mapResponse($response);
