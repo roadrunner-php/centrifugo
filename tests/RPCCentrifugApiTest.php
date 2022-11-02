@@ -50,7 +50,7 @@ final class RPCCentrifugApiTest extends TestCase
             )
             ->andReturn(new DTO\PublishResponse);
 
-        $this->api->publish(channel: 'foo-channel', data: ['foo' => 'bar'], skipHistory: true, tags: ['baz', 'baf']);
+        $this->api->publish(channel: 'foo-channel', message: \json_encode(['foo' => 'bar']), skipHistory: true, tags: ['baz', 'baf']);
     }
 
     public function testPublishErrorHandling(): void
@@ -70,6 +70,6 @@ final class RPCCentrifugApiTest extends TestCase
                 ])
             );
 
-        $this->api->publish(channel: 'foo-channel', data: ['foo' => 'bar'], skipHistory: true, tags: ['baz', 'baf']);
+        $this->api->publish(channel: 'foo-channel', message: \json_encode(['foo' => 'bar']), skipHistory: true, tags: ['baz', 'baf']);
     }
 }

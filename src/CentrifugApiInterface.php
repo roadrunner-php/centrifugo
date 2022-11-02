@@ -16,11 +16,12 @@ interface CentrifugApiInterface
      * Most probably this is a command you'll use most of the time.
      *
      * @param non-empty-string $channel
+     * @param string $message JSON encoded string
      * @param array<non-empty-string, non-empty-string> $tags
      */
     public function publish(
         string $channel,
-        array $data = [],
+        string $message,
         bool $skipHistory = true,
         array $tags = [],
     ): void;
@@ -29,11 +30,12 @@ interface CentrifugApiInterface
      * Similar to publish but allows to send the same data into many channels.
      *
      * @param non-empty-string[] $channels
+     * @param string $message JSON encoded string
      * @param array<non-empty-string, non-empty-string> $tags
      */
     public function broadcast(
         array $channels,
-        array $data = [],
+        string $message,
         bool $skipHistory = true,
         array $tags = [],
     ): void;

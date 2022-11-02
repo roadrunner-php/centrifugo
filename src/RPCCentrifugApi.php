@@ -24,15 +24,12 @@ final class RPCCentrifugApi implements CentrifugApiInterface
         $this->rpc = $rpc->withCodec(new ProtobufCodec());
     }
 
-    public function publish(string $channel, array $data = [], bool $skipHistory = true, array $tags = [],): void
+    public function publish(string $channel, string $message, bool $skipHistory = true, array $tags = [],): void
     {
         $request = new DTO\PublishRequest();
         $request->setChannel($channel);
         $request->setSkipHistory($skipHistory);
-
-        if ($data !== []) {
-            $request->setData(\json_encode($data));
-        }
+        $request->setData($message);
 
         if ($tags !== []) {
             $request->setTags($tags);
@@ -41,15 +38,12 @@ final class RPCCentrifugApi implements CentrifugApiInterface
         $this->call('centrifuge.Publish', $request, DTO\PublishResponse::class);
     }
 
-    public function broadcast(array $channels, array $data = [], bool $skipHistory = true, array $tags = [],): void
+    public function broadcast(array $channels, string $message, bool $skipHistory = true, array $tags = [],): void
     {
         $request = new DTO\BroadcastRequest();
         $request->setChannels($channels);
         $request->setSkipHistory($skipHistory);
-
-        if ($data !== []) {
-            $request->setData(\json_encode($data));
-        }
+        $request->setData($message);
 
         if ($tags !== []) {
             $request->setTags($tags);
