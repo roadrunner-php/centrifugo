@@ -30,6 +30,11 @@ final class SubscribeRequest extends AbstractRequest
         parent::__construct($worker);
     }
 
+    public function getData(): array
+    {
+        return $this->data;
+    }
+
     /**
      * @param SubscribeResponse $response
      * @psalm-suppress MoreSpecificImplementedParamType
