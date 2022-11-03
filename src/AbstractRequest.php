@@ -13,9 +13,30 @@ use Spiral\RoadRunner\WorkerInterface;
  */
 abstract class AbstractRequest implements RequestInterface
 {
+    private array $attributes;
+
     public function __construct(
         private readonly WorkerInterface $worker,
     ) {
+    }
+
+
+    public function getAttributes(): array
+    {
+        return $this->attributes;
+    }
+
+    public function getAttribute(string $name, mixed $default = null): mixed
+    {
+        return $this->attributes[$name] ?? $default;
+    }
+
+    public function withAttribute(string $name, mixed $value): self
+    {
+        $self = clone $this;
+        $self->attributes[$name] = $value;
+
+        return $self;
     }
 
     /**

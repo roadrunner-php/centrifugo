@@ -28,6 +28,11 @@ final class PublishRequest extends AbstractRequest
         parent::__construct($worker);
     }
 
+    public function getData(): array
+    {
+        return $this->data;
+    }
+
     /**
      * @param PublishResponse $response
      * @psalm-suppress MoreSpecificImplementedParamType

@@ -28,6 +28,11 @@ final class RPCRequest extends AbstractRequest
         parent::__construct($worker);
     }
 
+    public function getData(): array
+    {
+        return $this->data;
+    }
+
     /**
      * @param RPCResponse $response
      * @psalm-suppress MoreSpecificImplementedParamType
