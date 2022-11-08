@@ -6,6 +6,7 @@ namespace RoadRunner\Centrifugo\Request;
 
 use RoadRunner\Centrifugo\DTO;
 use RoadRunner\Centrifugo\Payload\Override;
+use RoadRunner\Centrifugo\Payload\ResponseInterface;
 use RoadRunner\Centrifugo\Payload\SubscribeResponse;
 use Spiral\RoadRunner\WorkerInterface;
 
@@ -39,16 +40,16 @@ final class Subscribe extends AbstractRequest
      * @param SubscribeResponse $response
      * @psalm-suppress MoreSpecificImplementedParamType
      */
-    public function respond(object $response): void
+    public function respond(ResponseInterface $response): void
     {
         /** @psalm-suppress RedundantConditionGivenDocblockType */
         \assert($response instanceof SubscribeResponse);
 
         $result = $this->mapResponse($response);
-        $response = $this->getResponseObject();
-        $response->setResult($result);
+        $responseObject = $this->getResponseObject();
+        $responseObject->setResult($result);
 
-        $this->sendResponse($response);
+        $this->sendResponse($responseObject);
     }
 
     /**

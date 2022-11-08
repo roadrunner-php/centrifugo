@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace RoadRunner\Centrifugo\Request;
 
+use RoadRunner\Centrifugo\Payload\ResponseInterface;
+
 /**
  * @psalm-type HeadersList = array<string, array<array-key, string>>
  */
@@ -32,7 +34,7 @@ interface RequestInterface
     /**
      * Send response to Centrifugo server.
      */
-    public function respond(object $response): void;
+    public function respond(ResponseInterface $response): void;
 
     /**
      * Send error response to Centrifugo server.

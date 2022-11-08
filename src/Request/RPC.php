@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace RoadRunner\Centrifugo\Request;
 
 use RoadRunner\Centrifugo\DTO;
+use RoadRunner\Centrifugo\Payload\ResponseInterface;
 use RoadRunner\Centrifugo\Payload\RPCResponse;
 use Spiral\RoadRunner\WorkerInterface;
 
@@ -37,17 +38,17 @@ final class RPC extends AbstractRequest
      * @param RPCResponse $response
      * @psalm-suppress MoreSpecificImplementedParamType
      */
-    public function respond(object $response): void
+    public function respond(ResponseInterface $response): void
     {
         /** @psalm-suppress RedundantConditionGivenDocblockType */
         \assert($response instanceof RPCResponse);
 
         $result = $this->mapResponse($response);
 
-        $response = $this->getResponseObject();
-        $response->setResult($result);
+        $responseObject = $this->getResponseObject();
+        $responseObject->setResult($result);
 
-        $this->sendResponse($response);
+        $this->sendResponse($responseObject);
     }
 
     private function mapResponse(RPCResponse $response): DTO\RPCResult
