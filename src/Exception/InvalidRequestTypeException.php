@@ -6,5 +6,4 @@ namespace RoadRunner\Centrifugo\Exception;
 
 class InvalidRequestTypeException extends \RuntimeException
 {
-
 }

@@ -34,7 +34,7 @@ final class RequestFactory
 
         try {
             $typeEnum = RequestType::from($type);
-        } catch (\Throwable $e) {
+        } catch (\Throwable) {
             throw new InvalidRequestTypeException(\sprintf('Request type `%s` is not supported', $type));
         }
 

@@ -6,6 +6,7 @@ namespace RoadRunner\Centrifugo\Request;
 
 use RoadRunner\Centrifugo\DTO\Disconnect;
 use RoadRunner\Centrifugo\DTO\Error;
+use Spiral\RoadRunner\Payload;
 use Spiral\RoadRunner\WorkerInterface;
 
 /**
@@ -69,7 +70,7 @@ abstract class AbstractRequest implements RequestInterface
     final protected function sendResponse(object $response): void
     {
         $this->worker->respond(
-            new \Spiral\RoadRunner\Payload(
+            new Payload(
                 $response->serializeToString()
             )
         );
