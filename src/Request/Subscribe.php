@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace RoadRunner\Centrifugo;
+namespace RoadRunner\Centrifugo\Request;
 
 use RoadRunner\Centrifugo\DTO;
 use RoadRunner\Centrifugo\Payload\Override;
@@ -12,7 +12,7 @@ use Spiral\RoadRunner\WorkerInterface;
 /**
  * @see https://centrifugal.dev/docs/server/proxy#subscribe-proxy
  */
-final class SubscribeRequest extends AbstractRequest
+final class Subscribe extends AbstractRequest
 {
     public function __construct(
         WorkerInterface $worker,

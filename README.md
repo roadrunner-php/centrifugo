@@ -105,15 +105,16 @@ To init abstract RoadRunner worker:
 require __DIR__ . '/vendor/autoload.php';
 
 use RoadRunner\Centrifugo\CentrifugoWorker;
-use Spiral\RoadRunner\Worker;
 use RoadRunner\Centrifugo\Payload;
+use RoadRunner\Centrifugo\Request;
+use Spiral\RoadRunner\Worker;
 
 // Create a new Centrifugo Worker from global environment
 $worker = new CentrifugoWorker(Worker::create());
 
 while ($request = $worker->waitRequest()) {
     
-    if ($request instanceof \RoadRunner\Centrifugo\ConnectRequest) {
+    if ($request instanceof Request\Connect) {
         try {
             // Do something
             $request->respond(new Payload\ConnectResponse(
@@ -129,7 +130,7 @@ while ($request = $worker->waitRequest()) {
         continue;
     }
     
-    if ($request instanceof \RoadRunner\Centrifugo\RefreshRequest) {
+    if ($request instanceof Request\Refresh) {
         try {
             // Do something
             $request->respond(new Payload\RefreshResponse(
@@ -142,7 +143,7 @@ while ($request = $worker->waitRequest()) {
         continue;
     }
     
-    if ($request instanceof \RoadRunner\Centrifugo\SubscribeRequest) {
+    if ($request instanceof Request\Subscribe) {
         try {
             // Do something
             $request->respond(new Payload\SubscribeResponse(
@@ -158,7 +159,7 @@ while ($request = $worker->waitRequest()) {
         continue;
     }
     
-    if ($request instanceof \RoadRunner\Centrifugo\PublishRequest) {
+    if ($request instanceof Request\Publish) {
         try {
             // Do something
             $request->respond(new Payload\PublishResponse(
@@ -174,7 +175,7 @@ while ($request = $worker->waitRequest()) {
         continue;
     }
     
-    if ($request instanceof \RoadRunner\Centrifugo\RPCRequest) {
+    if ($request instanceof Request\RPC) {
         try {
             $response = $router->handle(
                 new Request(uri: $request->method, data: $request->data)

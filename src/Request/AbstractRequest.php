@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace RoadRunner\Centrifugo;
+namespace RoadRunner\Centrifugo\Request;
 
 use RoadRunner\Centrifugo\DTO\Disconnect;
 use RoadRunner\Centrifugo\DTO\Error;

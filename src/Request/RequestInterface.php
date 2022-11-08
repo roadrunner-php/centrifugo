@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace RoadRunner\Centrifugo;
+namespace RoadRunner\Centrifugo\Request;
 
 /**
  * @psalm-type HeadersList = array<string, array<array-key, string>>

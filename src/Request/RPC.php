@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace RoadRunner\Centrifugo;
+namespace RoadRunner\Centrifugo\Request;
 
 use RoadRunner\Centrifugo\DTO;
-use RoadRunner\Centrifugo\Payload\PublishResponse;
+use RoadRunner\Centrifugo\Payload\RPCResponse;
 use Spiral\RoadRunner\WorkerInterface;
 
 /**
- * @see https://centrifugal.dev/docs/server/proxy#publish-proxy
+ * @see https://centrifugal.dev/docs/server/proxy#rpc-proxy
  */
-final class PublishRequest extends AbstractRequest
+final class RPC extends AbstractRequest
 {
     public function __construct(
         WorkerInterface $worker,
@@ -20,7 +20,7 @@ final class PublishRequest extends AbstractRequest
         public readonly string $protocol,
         public readonly string $encoding,
         public readonly string $user,
-        public readonly string $channel,
+        public readonly ?string $method,
         public readonly array $meta,
         public readonly array $data,
         public readonly array $headers
@@ -34,36 +34,31 @@ final class PublishRequest extends AbstractRequest
     }
 
     /**
-     * @param PublishResponse $response
+     * @param RPCResponse $response
      * @psalm-suppress MoreSpecificImplementedParamType
      */
     public function respond(object $response): void
     {
         /** @psalm-suppress RedundantConditionGivenDocblockType */
-        \assert($response instanceof PublishResponse);
+        \assert($response instanceof RPCResponse);
 
         $result = $this->mapResponse($response);
+
         $response = $this->getResponseObject();
         $response->setResult($result);
 
         $this->sendResponse($response);
     }
 
-    protected function getResponseObject(): DTO\PublishResponse
+    private function mapResponse(RPCResponse $response): DTO\RPCResult
     {
-        return new DTO\PublishResponse();
+        return new DTO\RPCResult([
+            'data' => \json_encode($response->data),
+        ]);
     }
 
-    private function mapResponse(PublishResponse $response): DTO\PublishResult
+    protected function getResponseObject(): DTO\RPCResponse
     {
-        $result = new DTO\PublishResult();
-
-        $result->setSkipHistory($response->skipHistory);
-
-        if ($response->data !== []) {
-            $result->setData(\json_encode($response->data));
-        }
-
-        return $result;
+        return new DTO\RPCResponse();
     }
 }

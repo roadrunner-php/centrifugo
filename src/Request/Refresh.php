@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace RoadRunner\Centrifugo;
+namespace RoadRunner\Centrifugo\Request;
 
 use RoadRunner\Centrifugo\DTO;
 use RoadRunner\Centrifugo\Payload\RefreshResponse;
@@ -11,7 +11,7 @@ use Spiral\RoadRunner\WorkerInterface;
 /**
  * @see https://centrifugal.dev/docs/server/proxy#refresh-proxy
  */
-class RefreshRequest extends AbstractRequest
+class Refresh extends AbstractRequest
 {
     public function __construct(
         WorkerInterface $worker,
@@ -34,6 +34,7 @@ class RefreshRequest extends AbstractRequest
     /**
      * @param RefreshResponse $response
      * @psalm-suppress MoreSpecificImplementedParamType
+     * @throws \JsonException
      */
     public function respond(object $response): void
     {
@@ -52,6 +53,9 @@ class RefreshRequest extends AbstractRequest
         return new DTO\RefreshResponse();
     }
 
+    /**
+     * @throws \JsonException
+     */
     private function mapResponse(RefreshResponse $response): DTO\RefreshResult
     {
         $result = new DTO\RefreshResult();
@@ -66,7 +70,7 @@ class RefreshRequest extends AbstractRequest
         }
 
         if ($response->info !== []) {
-            $result->setInfo(\json_encode($response->info));
+            $result->setInfo(\json_encode($response->info, JSON_THROW_ON_ERROR));
         }
 
         return $result;

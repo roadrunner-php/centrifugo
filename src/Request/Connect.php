@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace RoadRunner\Centrifugo;
+namespace RoadRunner\Centrifugo\Request;
 
 use RoadRunner\Centrifugo\DTO;
 use RoadRunner\Centrifugo\Payload\ConnectResponse;
@@ -13,7 +13,7 @@ use Spiral\RoadRunner\WorkerInterface;
 /**
  * @see https://centrifugal.dev/docs/server/proxy#connect-proxy
  */
-final class ConnectRequest extends AbstractRequest
+final class Connect extends AbstractRequest
 {
     /**
      * @param non-empty-string[] $channels
@@ -41,6 +41,7 @@ final class ConnectRequest extends AbstractRequest
     /**
      * @param ConnectResponse $response
      * @psalm-suppress MoreSpecificImplementedParamType
+     * @throws \JsonException
      */
     public function respond(object $response): void
     {
@@ -54,6 +55,9 @@ final class ConnectRequest extends AbstractRequest
         $this->sendResponse($response);
     }
 
+    /**
+     * @throws \JsonException
+     */
     private function mapResponse(ConnectResponse $response): DTO\ConnectResult
     {
         $result = new DTO\ConnectResult();
@@ -64,15 +68,15 @@ final class ConnectRequest extends AbstractRequest
         }
 
         if ($response->data !== []) {
-            $result->setData(\json_encode($response->data));
+            $result->setData(\json_encode($response->data, JSON_THROW_ON_ERROR));
         }
 
         if ($response->info !== []) {
-            $result->setInfo(\json_encode($response->info));
+            $result->setInfo(\json_encode($response->info, JSON_THROW_ON_ERROR));
         }
 
         if ($response->meta !== []) {
-            $result->setMeta(\json_encode($response->meta));
+            $result->setMeta(\json_encode($response->meta, JSON_THROW_ON_ERROR));
         }
 
         if ($response->channels !== []) {
@@ -94,6 +98,7 @@ final class ConnectRequest extends AbstractRequest
     /**
      * @param array<non-empty-string, SubscribeOption> $subscriptions
      * @return array<non-empty-string, DTO\SubscribeOptions>
+     * @throws \JsonException
      */
     private function mapSubscriptions(array $subscriptions): array
     {
@@ -107,11 +112,11 @@ final class ConnectRequest extends AbstractRequest
             }
 
             if ($subscription->data !== []) {
-                $sub->setData(\json_encode($subscription->data));
+                $sub->setData(\json_encode($subscription->data, JSON_THROW_ON_ERROR));
             }
 
             if ($subscription->info !== []) {
-                $sub->setInfo(\json_encode($subscription->info));
+                $sub->setInfo(\json_encode($subscription->info, JSON_THROW_ON_ERROR));
             }
 
             if ($subscription->override !== null) {
