@@ -43,5 +43,4 @@ interface RequestInterface
      * Send disconnect response to Centrifugo server.
      */
     public function disconnect(int $code, string $reason, bool $reconnect = false): void;
-
 }

@@ -13,13 +13,12 @@ use Spiral\RoadRunner\WorkerInterface;
  */
 abstract class AbstractRequest implements RequestInterface
 {
-    private array $attributes;
+    private array $attributes = [];
 
     public function __construct(
         private readonly WorkerInterface $worker,
     ) {
     }
-
 
     public function getAttributes(): array
     {

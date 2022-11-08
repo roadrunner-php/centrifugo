@@ -9,7 +9,7 @@ use RoadRunner\Centrifugo\Payload\Disconnect;
 /**
  * @see https://centrifugal.dev/docs/server/server_api
  */
-interface CentrifugApiInterface
+interface CentrifugoApiInterface
 {
     /**
      * Publish command allows publishing data into a channel (we call this message publication in Centrifugo).

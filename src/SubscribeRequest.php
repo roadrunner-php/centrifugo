@@ -51,16 +51,19 @@ final class SubscribeRequest extends AbstractRequest
         $this->sendResponse($response);
     }
 
+    /**
+     * @throws \JsonException
+     */
     private function mapResponse(SubscribeResponse $response): DTO\SubscribeResult
     {
         $result = new DTO\SubscribeResult();
 
         if ($response->info !== []) {
-            $result->setInfo(\json_encode($response->info));
+            $result->setInfo(\json_encode($response->info, JSON_THROW_ON_ERROR));
         }
 
         if ($response->data !== []) {
-            $result->setData(\json_encode($response->data));
+            $result->setData(\json_encode($response->data, JSON_THROW_ON_ERROR));
         }
 
         if ($response->allow !== []) {
