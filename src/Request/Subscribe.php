@@ -25,15 +25,10 @@ final class Subscribe extends AbstractRequest
         public readonly string $channel,
         public readonly string $token,
         public readonly array $meta,
-        public readonly array $data,
+        array $data,
         public readonly array $headers
     ) {
-        parent::__construct($worker);
-    }
-
-    public function getData(): array
-    {
-        return $this->data;
+        parent::__construct($worker, $data);
     }
 
     /**

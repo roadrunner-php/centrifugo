@@ -27,11 +27,6 @@ class Refresh extends AbstractRequest
         parent::__construct($worker);
     }
 
-    public function getData(): array
-    {
-        return [];
-    }
-
     /**
      * @param RefreshResponse $response
      * @psalm-suppress MoreSpecificImplementedParamType

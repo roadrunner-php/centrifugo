@@ -23,15 +23,10 @@ final class RPC extends AbstractRequest
         public readonly string $user,
         public readonly ?string $method,
         public readonly array $meta,
-        public readonly array $data,
+        array $data,
         public readonly array $headers
     ) {
-        parent::__construct($worker);
-    }
-
-    public function getData(): array
-    {
-        return $this->data;
+        parent::__construct($worker, $data);
     }
 
     /**

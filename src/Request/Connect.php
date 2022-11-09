@@ -25,18 +25,13 @@ final class Connect extends AbstractRequest
         public readonly string $transport,
         public readonly string $protocol,
         public readonly string $encoding,
-        public readonly array $data,
+        array $data,
         public readonly ?string $name,
         public readonly ?string $version,
         public readonly array $channels,
         public readonly array $headers
     ) {
-        parent::__construct($worker);
-    }
-
-    public function getData(): array
-    {
-        return $this->data;
+        parent::__construct($worker, $data);
     }
 
     /**

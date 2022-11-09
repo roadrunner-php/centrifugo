@@ -18,12 +18,18 @@ abstract class AbstractRequest implements RequestInterface
 
     public function __construct(
         private readonly WorkerInterface $worker,
+        private $data = []
     ) {
     }
 
     public function getAttributes(): array
     {
         return $this->attributes;
+    }
+
+    public function getData(): array
+    {
+        return $this->data;
     }
 
     public function getAttribute(string $name, mixed $default = null): mixed

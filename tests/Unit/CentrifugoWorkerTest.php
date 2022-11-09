@@ -49,7 +49,7 @@ final class CentrifugoWorkerTest extends TestCase
         $this->assertSame('webscoket', $request->transport);
         $this->assertSame('http', $request->protocol);
         $this->assertSame('utf8', $request->encoding);
-        $this->assertSame(['foo' => 'bar'], $request->data);
+        $this->assertSame(['foo' => 'bar'], $request->getData());
         $this->assertSame('request-name', $request->name);
         $this->assertSame('1.0.0', $request->version);
         $this->assertSame(['public', 'private'], $request->channels);
@@ -124,7 +124,7 @@ final class CentrifugoWorkerTest extends TestCase
         $this->assertSame('public', $request->channel);
         $this->assertSame('foo-token', $request->token);
         $this->assertSame(['foo' => 'bar'], $request->meta);
-        $this->assertSame(['baz' => 'bar'], $request->data);
+        $this->assertSame(['baz' => 'bar'], $request->getData());
         $this->assertSame(['type' => ['subscribe']], $request->headers);
     }
 
@@ -161,7 +161,7 @@ final class CentrifugoWorkerTest extends TestCase
         $this->assertSame('user-1', $request->user);
         $this->assertSame('private', $request->channel);
         $this->assertSame(['foo' => 'bar'], $request->meta);
-        $this->assertSame(['baz' => 'bar'], $request->data);
+        $this->assertSame(['baz' => 'bar'], $request->getData());
         $this->assertSame(['type' => ['publish']], $request->headers);
     }
 
@@ -198,7 +198,7 @@ final class CentrifugoWorkerTest extends TestCase
         $this->assertSame('user-1', $request->user);
         $this->assertSame('user.show', $request->method);
         $this->assertSame(['foo' => 'bar'], $request->meta);
-        $this->assertSame(['baz' => 'bar'], $request->data);
+        $this->assertSame(['baz' => 'bar'], $request->getData());
         $this->assertSame(['type' => ['rpc']], $request->headers);
     }
 
