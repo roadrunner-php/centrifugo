@@ -18,7 +18,7 @@ abstract class AbstractRequest implements RequestInterface
 
     public function __construct(
         private readonly WorkerInterface $worker,
-        private $data = []
+        private readonly array $data = []
     ) {
     }
 
