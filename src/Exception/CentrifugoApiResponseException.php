@@ -6,7 +6,7 @@ namespace RoadRunner\Centrifugo\Exception;
 
 use RoadRunner\Centrifugo\Service\DTO\Error;
 
-class CentrifugApiResponseException extends \Exception
+class CentrifugoApiResponseException extends \Exception
 {
     public static function createFromError(Error $error): self
     {

@@ -2,18 +2,19 @@
 
 declare(strict_types=1);
 
-namespace RoadRunner\Centrifugo;
+namespace RoadRunner\Centrifugo\Request;
 
 use RoadRunner\Centrifugo\DTO;
 use RoadRunner\Centrifugo\Payload\ConnectResponse;
 use RoadRunner\Centrifugo\Payload\Override;
+use RoadRunner\Centrifugo\Payload\ResponseInterface;
 use RoadRunner\Centrifugo\Payload\SubscribeOption;
 use Spiral\RoadRunner\WorkerInterface;
 
 /**
  * @see https://centrifugal.dev/docs/server/proxy#connect-proxy
  */
-final class ConnectRequest extends AbstractRequest
+final class Connect extends AbstractRequest
 {
     /**
      * @param non-empty-string[] $channels
@@ -24,36 +25,35 @@ final class ConnectRequest extends AbstractRequest
         public readonly string $transport,
         public readonly string $protocol,
         public readonly string $encoding,
-        public readonly array $data,
+        array $data,
         public readonly ?string $name,
         public readonly ?string $version,
         public readonly array $channels,
         public readonly array $headers
     ) {
-        parent::__construct($worker);
-    }
-
-    public function getData(): array
-    {
-        return $this->data;
+        parent::__construct($worker, $data);
     }
 
     /**
      * @param ConnectResponse $response
      * @psalm-suppress MoreSpecificImplementedParamType
+     * @throws \JsonException
      */
-    public function respond(object $response): void
+    public function respond(ResponseInterface $response): void
     {
         /** @psalm-suppress RedundantConditionGivenDocblockType */
         \assert($response instanceof ConnectResponse);
 
         $result = $this->mapResponse($response);
-        $response = $this->getResponseObject();
-        $response->setResult($result);
+        $responseObject = $this->getResponseObject();
+        $responseObject->setResult($result);
 
-        $this->sendResponse($response);
+        $this->sendResponse($responseObject);
     }
 
+    /**
+     * @throws \JsonException
+     */
     private function mapResponse(ConnectResponse $response): DTO\ConnectResult
     {
         $result = new DTO\ConnectResult();
@@ -64,15 +64,15 @@ final class ConnectRequest extends AbstractRequest
         }
 
         if ($response->data !== []) {
-            $result->setData(\json_encode($response->data));
+            $result->setData(\json_encode($response->data, JSON_THROW_ON_ERROR));
         }
 
         if ($response->info !== []) {
-            $result->setInfo(\json_encode($response->info));
+            $result->setInfo(\json_encode($response->info, JSON_THROW_ON_ERROR));
         }
 
         if ($response->meta !== []) {
-            $result->setMeta(\json_encode($response->meta));
+            $result->setMeta(\json_encode($response->meta, JSON_THROW_ON_ERROR));
         }
 
         if ($response->channels !== []) {
@@ -94,6 +94,7 @@ final class ConnectRequest extends AbstractRequest
     /**
      * @param array<non-empty-string, SubscribeOption> $subscriptions
      * @return array<non-empty-string, DTO\SubscribeOptions>
+     * @throws \JsonException
      */
     private function mapSubscriptions(array $subscriptions): array
     {
@@ -107,11 +108,11 @@ final class ConnectRequest extends AbstractRequest
             }
 
             if ($subscription->data !== []) {
-                $sub->setData(\json_encode($subscription->data));
+                $sub->setData(\json_encode($subscription->data, JSON_THROW_ON_ERROR));
             }
 
             if ($subscription->info !== []) {
-                $sub->setInfo(\json_encode($subscription->info));
+                $sub->setInfo(\json_encode($subscription->info, JSON_THROW_ON_ERROR));
             }
 
             if ($subscription->override !== null) {

@@ -7,7 +7,7 @@ namespace RoadRunner\Centrifugo\Payload;
 /**
  * @see https://centrifugal.dev/docs/server/proxy#publish-proxy
  */
-class PublishResponse
+class PublishResponse implements ResponseInterface
 {
     /**
      * @param array $data An optional JSON data to send into a channel instead of original data sent by a client.

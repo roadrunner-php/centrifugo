@@ -2,10 +2,11 @@
 
 declare(strict_types=1);
 
-namespace RoadRunner\Centrifugo;
+namespace RoadRunner\Centrifugo\Request;
 
 use RoadRunner\Centrifugo\DTO\Disconnect;
 use RoadRunner\Centrifugo\DTO\Error;
+use Spiral\RoadRunner\Payload;
 use Spiral\RoadRunner\WorkerInterface;
 
 /**
@@ -13,17 +14,22 @@ use Spiral\RoadRunner\WorkerInterface;
  */
 abstract class AbstractRequest implements RequestInterface
 {
-    private array $attributes;
+    private array $attributes = [];
 
     public function __construct(
         private readonly WorkerInterface $worker,
+        private readonly array $data = []
     ) {
     }
-
 
     public function getAttributes(): array
     {
         return $this->attributes;
+    }
+
+    public function getData(): array
+    {
+        return $this->data;
     }
 
     public function getAttribute(string $name, mixed $default = null): mixed
@@ -70,7 +76,7 @@ abstract class AbstractRequest implements RequestInterface
     final protected function sendResponse(object $response): void
     {
         $this->worker->respond(
-            new \Spiral\RoadRunner\Payload(
+            new Payload(
                 $response->serializeToString()
             )
         );

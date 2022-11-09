@@ -7,7 +7,7 @@ namespace RoadRunner\Centrifugo\Payload;
 /**
  * @see https://centrifugal.dev/docs/server/proxy#connect-proxy
  */
-class ConnectResponse
+class ConnectResponse implements ResponseInterface
 {
     /**
      * @param string $user User ID (calculated on app backend based on request cookie header for example).

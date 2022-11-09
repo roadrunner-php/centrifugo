@@ -2,16 +2,17 @@
 
 declare(strict_types=1);
 
-namespace RoadRunner\Centrifugo;
+namespace RoadRunner\Centrifugo\Request;
 
 use RoadRunner\Centrifugo\DTO;
 use RoadRunner\Centrifugo\Payload\RefreshResponse;
+use RoadRunner\Centrifugo\Payload\ResponseInterface;
 use Spiral\RoadRunner\WorkerInterface;
 
 /**
  * @see https://centrifugal.dev/docs/server/proxy#refresh-proxy
  */
-class RefreshRequest extends AbstractRequest
+class Refresh extends AbstractRequest
 {
     public function __construct(
         WorkerInterface $worker,
@@ -26,25 +27,21 @@ class RefreshRequest extends AbstractRequest
         parent::__construct($worker);
     }
 
-    public function getData(): array
-    {
-        return [];
-    }
-
     /**
      * @param RefreshResponse $response
      * @psalm-suppress MoreSpecificImplementedParamType
+     * @throws \JsonException
      */
-    public function respond(object $response): void
+    public function respond(ResponseInterface $response): void
     {
         /** @psalm-suppress RedundantConditionGivenDocblockType */
         \assert($response instanceof RefreshResponse);
 
         $result = $this->mapResponse($response);
-        $response = $this->getResponseObject();
-        $response->setResult($result);
+        $responseObject = $this->getResponseObject();
+        $responseObject->setResult($result);
 
-        $this->sendResponse($response);
+        $this->sendResponse($responseObject);
     }
 
     protected function getResponseObject(): DTO\RefreshResponse
@@ -52,6 +49,9 @@ class RefreshRequest extends AbstractRequest
         return new DTO\RefreshResponse();
     }
 
+    /**
+     * @throws \JsonException
+     */
     private function mapResponse(RefreshResponse $response): DTO\RefreshResult
     {
         $result = new DTO\RefreshResult();
@@ -66,7 +66,7 @@ class RefreshRequest extends AbstractRequest
         }
 
         if ($response->info !== []) {
-            $result->setInfo(\json_encode($response->info));
+            $result->setInfo(\json_encode($response->info, JSON_THROW_ON_ERROR));
         }
 
         return $result;

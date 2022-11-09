@@ -2,16 +2,17 @@
 
 declare(strict_types=1);
 
-namespace RoadRunner\Centrifugo;
+namespace RoadRunner\Centrifugo\Request;
 
 use RoadRunner\Centrifugo\DTO;
+use RoadRunner\Centrifugo\Payload\ResponseInterface;
 use RoadRunner\Centrifugo\Payload\RPCResponse;
 use Spiral\RoadRunner\WorkerInterface;
 
 /**
  * @see https://centrifugal.dev/docs/server/proxy#rpc-proxy
  */
-final class RPCRequest extends AbstractRequest
+final class RPC extends AbstractRequest
 {
     public function __construct(
         WorkerInterface $worker,
@@ -22,32 +23,27 @@ final class RPCRequest extends AbstractRequest
         public readonly string $user,
         public readonly ?string $method,
         public readonly array $meta,
-        public readonly array $data,
+        array $data,
         public readonly array $headers
     ) {
-        parent::__construct($worker);
-    }
-
-    public function getData(): array
-    {
-        return $this->data;
+        parent::__construct($worker, $data);
     }
 
     /**
      * @param RPCResponse $response
      * @psalm-suppress MoreSpecificImplementedParamType
      */
-    public function respond(object $response): void
+    public function respond(ResponseInterface $response): void
     {
         /** @psalm-suppress RedundantConditionGivenDocblockType */
         \assert($response instanceof RPCResponse);
 
         $result = $this->mapResponse($response);
 
-        $response = $this->getResponseObject();
-        $response->setResult($result);
+        $responseObject = $this->getResponseObject();
+        $responseObject->setResult($result);
 
-        $this->sendResponse($response);
+        $this->sendResponse($responseObject);
     }
 
     private function mapResponse(RPCResponse $response): DTO\RPCResult

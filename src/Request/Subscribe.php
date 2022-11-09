@@ -2,17 +2,18 @@
 
 declare(strict_types=1);
 
-namespace RoadRunner\Centrifugo;
+namespace RoadRunner\Centrifugo\Request;
 
 use RoadRunner\Centrifugo\DTO;
 use RoadRunner\Centrifugo\Payload\Override;
+use RoadRunner\Centrifugo\Payload\ResponseInterface;
 use RoadRunner\Centrifugo\Payload\SubscribeResponse;
 use Spiral\RoadRunner\WorkerInterface;
 
 /**
  * @see https://centrifugal.dev/docs/server/proxy#subscribe-proxy
  */
-final class SubscribeRequest extends AbstractRequest
+final class Subscribe extends AbstractRequest
 {
     public function __construct(
         WorkerInterface $worker,
@@ -24,43 +25,41 @@ final class SubscribeRequest extends AbstractRequest
         public readonly string $channel,
         public readonly string $token,
         public readonly array $meta,
-        public readonly array $data,
+        array $data,
         public readonly array $headers
     ) {
-        parent::__construct($worker);
-    }
-
-    public function getData(): array
-    {
-        return $this->data;
+        parent::__construct($worker, $data);
     }
 
     /**
      * @param SubscribeResponse $response
      * @psalm-suppress MoreSpecificImplementedParamType
      */
-    public function respond(object $response): void
+    public function respond(ResponseInterface $response): void
     {
         /** @psalm-suppress RedundantConditionGivenDocblockType */
         \assert($response instanceof SubscribeResponse);
 
         $result = $this->mapResponse($response);
-        $response = $this->getResponseObject();
-        $response->setResult($result);
+        $responseObject = $this->getResponseObject();
+        $responseObject->setResult($result);
 
-        $this->sendResponse($response);
+        $this->sendResponse($responseObject);
     }
 
+    /**
+     * @throws \JsonException
+     */
     private function mapResponse(SubscribeResponse $response): DTO\SubscribeResult
     {
         $result = new DTO\SubscribeResult();
 
         if ($response->info !== []) {
-            $result->setInfo(\json_encode($response->info));
+            $result->setInfo(\json_encode($response->info, JSON_THROW_ON_ERROR));
         }
 
         if ($response->data !== []) {
-            $result->setData(\json_encode($response->data));
+            $result->setData(\json_encode($response->data, JSON_THROW_ON_ERROR));
         }
 
         if ($response->allow !== []) {

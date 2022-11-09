@@ -7,7 +7,7 @@ namespace RoadRunner\Centrifugo\Payload;
 /**
  * @see https://centrifugal.dev/docs/server/proxy#refresh-proxy
  */
-class RefreshResponse
+class RefreshResponse implements ResponseInterface
 {
     /**
      * @param bool $expired A flag to mark the connection as expired - the client will be disconnected.

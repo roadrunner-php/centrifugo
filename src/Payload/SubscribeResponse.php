@@ -7,7 +7,7 @@ namespace RoadRunner\Centrifugo\Payload;
 /**
  * @see https://centrifugal.dev/docs/server/proxy#subscribe-proxy
  */
-class SubscribeResponse
+class SubscribeResponse implements ResponseInterface
 {
     /**
      * @param array $info A channel info JSON.

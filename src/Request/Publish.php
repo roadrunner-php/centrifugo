@@ -2,16 +2,17 @@
 
 declare(strict_types=1);
 
-namespace RoadRunner\Centrifugo;
+namespace RoadRunner\Centrifugo\Request;
 
 use RoadRunner\Centrifugo\DTO;
 use RoadRunner\Centrifugo\Payload\PublishResponse;
+use RoadRunner\Centrifugo\Payload\ResponseInterface;
 use Spiral\RoadRunner\WorkerInterface;
 
 /**
  * @see https://centrifugal.dev/docs/server/proxy#publish-proxy
  */
-final class PublishRequest extends AbstractRequest
+final class Publish extends AbstractRequest
 {
     public function __construct(
         WorkerInterface $worker,
@@ -22,31 +23,27 @@ final class PublishRequest extends AbstractRequest
         public readonly string $user,
         public readonly string $channel,
         public readonly array $meta,
-        public readonly array $data,
+        array $data,
         public readonly array $headers
     ) {
-        parent::__construct($worker);
-    }
-
-    public function getData(): array
-    {
-        return $this->data;
+        parent::__construct($worker, $data);
     }
 
     /**
      * @param PublishResponse $response
      * @psalm-suppress MoreSpecificImplementedParamType
+     * @throws \JsonException
      */
-    public function respond(object $response): void
+    public function respond(ResponseInterface $response): void
     {
         /** @psalm-suppress RedundantConditionGivenDocblockType */
         \assert($response instanceof PublishResponse);
 
         $result = $this->mapResponse($response);
-        $response = $this->getResponseObject();
-        $response->setResult($result);
+        $responseObject = $this->getResponseObject();
+        $responseObject->setResult($result);
 
-        $this->sendResponse($response);
+        $this->sendResponse($responseObject);
     }
 
     protected function getResponseObject(): DTO\PublishResponse
@@ -54,6 +51,9 @@ final class PublishRequest extends AbstractRequest
         return new DTO\PublishResponse();
     }
 
+    /**
+     * @throws \JsonException
+     */
     private function mapResponse(PublishResponse $response): DTO\PublishResult
     {
         $result = new DTO\PublishResult();
@@ -61,7 +61,7 @@ final class PublishRequest extends AbstractRequest
         $result->setSkipHistory($response->skipHistory);
 
         if ($response->data !== []) {
-            $result->setData(\json_encode($response->data));
+            $result->setData(\json_encode($response->data, JSON_THROW_ON_ERROR));
         }
 
         return $result;

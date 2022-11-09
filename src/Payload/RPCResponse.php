@@ -7,7 +7,7 @@ namespace RoadRunner\Centrifugo\Payload;
 /**
  * @see https://centrifugal.dev/docs/server/proxy#rpc-proxy
  */
-class RPCResponse
+class RPCResponse implements ResponseInterface
 {
     /**
      * @param array $data RPC response - any valid JSON is supported.

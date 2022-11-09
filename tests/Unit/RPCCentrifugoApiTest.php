@@ -2,24 +2,24 @@
 
 declare(strict_types=1);
 
-namespace RoadRunner\Centrifugo\Tests;
+namespace RoadRunner\Centrifugo\Tests\Unit;
 
 use Mockery as m;
 use PHPUnit\Framework\TestCase;
-use RoadRunner\Centrifugo\CentrifugApiInterface;
-use RoadRunner\Centrifugo\Exception\CentrifugApiResponseException;
-use RoadRunner\Centrifugo\RPCCentrifugApi;
+use RoadRunner\Centrifugo\CentrifugoApiInterface;
+use RoadRunner\Centrifugo\Exception\CentrifugoApiResponseException;
+use RoadRunner\Centrifugo\RPCCentrifugoApi;
 use RoadRunner\Centrifugo\Service\DTO;
 use Spiral\Goridge\RPC\Codec\ProtobufCodec;
 use Spiral\Goridge\RPC\CodecInterface;
 use Spiral\Goridge\RPC\RPCInterface;
 
-final class RPCCentrifugApiTest extends TestCase
+final class RPCCentrifugoApiTest extends TestCase
 {
     use m\Adapter\Phpunit\MockeryPHPUnitIntegration;
 
     private m\MockInterface|RPCInterface $rpc;
-    private CentrifugApiInterface $api;
+    private CentrifugoApiInterface $api;
 
     protected function setUp(): void
     {
@@ -30,7 +30,7 @@ final class RPCCentrifugApiTest extends TestCase
             static fn(CodecInterface $codec): bool => $codec instanceof ProtobufCodec
         )->andReturnSelf();
 
-        $this->api = new RPCCentrifugApi($this->rpc);
+        $this->api = new RPCCentrifugoApi($this->rpc);
     }
 
     public function testPublish(): void
@@ -55,7 +55,7 @@ final class RPCCentrifugApiTest extends TestCase
 
     public function testPublishErrorHandling(): void
     {
-        $this->expectException(CentrifugApiResponseException::class);
+        $this->expectException(CentrifugoApiResponseException::class);
         $this->expectErrorMessage('Error message');
         $this->expectExceptionCode(500);
 

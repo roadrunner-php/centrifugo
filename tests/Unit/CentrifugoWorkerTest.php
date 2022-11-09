@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace RoadRunner\Centrifugo\Tests;
+namespace RoadRunner\Centrifugo\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
 use RoadRunner\Centrifugo\CentrifugoWorker;
-use RoadRunner\Centrifugo\ConnectRequest;
+use RoadRunner\Centrifugo\Request\Connect;
+use RoadRunner\Centrifugo\Request\Publish;
+use RoadRunner\Centrifugo\Request\Refresh;
+use RoadRunner\Centrifugo\Request\RequestFactory;
+use RoadRunner\Centrifugo\Request\RequestType;
+use RoadRunner\Centrifugo\Request\RPC;
+use RoadRunner\Centrifugo\Request\Subscribe;
 use RoadRunner\Centrifugo\DTO;
-use RoadRunner\Centrifugo\PublishRequest;
-use RoadRunner\Centrifugo\RefreshRequest;
-use RoadRunner\Centrifugo\RequestFactory;
-use RoadRunner\Centrifugo\RequestType;
-use RoadRunner\Centrifugo\RPCRequest;
-use RoadRunner\Centrifugo\SubscribeRequest;
 use Spiral\RoadRunner\Payload;
 use Spiral\RoadRunner\WorkerInterface;
 
@@ -43,13 +43,13 @@ final class CentrifugoWorkerTest extends TestCase
 
         $request = $centrifugo->waitRequest();
 
-        $this->assertInstanceOf(ConnectRequest::class, $request);
+        $this->assertInstanceOf(Connect::class, $request);
 
         $this->assertSame('client-id', $request->client);
         $this->assertSame('webscoket', $request->transport);
         $this->assertSame('http', $request->protocol);
         $this->assertSame('utf8', $request->encoding);
-        $this->assertSame(['foo' => 'bar'], $request->data);
+        $this->assertSame(['foo' => 'bar'], $request->getData());
         $this->assertSame('request-name', $request->name);
         $this->assertSame('1.0.0', $request->version);
         $this->assertSame(['public', 'private'], $request->channels);
@@ -78,7 +78,7 @@ final class CentrifugoWorkerTest extends TestCase
 
         $request = $centrifugo->waitRequest();
 
-        $this->assertInstanceOf(RefreshRequest::class, $request);
+        $this->assertInstanceOf(Refresh::class, $request);
 
         $this->assertSame('client-id', $request->client);
         $this->assertSame('webscoket', $request->transport);
@@ -114,7 +114,7 @@ final class CentrifugoWorkerTest extends TestCase
 
         $request = $centrifugo->waitRequest();
 
-        $this->assertInstanceOf(SubscribeRequest::class, $request);
+        $this->assertInstanceOf(Subscribe::class, $request);
 
         $this->assertSame('client-id', $request->client);
         $this->assertSame('webscoket', $request->transport);
@@ -124,7 +124,7 @@ final class CentrifugoWorkerTest extends TestCase
         $this->assertSame('public', $request->channel);
         $this->assertSame('foo-token', $request->token);
         $this->assertSame(['foo' => 'bar'], $request->meta);
-        $this->assertSame(['baz' => 'bar'], $request->data);
+        $this->assertSame(['baz' => 'bar'], $request->getData());
         $this->assertSame(['type' => ['subscribe']], $request->headers);
     }
 
@@ -152,7 +152,7 @@ final class CentrifugoWorkerTest extends TestCase
 
         $request = $centrifugo->waitRequest();
 
-        $this->assertInstanceOf(PublishRequest::class, $request);
+        $this->assertInstanceOf(Publish::class, $request);
 
         $this->assertSame('client-id', $request->client);
         $this->assertSame('webscoket', $request->transport);
@@ -161,7 +161,7 @@ final class CentrifugoWorkerTest extends TestCase
         $this->assertSame('user-1', $request->user);
         $this->assertSame('private', $request->channel);
         $this->assertSame(['foo' => 'bar'], $request->meta);
-        $this->assertSame(['baz' => 'bar'], $request->data);
+        $this->assertSame(['baz' => 'bar'], $request->getData());
         $this->assertSame(['type' => ['publish']], $request->headers);
     }
 
@@ -189,7 +189,7 @@ final class CentrifugoWorkerTest extends TestCase
 
         $request = $centrifugo->waitRequest();
 
-        $this->assertInstanceOf(RPCRequest::class, $request);
+        $this->assertInstanceOf(RPC::class, $request);
 
         $this->assertSame('client-id', $request->client);
         $this->assertSame('webscoket', $request->transport);
@@ -198,7 +198,7 @@ final class CentrifugoWorkerTest extends TestCase
         $this->assertSame('user-1', $request->user);
         $this->assertSame('user.show', $request->method);
         $this->assertSame(['foo' => 'bar'], $request->meta);
-        $this->assertSame(['baz' => 'bar'], $request->data);
+        $this->assertSame(['baz' => 'bar'], $request->getData());
         $this->assertSame(['type' => ['rpc']], $request->headers);
     }
 

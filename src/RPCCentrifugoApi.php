@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace RoadRunner\Centrifugo;
 
 use Google\Protobuf\Internal\Message;
-use RoadRunner\Centrifugo\Exception\CentrifugApiResponseException;
+use RoadRunner\Centrifugo\Exception\CentrifugoApiResponseException;
 use RoadRunner\Centrifugo\Payload\Disconnect;
 use Spiral\Goridge\RPC\Codec\ProtobufCodec;
 use Spiral\Goridge\RPC\RPCInterface;
@@ -15,7 +15,7 @@ use RoadRunner\Centrifugo\Service\DTO;
  * @psalm-type ResponseDTO = DTO\PublishResponse|DTO\BroadcastResponse|DTO\RefreshResponse|DTO\SubscribeResponse|DTO\UnsubscribeResponse|DTO\DisconnectResponse|DTO\PresenceResponse|DTO\PresenceStatsResponse|DTO\ChannelsResponse|DTO\BlockUserResponse|DTO\UnblockUserResponse
  * @psalm-type RequestDTO = DTO\PublishRequest|DTO\BroadcastRequest|DTO\RefreshRequest|DTO\SubscribeRequest|DTO\UnsubscribeRequest|DTO\DisconnectRequest|DTO\PresenceRequest|DTO\PresenceStatsRequest|DTO\ChannelsRequest|DTO\BlockUserRequest|DTO\UnblockUserRequest
  */
-final class RPCCentrifugApi implements CentrifugApiInterface
+final class RPCCentrifugoApi implements CentrifugoApiInterface
 {
     private RPCInterface $rpc;
 
@@ -266,7 +266,7 @@ final class RPCCentrifugApi implements CentrifugApiInterface
      * @param RequestDTO $request
      * @param class-string<T> $responseClass
      * @return T
-     * @throws CentrifugApiResponseException
+     * @throws CentrifugoApiResponseException
      *
      * @psalm-suppress MixedInferredReturnType
      * @psalm-suppress MismatchingDocblockReturnType
@@ -279,7 +279,7 @@ final class RPCCentrifugApi implements CentrifugApiInterface
         \assert($response instanceof $responseClass);
 
         if ($response->getError() !== null) {
-            throw CentrifugApiResponseException::createFromError($response->getError());
+            throw CentrifugoApiResponseException::createFromError($response->getError());
         }
 
         return $response;
