@@ -59,7 +59,6 @@ server:
   relay: pipes
 
 centrifuge:
-  endpoint: "ws://127.0.0.1:8000/connection/websocket"
   proxy_address: "tcp://0.0.0.0:10001" # Centrifugo address
 ```
 
