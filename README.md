@@ -204,7 +204,7 @@ vendor/bin/rr download-protoc-binary
 composer compile
 ```
 
-https://buf.build/roadrunner-server/api/file/main:proto/centrifugo/proxy/v1/proxy.proto
+Proto files are located here: [link](https://buf.build/roadrunner-server/api/docs/main:centrifugal.centrifugo.proxy)
 
 ## License
 
