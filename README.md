@@ -107,11 +107,15 @@ use RoadRunner\Centrifugo\CentrifugoWorker;
 use RoadRunner\Centrifugo\Payload;
 use RoadRunner\Centrifugo\Request;
 use Spiral\RoadRunner\Worker;
+use RoadRunner\Centrifugo\Request\RequestFactory;
+
+$worker = Worker::create();
+$requestFactory = new RequestFactory($worker);
 
 // Create a new Centrifugo Worker from global environment
-$worker = new CentrifugoWorker(Worker::create());
+$centrifugoWorker = new CentrifugoWorker($worker, $requestFactory);
 
-while ($request = $worker->waitRequest()) {
+while ($request = $centrifugoWorker->waitRequest()) {
     
     if ($request instanceof Request\Connect) {
         try {
