@@ -67,7 +67,7 @@ final class RequestFactory
             transport: $request->getTransport(),
             protocol: $request->getProtocol(),
             encoding: $request->getEncoding(),
-            data: $request->getData() ? (array)\json_decode($request->getData(), true, 512, JSON_THROW_ON_ERROR) : [],
+            data: $this->decodeRequestData($request->getData()),
             name: $request->getName(),
             version: $request->getVersion(),
             channels: $channels,
@@ -91,7 +91,7 @@ final class RequestFactory
             protocol: $request->getProtocol(),
             encoding: $request->getEncoding(),
             user: $request->getUser(),
-            meta: $request->getMeta() ? (array)\json_decode($request->getMeta(), true, 512, JSON_THROW_ON_ERROR) : [],
+            meta: $this->decodeRequestData($request->getMeta()),
             headers: $headers,
         );
     }
@@ -114,8 +114,8 @@ final class RequestFactory
             user: $request->getUser(),
             channel: $request->getChannel(),
             token: $request->getToken(),
-            meta: $request->getMeta() ? (array)\json_decode($request->getMeta(), true, 512, JSON_THROW_ON_ERROR) : [],
-            data: $request->getData() ? (array)\json_decode($request->getData(), true, 512, JSON_THROW_ON_ERROR) : [],
+            meta: $this->decodeRequestData($request->getMeta()),
+            data: $this->decodeRequestData($request->getData()),
             headers: $headers,
         );
     }
@@ -137,8 +137,8 @@ final class RequestFactory
             encoding: $request->getEncoding(),
             user: $request->getUser(),
             channel: $request->getChannel(),
-            meta: $request->getMeta() ? (array)\json_decode($request->getMeta(), true, 512, JSON_THROW_ON_ERROR) : [],
-            data: $request->getData() ? (array)\json_decode($request->getData(), true, 512, JSON_THROW_ON_ERROR) : [],
+            meta: $this->decodeRequestData($request->getMeta()),
+            data: $this->decodeRequestData($request->getData()),
             headers: $headers,
         );
     }
@@ -160,8 +160,8 @@ final class RequestFactory
             encoding: $request->getEncoding(),
             user: $request->getUser(),
             method: $request->getMethod(),
-            meta: $request->getMeta() ? (array)\json_decode($request->getMeta(), true, 512, JSON_THROW_ON_ERROR) : [],
-            data: $request->getData() ? (array)\json_decode($request->getData(), true, 512, JSON_THROW_ON_ERROR) : [],
+            meta: $this->decodeRequestData($request->getMeta()),
+            data: $this->decodeRequestData($request->getData()),
             headers: $headers,
         );
     }
@@ -185,5 +185,13 @@ final class RequestFactory
         $request->mergeFromString($body);
 
         return $request;
+    }
+
+    /**
+     * @throws \JsonException
+     */
+    private function decodeRequestData(string $data): array
+    {
+        return (array) \json_decode($data, true, 512, JSON_THROW_ON_ERROR);
     }
 }

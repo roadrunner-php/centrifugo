@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace RoadRunner\Centrifugo;
 
+use RoadRunner\Centrifugo\Request\InvalidRequestWrapper;
 use RoadRunner\Centrifugo\Request\RequestFactory;
 use RoadRunner\Centrifugo\Request\RequestInterface;
 use Spiral\RoadRunner\WorkerInterface;
@@ -19,14 +20,18 @@ final class CentrifugoWorker implements CentrifugoWorkerInterface
     /**
      * @throws \JsonException
      */
-    public function waitRequest(): ?RequestInterface
+    public function waitRequest(): null|RequestInterface|InvalidRequestWrapper
     {
-        $payload = $this->worker->waitPayload();
-        if ($payload === null || (!$payload->body && !$payload->header)) {
-            return null;
-        }
+        try {
+            $payload = $this->worker->waitPayload();
+            if ($payload === null || (!$payload->body && !$payload->header)) {
+                return null;
+            }
 
-        return $this->requestFactory->createFromPayload($payload);
+            return $this->requestFactory->createFromPayload($payload);
+        } catch (\Throwable $throwable) {
+            return new InvalidRequestWrapper($throwable);
+        }
     }
 
     public function getWorker(): WorkerInterface

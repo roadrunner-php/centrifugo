@@ -116,14 +116,18 @@ $requestFactory = new RequestFactory($worker);
 $centrifugoWorker = new CentrifugoWorker($worker, $requestFactory);
 
 while ($request = $centrifugoWorker->waitRequest()) {
-    
+    if ($request instanceof Request\InvalidRequestWrapper) {
+        // the payload was invalid, something else went wrong, log it.
+        continue;
+    }
+
     if ($request instanceof Request\Connect) {
         try {
             // Do something
             $request->respond(new Payload\ConnectResponse(
                 // ...
             ));
-            
+
             // You can also disconnect connection
             $request->disconnect('500', 'Connection is not allowed.');
         } catch (\Throwable $e) {
@@ -132,7 +136,7 @@ while ($request = $centrifugoWorker->waitRequest()) {
 
         continue;
     }
-    
+
     if ($request instanceof Request\Refresh) {
         try {
             // Do something
@@ -145,14 +149,14 @@ while ($request = $centrifugoWorker->waitRequest()) {
 
         continue;
     }
-    
+
     if ($request instanceof Request\Subscribe) {
         try {
             // Do something
             $request->respond(new Payload\SubscribeResponse(
                 // ...
             ));
-            
+
             // You can also disconnect connection
             $request->disconnect('500', 'Connection is not allowed.');
         } catch (\Throwable $e) {
@@ -161,14 +165,14 @@ while ($request = $centrifugoWorker->waitRequest()) {
 
         continue;
     }
-    
+
     if ($request instanceof Request\Publish) {
         try {
             // Do something
             $request->respond(new Payload\PublishResponse(
                 // ...
             ));
-            
+
             // You can also disconnect connection
             $request->disconnect('500', 'Connection is not allowed.');
         } catch (\Throwable $e) {
@@ -177,13 +181,13 @@ while ($request = $centrifugoWorker->waitRequest()) {
 
         continue;
     }
-    
+
     if ($request instanceof Request\RPC) {
         try {
             $response = $router->handle(
                 new Request(uri: $request->method, data: $request->data)
             ); // ['user' => ['id' => 1, 'username' => 'john_smith']]
-            
+
             $request->respond(new Payload\RPCResponse(
                 data: $response
             ));
