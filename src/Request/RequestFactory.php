@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace RoadRunner\Centrifugo\Request;
 
-use RoadRunner\Centrifugo\DTO;
+use JsonException;
+use RoadRunner\Centrifugal\Proxy\DTO\V1 as DTO;
 use Google\Protobuf\Internal\Message;
 use RoadRunner\Centrifugo\Exception\InvalidRequestTypeException;
 use Spiral\RoadRunner\Payload as WorkerPayload;
@@ -24,7 +25,8 @@ final class RequestFactory
 
     /**
      * Create a request Payload object.
-     * @throws \JsonException
+     * @throws JsonException
+     * @throws InvalidRequestTypeException
      */
     public function createFromPayload(WorkerPayload $payload): RequestInterface
     {
@@ -35,7 +37,10 @@ final class RequestFactory
         try {
             $typeEnum = RequestType::from($type);
         } catch (\Throwable) {
-            throw new InvalidRequestTypeException(\sprintf('Request type `%s` is not supported', $type));
+            throw new InvalidRequestTypeException(
+                $payload,
+                \sprintf('Request type `%s` is not supported', $type)
+            );
         }
 
         \assert($payload->body !== '');
@@ -49,10 +54,17 @@ final class RequestFactory
         };
     }
 
+    public function createFromException(\Throwable $e): Invalid
+    {
+        return new Invalid(
+            exception: $e,
+        );
+    }
+
     /**
      * @param non-empty-string $body
      * @param RequestHeader $headers
-     * @throws \JsonException
+     * @throws JsonException
      */
     private function createConnectRequest(string $body, array $headers): Connect
     {
@@ -78,7 +90,7 @@ final class RequestFactory
     /**
      * @param non-empty-string $body
      * @param RequestHeader $headers
-     * @throws \JsonException
+     * @throws JsonException
      */
     private function createRefreshRequest(string $body, array $headers): Refresh
     {
@@ -99,7 +111,7 @@ final class RequestFactory
     /**
      * @param non-empty-string $body
      * @param RequestHeader $headers
-     * @throws \JsonException
+     * @throws JsonException
      */
     private function createSubscribeRequest(string $body, array $headers): Subscribe
     {
@@ -123,7 +135,7 @@ final class RequestFactory
     /**
      * @param non-empty-string $body
      * @param RequestHeader $headers
-     * @throws \JsonException
+     * @throws JsonException
      */
     private function createPublishRequest(string $body, array $headers): Publish
     {
@@ -146,7 +158,7 @@ final class RequestFactory
     /**
      * @param non-empty-string $body
      * @param RequestHeader $headers
-     * @throws \JsonException
+     * @throws JsonException
      */
     private function createRPCRequest(string $body, array $headers): RPC
     {

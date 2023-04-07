@@ -13,6 +13,7 @@ enum RequestType: string
     case Publish = 'publish';
     case Subscribe = 'subscribe';
     case RPC = 'rpc';
+    case Invalid = 'invalid';
 
     public static function createFrom(RequestInterface $request): self
     {
@@ -22,6 +23,7 @@ enum RequestType: string
             $request instanceof Refresh => self::Refresh,
             $request instanceof Publish => self::Publish,
             $request instanceof RPC => self::RPC,
+            $request instanceof Invalid => self::Invalid,
             default => throw new InvalidRequestTypeException(
                 \sprintf('Request type `%s` is not supported', $request::class)
             ),

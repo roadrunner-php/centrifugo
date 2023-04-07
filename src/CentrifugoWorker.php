@@ -12,7 +12,7 @@ final class CentrifugoWorker implements CentrifugoWorkerInterface
 {
     public function __construct(
         private readonly WorkerInterface $worker,
-        private readonly RequestFactory $requestFactory
+        private readonly RequestFactory $requestFactory,
     ) {
     }
 
@@ -21,12 +21,16 @@ final class CentrifugoWorker implements CentrifugoWorkerInterface
      */
     public function waitRequest(): ?RequestInterface
     {
-        $payload = $this->worker->waitPayload();
-        if ($payload === null || (!$payload->body && !$payload->header)) {
-            return null;
-        }
+        try {
+            $payload = $this->worker->waitPayload();
+            if ($payload === null || (!$payload->body && !$payload->header)) {
+                return null;
+            }
 
-        return $this->requestFactory->createFromPayload($payload);
+            return $this->requestFactory->createFromPayload($payload);
+        } catch (\Throwable $e) {
+            return $this->requestFactory->createFromException($e);
+        }
     }
 
     public function getWorker(): WorkerInterface

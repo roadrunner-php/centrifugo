@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace RoadRunner\Centrifugo\Tests\Unit\Request;
 
-use RoadRunner\Centrifugo\DTO\ConnectResponse;
-use RoadRunner\Centrifugo\DTO\Disconnect;
-use RoadRunner\Centrifugo\DTO\Error;
+use RoadRunner\Centrifugal\Proxy\DTO\V1\ConnectResponse;
+use RoadRunner\Centrifugal\Proxy\DTO\V1\Disconnect;
+use RoadRunner\Centrifugal\Proxy\DTO\V1\Error;
 use RoadRunner\Centrifugo\Request\AbstractRequest;
 use RoadRunner\Centrifugo\Tests\Unit\TestCase;
 use Spiral\RoadRunner\Payload;

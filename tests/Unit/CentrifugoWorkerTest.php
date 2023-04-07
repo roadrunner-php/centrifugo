@@ -13,7 +13,7 @@ use RoadRunner\Centrifugo\Request\RequestFactory;
 use RoadRunner\Centrifugo\Request\RequestType;
 use RoadRunner\Centrifugo\Request\RPC;
 use RoadRunner\Centrifugo\Request\Subscribe;
-use RoadRunner\Centrifugo\DTO;
+use RoadRunner\Centrifugal\Proxy\DTO\V1 as DTO;
 use Spiral\RoadRunner\Payload;
 use Spiral\RoadRunner\WorkerInterface;
 

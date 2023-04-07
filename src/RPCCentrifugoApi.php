@@ -9,7 +9,7 @@ use RoadRunner\Centrifugo\Exception\CentrifugoApiResponseException;
 use RoadRunner\Centrifugo\Payload\Disconnect;
 use Spiral\Goridge\RPC\Codec\ProtobufCodec;
 use Spiral\Goridge\RPC\RPCInterface;
-use RoadRunner\Centrifugo\Service\DTO;
+use RoadRunner\Centrifugal\API\DTO\V1 as DTO;
 
 /**
  * @psalm-type ResponseDTO = DTO\PublishResponse|DTO\BroadcastResponse|DTO\RefreshResponse|DTO\SubscribeResponse|DTO\UnsubscribeResponse|DTO\DisconnectResponse|DTO\PresenceResponse|DTO\PresenceStatsResponse|DTO\ChannelsResponse|DTO\BlockUserResponse|DTO\UnblockUserResponse

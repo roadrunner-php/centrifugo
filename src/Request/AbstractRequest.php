@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace RoadRunner\Centrifugo\Request;
 
-use RoadRunner\Centrifugo\DTO\Disconnect;
-use RoadRunner\Centrifugo\DTO\Error;
+use RoadRunner\Centrifugal\Proxy\DTO\V1\Disconnect;
+use RoadRunner\Centrifugal\Proxy\DTO\V1\Error;
 use Spiral\RoadRunner\Payload;
 use Spiral\RoadRunner\WorkerInterface;
 
@@ -73,7 +73,7 @@ abstract class AbstractRequest implements RequestInterface
     /**
      * @param ResponseDTO $response
      */
-    final protected function sendResponse(object $response): void
+    protected function sendResponse(object $response): void
     {
         $this->worker->respond(
             new Payload(

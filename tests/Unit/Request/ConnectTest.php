@@ -6,11 +6,11 @@ namespace RoadRunner\Centrifugo\Tests\Unit\Request;
 
 use Google\Protobuf\Internal\MapField;
 use Google\Protobuf\Internal\RepeatedField;
-use RoadRunner\Centrifugo\DTO\BoolValue;
-use RoadRunner\Centrifugo\DTO\ConnectResponse as ConnectResponseDTO;
-use RoadRunner\Centrifugo\DTO\ConnectResult;
-use RoadRunner\Centrifugo\DTO\SubscribeOptionOverride;
-use RoadRunner\Centrifugo\DTO\SubscribeOptions;
+use RoadRunner\Centrifugal\Proxy\DTO\V1\BoolValue;
+use RoadRunner\Centrifugal\Proxy\DTO\V1\ConnectResponse as ConnectResponseDTO;
+use RoadRunner\Centrifugal\Proxy\DTO\V1\ConnectResult;
+use RoadRunner\Centrifugal\Proxy\DTO\V1\SubscribeOptionOverride;
+use RoadRunner\Centrifugal\Proxy\DTO\V1\SubscribeOptions;
 use RoadRunner\Centrifugo\Payload\ConnectResponse;
 use RoadRunner\Centrifugo\Payload\Override;
 use RoadRunner\Centrifugo\Payload\SubscribeOption;
