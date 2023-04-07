@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace RoadRunner\Centrifugo\Request;
 
-use RoadRunner\Centrifugo\Exception\InvalidRequestTypeException;
-
 enum RequestType: string
 {
     case Connect = 'connect';
@@ -15,6 +13,9 @@ enum RequestType: string
     case RPC = 'rpc';
     case Invalid = 'invalid';
 
+    /**
+     * @deprecated Will be removed in 2.0
+     */
     public static function createFrom(RequestInterface $request): self
     {
         return match (true) {
@@ -24,7 +25,7 @@ enum RequestType: string
             $request instanceof Publish => self::Publish,
             $request instanceof RPC => self::RPC,
             $request instanceof Invalid => self::Invalid,
-            default => throw new InvalidRequestTypeException(
+            default => throw new \InvalidArgumentException(
                 \sprintf('Request type `%s` is not supported', $request::class)
             ),
         };

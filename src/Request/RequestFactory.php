@@ -51,6 +51,10 @@ final class RequestFactory
             RequestType::Subscribe => $this->createSubscribeRequest($payload->body, $headers),
             RequestType::Publish => $this->createPublishRequest($payload->body, $headers),
             RequestType::RPC => $this->createRPCRequest($payload->body, $headers),
+            RequestType::Invalid => throw new InvalidRequestTypeException(
+                $payload,
+                \sprintf('Request type `%s` is not supported', $type)
+            )
         };
     }
 

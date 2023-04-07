@@ -18,7 +18,7 @@ abstract class AbstractRequest implements RequestInterface
 
     public function __construct(
         private readonly WorkerInterface $worker,
-        private readonly array $data = []
+        private readonly array $data = [],
     ) {
     }
 
@@ -54,7 +54,7 @@ abstract class AbstractRequest implements RequestInterface
     {
         $response = $this->getResponseObject();
         $response->setError(
-            new Error(compact('code', 'message', 'temporary'))
+            new Error(compact('code', 'message', 'temporary')),
         );
 
         $this->sendResponse($response);
@@ -64,7 +64,7 @@ abstract class AbstractRequest implements RequestInterface
     {
         $response = $this->getResponseObject();
         $response->setDisconnect(
-            new Disconnect(compact('code', 'reason', 'reconnect'))
+            new Disconnect(compact('code', 'reason', 'reconnect')),
         );
 
         $this->sendResponse($response);
@@ -76,9 +76,7 @@ abstract class AbstractRequest implements RequestInterface
     protected function sendResponse(object $response): void
     {
         $this->worker->respond(
-            new Payload(
-                $response->serializeToString()
-            )
+            new Payload((string)$response->serializeToString()),
         );
     }
 }
