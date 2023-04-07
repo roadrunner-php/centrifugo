@@ -76,7 +76,7 @@ abstract class AbstractRequest implements RequestInterface
     protected function sendResponse(object $response): void
     {
         $this->worker->respond(
-            new Payload((string)$response->serializeToString()),
+            new Payload($response->serializeToString()),
         );
     }
 }
