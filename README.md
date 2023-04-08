@@ -49,7 +49,7 @@ First you need to add `centrifuge` section to your RoadRunner configuration. For
 would be quite feasible to run:
 
 ```yaml
-version: '2.7'
+version: '3.0'
 
 rpc:
   listen: tcp://127.0.0.1:6001
@@ -103,7 +103,11 @@ To init abstract RoadRunner worker:
 
 require __DIR__ . '/vendor/autoload.php';
 
-use RoadRunner\Centrifugo\CentrifugoWorker;use RoadRunner\Centrifugo\Payload;use RoadRunner\Centrifugo\Request;use RoadRunner\Centrifugo\Request\RequestFactory;use Spiral\RoadRunner\Worker;
+use RoadRunner\Centrifugo\CentrifugoWorker;
+use RoadRunner\Centrifugo\Payload;
+use RoadRunner\Centrifugo\Request;
+use RoadRunner\Centrifugo\Request\RequestFactory;
+use Spiral\RoadRunner\Worker;
 
 $worker = Worker::create();
 $requestFactory = new RequestFactory($worker);
