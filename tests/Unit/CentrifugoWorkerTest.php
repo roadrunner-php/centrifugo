@@ -15,6 +15,7 @@ use RoadRunner\Centrifugo\Request\Refresh;
 use RoadRunner\Centrifugo\Request\RequestFactory;
 use RoadRunner\Centrifugo\Request\RequestType;
 use RoadRunner\Centrifugo\Request\RPC;
+use RoadRunner\Centrifugo\Request\SubRefresh;
 use RoadRunner\Centrifugo\Request\Subscribe;
 use Spiral\RoadRunner\Exception\RoadRunnerException;
 use Spiral\RoadRunner\Payload;
@@ -90,6 +91,41 @@ final class CentrifugoWorkerTest extends TestCase
         $this->assertSame('user-1', $request->user);
         $this->assertSame(['foo' => 'bar'], $request->meta);
         $this->assertSame(['type' => ['refresh']], $request->headers);
+    }
+
+    public function testSubRefreshRequest(): void
+    {
+        $worker = \Mockery::mock(WorkerInterface::class);
+
+        $worker->shouldReceive('waitPayload')->once()
+            ->andReturn(
+                $this->createPayload(
+                    new DTO\SubRefreshRequest([
+                        'client' => 'client-id',
+                        'transport' => 'webscoket',
+                        'protocol' => 'http',
+                        'encoding' => 'utf8',
+                        'user' => 'user-1',
+                        'channel' => 'channel-1',
+                        'meta' => \json_encode(['foo' => 'bar']),
+                    ]),
+                ),
+            );
+
+        $centrifugo = new CentrifugoWorker($worker, new RequestFactory($worker));
+
+        $request = $centrifugo->waitRequest();
+
+        $this->assertInstanceOf(SubRefresh::class, $request);
+
+        $this->assertSame('client-id', $request->client);
+        $this->assertSame('webscoket', $request->transport);
+        $this->assertSame('http', $request->protocol);
+        $this->assertSame('utf8', $request->encoding);
+        $this->assertSame('user-1', $request->user);
+        $this->assertSame('channel-1', $request->channel);
+        $this->assertSame(['foo' => 'bar'], $request->meta);
+        $this->assertSame(['type' => ['sub_refresh']], $request->headers);
     }
 
     public function testSubscribeRequest(): void
@@ -255,6 +291,7 @@ final class CentrifugoWorkerTest extends TestCase
             $request instanceof DTO\PublishRequest => RequestType::Publish,
             $request instanceof DTO\SubscribeRequest => RequestType::Subscribe,
             $request instanceof DTO\RefreshRequest => RequestType::Refresh,
+            $request instanceof DTO\SubRefreshRequest => RequestType::SubRefresh,
             $request instanceof DTO\RPCRequest => RequestType::RPC,
             default => throw new \InvalidArgumentException('Invalid request object ' . $request::class)
         };

@@ -8,6 +8,7 @@ enum RequestType: string
 {
     case Connect = 'connect';
     case Refresh = 'refresh';
+    case SubRefresh = 'sub_refresh';
     case Publish = 'publish';
     case Subscribe = 'subscribe';
     case RPC = 'rpc';
