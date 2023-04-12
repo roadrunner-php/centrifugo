@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace RoadRunner\Centrifugo\Tests\Unit\Request;
 
-use RoadRunner\Centrifugo\DTO\PublishResult;
+use RoadRunner\Centrifugal\Proxy\DTO\V1\PublishResult;
 use RoadRunner\Centrifugo\Payload\PublishResponse;
 use RoadRunner\Centrifugo\Request\Publish;
 use RoadRunner\Centrifugo\Tests\Unit\TestCase;
 use Spiral\RoadRunner\Payload;
-use RoadRunner\Centrifugo\DTO\PublishResponse as PublishResponseDTO;
+use RoadRunner\Centrifugal\Proxy\DTO\V1\PublishResponse as PublishResponseDTO;
 use Spiral\RoadRunner\WorkerInterface;
 
 final class PublishTest extends TestCase
@@ -56,7 +56,7 @@ final class PublishTest extends TestCase
         $this->assertSame($expected['skip_history'], $dto->getSkipHistory());
     }
 
-    public function mapResponseDataProvider(): \Traversable
+    public static function mapResponseDataProvider(): \Traversable
     {
         yield [new PublishResponse(), ['data' => '', 'skip_history' => false]];
         yield [new PublishResponse(skipHistory: true), ['data' => '', 'skip_history' => true]];

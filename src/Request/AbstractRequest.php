@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace RoadRunner\Centrifugo\Request;
 
-use RoadRunner\Centrifugo\DTO\Disconnect;
-use RoadRunner\Centrifugo\DTO\Error;
+use RoadRunner\Centrifugal\Proxy\DTO\V1\Disconnect;
+use RoadRunner\Centrifugal\Proxy\DTO\V1\Error;
 use Spiral\RoadRunner\Payload;
 use Spiral\RoadRunner\WorkerInterface;
 
@@ -18,7 +18,7 @@ abstract class AbstractRequest implements RequestInterface
 
     public function __construct(
         private readonly WorkerInterface $worker,
-        private readonly array $data = []
+        private readonly array $data = [],
     ) {
     }
 
@@ -54,7 +54,7 @@ abstract class AbstractRequest implements RequestInterface
     {
         $response = $this->getResponseObject();
         $response->setError(
-            new Error(compact('code', 'message', 'temporary'))
+            new Error(compact('code', 'message', 'temporary')),
         );
 
         $this->sendResponse($response);
@@ -64,7 +64,7 @@ abstract class AbstractRequest implements RequestInterface
     {
         $response = $this->getResponseObject();
         $response->setDisconnect(
-            new Disconnect(compact('code', 'reason', 'reconnect'))
+            new Disconnect(\compact('code', 'reason', 'reconnect')),
         );
 
         $this->sendResponse($response);
@@ -72,13 +72,13 @@ abstract class AbstractRequest implements RequestInterface
 
     /**
      * @param ResponseDTO $response
+     * @psalm-suppress InternalClass
+     * @psalm-suppress InternalMethod
      */
-    final protected function sendResponse(object $response): void
+    protected function sendResponse(object $response): void
     {
         $this->worker->respond(
-            new Payload(
-                $response->serializeToString()
-            )
+            new Payload($response->serializeToString()),
         );
     }
 }

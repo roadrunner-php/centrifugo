@@ -5,15 +5,15 @@ declare(strict_types=1);
 namespace RoadRunner\Centrifugo\Tests\Unit\Request;
 
 use Google\Protobuf\Internal\RepeatedField;
-use RoadRunner\Centrifugo\DTO\BoolValue;
-use RoadRunner\Centrifugo\DTO\SubscribeOptionOverride;
-use RoadRunner\Centrifugo\DTO\SubscribeResult;
+use RoadRunner\Centrifugal\Proxy\DTO\V1\BoolValue;
+use RoadRunner\Centrifugal\Proxy\DTO\V1\SubscribeOptionOverride;
+use RoadRunner\Centrifugal\Proxy\DTO\V1\SubscribeResult;
 use RoadRunner\Centrifugo\Payload\Override;
 use RoadRunner\Centrifugo\Payload\SubscribeResponse;
 use RoadRunner\Centrifugo\Request\Subscribe;
 use RoadRunner\Centrifugo\Tests\Unit\TestCase;
 use Spiral\RoadRunner\Payload;
-use RoadRunner\Centrifugo\DTO\SubscribeResponse as SubscribeResponseDTO;
+use RoadRunner\Centrifugal\Proxy\DTO\V1\SubscribeResponse as SubscribeResponseDTO;
 use Spiral\RoadRunner\WorkerInterface;
 
 final class SubscribeTest extends TestCase
@@ -62,7 +62,7 @@ final class SubscribeTest extends TestCase
         $this->assertEquals($expected['override'], $dto->getOverride());
     }
 
-    public function mapResponseDataProvider(): \Traversable
+    public static function mapResponseDataProvider(): \Traversable
     {
         yield [
             new SubscribeResponse(),

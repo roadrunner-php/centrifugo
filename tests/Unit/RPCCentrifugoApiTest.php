@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 use RoadRunner\Centrifugo\CentrifugoApiInterface;
 use RoadRunner\Centrifugo\Exception\CentrifugoApiResponseException;
 use RoadRunner\Centrifugo\RPCCentrifugoApi;
-use RoadRunner\Centrifugo\Service\DTO;
+use RoadRunner\Centrifugal\API\DTO\V1 as DTO;
 use Spiral\Goridge\RPC\Codec\ProtobufCodec;
 use Spiral\Goridge\RPC\CodecInterface;
 use Spiral\Goridge\RPC\RPCInterface;
@@ -56,7 +56,7 @@ final class RPCCentrifugoApiTest extends TestCase
     public function testPublishErrorHandling(): void
     {
         $this->expectException(CentrifugoApiResponseException::class);
-        $this->expectErrorMessage('Error message');
+        $this->expectExceptionMessage('Error message');
         $this->expectExceptionCode(500);
 
         $this->rpc->shouldReceive('call')

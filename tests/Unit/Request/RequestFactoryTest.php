@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace RoadRunner\Centrifugo\Tests\Unit\Request;
 
-use RoadRunner\Centrifugo\DTO\ConnectRequest;
-use RoadRunner\Centrifugo\DTO\PublishRequest;
-use RoadRunner\Centrifugo\DTO\RefreshRequest;
-use RoadRunner\Centrifugo\DTO\RPCRequest;
-use RoadRunner\Centrifugo\DTO\SubscribeRequest;
+use RoadRunner\Centrifugal\Proxy\DTO\V1\ConnectRequest;
+use RoadRunner\Centrifugal\Proxy\DTO\V1\PublishRequest;
+use RoadRunner\Centrifugal\Proxy\DTO\V1\RefreshRequest;
+use RoadRunner\Centrifugal\Proxy\DTO\V1\RPCRequest;
+use RoadRunner\Centrifugal\Proxy\DTO\V1\SubscribeRequest;
 use RoadRunner\Centrifugo\Request\Connect;
 use RoadRunner\Centrifugo\Request\Publish;
 use RoadRunner\Centrifugo\Request\Refresh;

@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace RoadRunner\Centrifugo\Tests\Unit\Request;
 
-use RoadRunner\Centrifugo\DTO\RefreshResult;
+use RoadRunner\Centrifugal\Proxy\DTO\V1\RefreshResult;
 use RoadRunner\Centrifugo\Payload\RefreshResponse;
 use RoadRunner\Centrifugo\Request\Refresh;
 use RoadRunner\Centrifugo\Tests\Unit\TestCase;
 use Spiral\RoadRunner\Payload;
-use RoadRunner\Centrifugo\DTO\RefreshResponse as RefreshResponseDTO;
+use RoadRunner\Centrifugal\Proxy\DTO\V1\RefreshResponse as RefreshResponseDTO;
 use Spiral\RoadRunner\WorkerInterface;
 
 final class RefreshTest extends TestCase
@@ -57,7 +57,7 @@ final class RefreshTest extends TestCase
         $this->assertSame($expected['info'], $dto->getInfo());
     }
 
-    public function mapResponseDataProvider(): \Traversable
+    public static function mapResponseDataProvider(): \Traversable
     {
         yield [new RefreshResponse(), ['expired' => false, 'expire_at' => 0, 'info' => '']];
         yield [new RefreshResponse(expired: true), ['expired' => true, 'expire_at' => 0, 'info' => '']];

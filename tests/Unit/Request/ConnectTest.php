@@ -6,11 +6,11 @@ namespace RoadRunner\Centrifugo\Tests\Unit\Request;
 
 use Google\Protobuf\Internal\MapField;
 use Google\Protobuf\Internal\RepeatedField;
-use RoadRunner\Centrifugo\DTO\BoolValue;
-use RoadRunner\Centrifugo\DTO\ConnectResponse as ConnectResponseDTO;
-use RoadRunner\Centrifugo\DTO\ConnectResult;
-use RoadRunner\Centrifugo\DTO\SubscribeOptionOverride;
-use RoadRunner\Centrifugo\DTO\SubscribeOptions;
+use RoadRunner\Centrifugal\Proxy\DTO\V1\BoolValue;
+use RoadRunner\Centrifugal\Proxy\DTO\V1\ConnectResponse as ConnectResponseDTO;
+use RoadRunner\Centrifugal\Proxy\DTO\V1\ConnectResult;
+use RoadRunner\Centrifugal\Proxy\DTO\V1\SubscribeOptionOverride;
+use RoadRunner\Centrifugal\Proxy\DTO\V1\SubscribeOptions;
 use RoadRunner\Centrifugo\Payload\ConnectResponse;
 use RoadRunner\Centrifugo\Payload\Override;
 use RoadRunner\Centrifugo\Payload\SubscribeOption;
@@ -107,7 +107,7 @@ final class ConnectTest extends TestCase
         $this->assertSame($expected['force_recovery'], $override->getForceRecovery()?->getValue());
     }
 
-    public function mapResponseDataProvider(): \Traversable
+    public static function mapResponseDataProvider(): \Traversable
     {
         yield [new ConnectResponse(), [
             'user' => '',
@@ -213,7 +213,7 @@ final class ConnectTest extends TestCase
         ];
     }
 
-    public function mapSubscriptionsDataProvider(): \Traversable
+    public static function mapSubscriptionsDataProvider(): \Traversable
     {
         yield [new SubscribeOption(), ['expire_at' => 0, 'data' => '', 'info' => '', 'override' => null]];
         yield [new SubscribeOption(222), ['expire_at' => 222, 'data' => '', 'info' => '', 'override' => null]];
@@ -310,7 +310,7 @@ final class ConnectTest extends TestCase
         ];
     }
 
-    public function mapSubscribeOptionDataProvider(): \Traversable
+    public static function mapSubscribeOptionDataProvider(): \Traversable
     {
         yield [new Override(), [
             'presence' => null,

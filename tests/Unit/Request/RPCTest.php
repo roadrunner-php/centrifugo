@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace RoadRunner\Centrifugo\Tests\Unit\Request;
 
-use RoadRunner\Centrifugo\DTO\RPCResult;
+use RoadRunner\Centrifugal\Proxy\DTO\V1\RPCResult;
 use RoadRunner\Centrifugo\Payload\RPCResponse;
 use RoadRunner\Centrifugo\Request\RPC;
 use RoadRunner\Centrifugo\Tests\Unit\TestCase;
 use Spiral\RoadRunner\Payload;
-use RoadRunner\Centrifugo\DTO\RPCResponse as RPCResponseDTO;
+use RoadRunner\Centrifugal\Proxy\DTO\V1\RPCResponse as RPCResponseDTO;
 use Spiral\RoadRunner\WorkerInterface;
 
 final class RPCTest extends TestCase
@@ -55,7 +55,7 @@ final class RPCTest extends TestCase
         $this->assertSame($expected['data'], $dto->getData());
     }
 
-    public function mapResponseDataProvider(): \Traversable
+    public static function mapResponseDataProvider(): \Traversable
     {
         yield [new RPCResponse(), ['data' => '[]']];
         yield [new RPCResponse(['some']), ['data' => '["some"]']];

@@ -5,15 +5,18 @@ declare(strict_types=1);
 namespace RoadRunner\Centrifugo\Tests\Unit;
 
 use PHPUnit\Framework\TestCase;
+use RoadRunner\Centrifugal\Proxy\DTO\V1 as DTO;
 use RoadRunner\Centrifugo\CentrifugoWorker;
+use RoadRunner\Centrifugo\Exception\InvalidRequestTypeException;
 use RoadRunner\Centrifugo\Request\Connect;
+use RoadRunner\Centrifugo\Request\Invalid;
 use RoadRunner\Centrifugo\Request\Publish;
 use RoadRunner\Centrifugo\Request\Refresh;
 use RoadRunner\Centrifugo\Request\RequestFactory;
 use RoadRunner\Centrifugo\Request\RequestType;
 use RoadRunner\Centrifugo\Request\RPC;
 use RoadRunner\Centrifugo\Request\Subscribe;
-use RoadRunner\Centrifugo\DTO;
+use Spiral\RoadRunner\Exception\RoadRunnerException;
 use Spiral\RoadRunner\Payload;
 use Spiral\RoadRunner\WorkerInterface;
 
@@ -35,8 +38,8 @@ final class CentrifugoWorkerTest extends TestCase
                         'name' => 'request-name',
                         'version' => '1.0.0',
                         'channels' => ['public', 'private'],
-                    ])
-                )
+                    ]),
+                ),
             );
 
         $centrifugo = new CentrifugoWorker($worker, new RequestFactory($worker));
@@ -70,8 +73,8 @@ final class CentrifugoWorkerTest extends TestCase
                         'encoding' => 'utf8',
                         'user' => 'user-1',
                         'meta' => \json_encode(['foo' => 'bar']),
-                    ])
-                )
+                    ]),
+                ),
             );
 
         $centrifugo = new CentrifugoWorker($worker, new RequestFactory($worker));
@@ -106,8 +109,8 @@ final class CentrifugoWorkerTest extends TestCase
                         'token' => 'foo-token',
                         'meta' => \json_encode(['foo' => 'bar']),
                         'data' => \json_encode(['baz' => 'bar']),
-                    ])
-                )
+                    ]),
+                ),
             );
 
         $centrifugo = new CentrifugoWorker($worker, new RequestFactory($worker));
@@ -144,8 +147,8 @@ final class CentrifugoWorkerTest extends TestCase
                         'channel' => 'private',
                         'meta' => \json_encode(['foo' => 'bar']),
                         'data' => \json_encode(['baz' => 'bar']),
-                    ])
-                )
+                    ]),
+                ),
             );
 
         $centrifugo = new CentrifugoWorker($worker, new RequestFactory($worker));
@@ -181,8 +184,8 @@ final class CentrifugoWorkerTest extends TestCase
                         'method' => 'user.show',
                         'meta' => \json_encode(['foo' => 'bar']),
                         'data' => \json_encode(['baz' => 'bar']),
-                    ])
-                )
+                    ]),
+                ),
             );
 
         $centrifugo = new CentrifugoWorker($worker, new RequestFactory($worker));
@@ -200,6 +203,49 @@ final class CentrifugoWorkerTest extends TestCase
         $this->assertSame(['foo' => 'bar'], $request->meta);
         $this->assertSame(['baz' => 'bar'], $request->getData());
         $this->assertSame(['type' => ['rpc']], $request->headers);
+    }
+
+    public function testInvalidPayloadRequest(): void
+    {
+        $worker = \Mockery::mock(WorkerInterface::class);
+
+        $worker->shouldReceive('waitPayload')->once()
+            ->andReturn('test');
+
+        $centrifugo = new CentrifugoWorker($worker, new RequestFactory($worker));
+        $request = $centrifugo->waitRequest();
+
+        $this->assertInstanceOf(Invalid::class, $request);
+        $this->assertInstanceOf(\TypeError::class, $request->getException());
+    }
+
+    public function testInvalidPayloadTypeRequest(): void
+    {
+        $worker = \Mockery::mock(WorkerInterface::class);
+
+        $worker->shouldReceive('waitPayload')->once()
+            ->andReturn($payload = new Payload('test', \json_encode(['type' => ['test']])));
+
+        $centrifugo = new CentrifugoWorker($worker, new RequestFactory($worker));
+        $request = $centrifugo->waitRequest();
+
+        $this->assertInstanceOf(Invalid::class, $request);
+        $this->assertInstanceOf(InvalidRequestTypeException::class, $request->getException());
+        $this->assertSame($payload, $request->getException()->payload);
+    }
+
+    public function testWaitPayloadExceptionRequest(): void
+    {
+        $worker = \Mockery::mock(WorkerInterface::class);
+
+        $worker->shouldReceive('waitPayload')->once()
+            ->andThrow($e = new RoadRunnerException('Some error'));
+
+        $centrifugo = new CentrifugoWorker($worker, new RequestFactory($worker));
+        $request = $centrifugo->waitRequest();
+
+        $this->assertInstanceOf(Invalid::class, $request);
+        $this->assertSame($e, $request->getException());
     }
 
     private function createPayload(object $request): Payload

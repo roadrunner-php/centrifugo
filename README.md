@@ -49,7 +49,7 @@ First you need to add `centrifuge` section to your RoadRunner configuration. For
 would be quite feasible to run:
 
 ```yaml
-version: '2.7'
+version: '3.0'
 
 rpc:
   listen: tcp://127.0.0.1:6001
@@ -106,8 +106,8 @@ require __DIR__ . '/vendor/autoload.php';
 use RoadRunner\Centrifugo\CentrifugoWorker;
 use RoadRunner\Centrifugo\Payload;
 use RoadRunner\Centrifugo\Request;
-use Spiral\RoadRunner\Worker;
 use RoadRunner\Centrifugo\Request\RequestFactory;
+use Spiral\RoadRunner\Worker;
 
 $worker = Worker::create();
 $requestFactory = new RequestFactory($worker);
@@ -116,23 +116,20 @@ $requestFactory = new RequestFactory($worker);
 $centrifugoWorker = new CentrifugoWorker($worker, $requestFactory);
 
 while ($request = $centrifugoWorker->waitRequest()) {
-    
-    if ($request instanceof Request\Connect) {
-        try {
-            // Do something
-            $request->respond(new Payload\ConnectResponse(
-                // ...
-            ));
-            
-            // You can also disconnect connection
-            $request->disconnect('500', 'Connection is not allowed.');
-        } catch (\Throwable $e) {
-            $request->error($e->getCode(), $e->getMessage());
+
+    if ($request instanceof Request\Invalid) {
+        $errorMessage = $request->getException()->getMessage();
+
+        if ($request->getException() instanceof \RoadRunner\Centrifugo\Exception\InvalidRequestTypeException) {
+            $payload = $request->getException()->payload;
         }
+
+        // Handle invalid request
+        // $logger->error($errorMessage, $payload ?? []);
 
         continue;
     }
-    
+
     if ($request instanceof Request\Refresh) {
         try {
             // Do something
@@ -145,14 +142,14 @@ while ($request = $centrifugoWorker->waitRequest()) {
 
         continue;
     }
-    
+
     if ($request instanceof Request\Subscribe) {
         try {
             // Do something
             $request->respond(new Payload\SubscribeResponse(
                 // ...
             ));
-            
+
             // You can also disconnect connection
             $request->disconnect('500', 'Connection is not allowed.');
         } catch (\Throwable $e) {
@@ -161,14 +158,14 @@ while ($request = $centrifugoWorker->waitRequest()) {
 
         continue;
     }
-    
+
     if ($request instanceof Request\Publish) {
         try {
             // Do something
             $request->respond(new Payload\PublishResponse(
                 // ...
             ));
-            
+
             // You can also disconnect connection
             $request->disconnect('500', 'Connection is not allowed.');
         } catch (\Throwable $e) {
@@ -177,13 +174,13 @@ while ($request = $centrifugoWorker->waitRequest()) {
 
         continue;
     }
-    
+
     if ($request instanceof Request\RPC) {
         try {
             $response = $router->handle(
-                new Request(uri: $request->method, data: $request->data)
+                new Request(uri: $request->method, data: $request->data),
             ); // ['user' => ['id' => 1, 'username' => 'john_smith']]
-            
+
             $request->respond(new Payload\RPCResponse(
                 data: $response
             ));

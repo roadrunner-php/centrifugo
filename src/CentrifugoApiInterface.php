@@ -43,7 +43,6 @@ interface CentrifugoApiInterface
     /**
      * Allows refreshing user connection (mostly useful when unidirectional transports are used).
      *
-     * @param string $user
      * @param non-empty-string|null $client
      * @param non-empty-string|null $session
      */
@@ -59,7 +58,6 @@ interface CentrifugoApiInterface
      * Allows subscribing user to a channel.
      *
      * @param non-empty-string $channel
-     * @param string $user
      * @param non-empty-string|null $client
      * @param non-empty-string|null $session
      */
@@ -77,7 +75,6 @@ interface CentrifugoApiInterface
      * Allows unsubscribing user from a channel.
      *
      * @param non-empty-string $channel
-     * @param string $user
      * @param non-empty-string|null $client
      * @param non-empty-string|null $session
      */
@@ -91,11 +88,9 @@ interface CentrifugoApiInterface
     /**
      * Allows disconnecting a user by ID.
      *
-     * @param string $user
      * @param non-empty-string|null $client
      * @param non-empty-string[] $whitelist
      * @param non-empty-string|null $session
-     * @param Disconnect|null $disconnect
      */
     public function disconnect(
         string $user,

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace RoadRunner\Centrifugo\Tests\Unit\Request;
 
-use RoadRunner\Centrifugo\DTO\ConnectResponse;
-use RoadRunner\Centrifugo\DTO\Disconnect;
-use RoadRunner\Centrifugo\DTO\Error;
+use RoadRunner\Centrifugal\Proxy\DTO\V1\ConnectResponse;
+use RoadRunner\Centrifugal\Proxy\DTO\V1\Disconnect;
+use RoadRunner\Centrifugal\Proxy\DTO\V1\Error;
 use RoadRunner\Centrifugo\Request\AbstractRequest;
 use RoadRunner\Centrifugo\Tests\Unit\TestCase;
 use Spiral\RoadRunner\Payload;
@@ -29,12 +29,13 @@ final class AbstractRequestTest extends TestCase
         $this->assertSame(['foo' => 'bar'], $this->req->getData());
     }
 
-    /**
-     * @dataProvider attributesDataProvider
-     */
-    public function testGetAttributes(AbstractRequest $request, array $expected): void
+    public function testGetAttributes(): void
     {
-        $this->assertSame($expected, $request->getAttributes());
+        $req = $this->getMockForAbstractClass(AbstractRequest::class, [
+            $this->createMock(WorkerInterface::class)
+        ]);
+
+        $this->assertSame($req->withAttribute('foo', 'bar')->getAttributes(), ['foo' => 'bar']);
     }
 
     public function testGetAttribute(): void
@@ -52,16 +53,6 @@ final class AbstractRequestTest extends TestCase
         $this->assertNotEquals($newReq, $this->req);
         $this->assertSame(['foo' => 'bar'], $newReq->getAttributes());
         $this->assertSame([], $this->req->getAttributes());
-    }
-
-    public function attributesDataProvider(): \Traversable
-    {
-        $req = $this->getMockForAbstractClass(AbstractRequest::class, [
-            $this->createMock(WorkerInterface::class)
-        ]);
-
-        yield [$req, []];
-        yield [$req->withAttribute('foo', 'bar'), ['foo' => 'bar']];
     }
 
     public function testTemporaryError(): void

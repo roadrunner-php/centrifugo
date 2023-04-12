@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace RoadRunner\Centrifugo\Exception;
 
-use RoadRunner\Centrifugo\Service\DTO\Error;
+use RoadRunner\Centrifugal\API\DTO\V1\Error;
 
 class CentrifugoApiResponseException extends \Exception
 {

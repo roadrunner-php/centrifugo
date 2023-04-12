@@ -9,7 +9,7 @@ use RoadRunner\Centrifugo\Exception\CentrifugoApiResponseException;
 use RoadRunner\Centrifugo\Payload\Disconnect;
 use Spiral\Goridge\RPC\Codec\ProtobufCodec;
 use Spiral\Goridge\RPC\RPCInterface;
-use RoadRunner\Centrifugo\Service\DTO;
+use RoadRunner\Centrifugal\API\DTO\V1 as DTO;
 
 /**
  * @psalm-type ResponseDTO = DTO\PublishResponse|DTO\BroadcastResponse|DTO\RefreshResponse|DTO\SubscribeResponse|DTO\UnsubscribeResponse|DTO\DisconnectResponse|DTO\PresenceResponse|DTO\PresenceStatsResponse|DTO\ChannelsResponse|DTO\BlockUserResponse|DTO\UnblockUserResponse
@@ -17,7 +17,7 @@ use RoadRunner\Centrifugo\Service\DTO;
  */
 final class RPCCentrifugoApi implements CentrifugoApiInterface
 {
-    private RPCInterface $rpc;
+    private readonly RPCInterface $rpc;
 
     public function __construct(RPCInterface $rpc)
     {
@@ -96,11 +96,11 @@ final class RPCCentrifugoApi implements CentrifugoApiInterface
         }
 
         if ($data !== []) {
-            $request->setData(\json_encode($data));
+            $request->setData(\json_encode($data, JSON_THROW_ON_ERROR));
         }
 
         if ($info !== []) {
-            $request->setInfo(\json_encode($info));
+            $request->setInfo(\json_encode($info, JSON_THROW_ON_ERROR));
         }
 
         if ($client !== null) {
@@ -179,7 +179,7 @@ final class RPCCentrifugoApi implements CentrifugoApiInterface
         );
 
         /** @var array<non-empty-string, DTO\ClientInfo> $result */
-        $result = $response->getResult()->getPresence();
+        $result = $response->getResult()?->getPresence() ?? [];
 
         foreach ($result as $clientId => $info) {
             $data[$clientId] = [
@@ -204,11 +204,9 @@ final class RPCCentrifugoApi implements CentrifugoApiInterface
             DTO\PresenceStatsResponse::class
         );
 
-        $result = $response->getResult();
-
         return [
-            'num_clients' => $result->getNumClients(),
-            'num_users' => $result->getNumUsers(),
+            'num_clients' => $response->getResult()?->getNumClients() ?? 0,
+            'num_users' => $response->getResult()?->getNumUsers() ?? 0,
         ];
     }
 
@@ -228,7 +226,7 @@ final class RPCCentrifugoApi implements CentrifugoApiInterface
         $data = [];
 
         /** @var array<non-empty-string, DTO\ChannelInfo> $result */
-        $result = $response->getResult()->getChannels();
+        $result = $response->getResult()?->getChannels() ?? [];
 
         foreach ($result as $channel => $info) {
             $data[$channel] = [
@@ -278,8 +276,10 @@ final class RPCCentrifugoApi implements CentrifugoApiInterface
         $response = $this->rpc->call($method, $request, $responseClass);
         \assert($response instanceof $responseClass);
 
-        if ($response->getError() !== null) {
-            throw CentrifugoApiResponseException::createFromError($response->getError());
+        $error = $response->getError();
+
+        if ($error !== null) {
+            throw CentrifugoApiResponseException::createFromError($error);
         }
 
         return $response;

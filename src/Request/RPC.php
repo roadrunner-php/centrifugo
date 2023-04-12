@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace RoadRunner\Centrifugo\Request;
 
-use RoadRunner\Centrifugo\DTO;
+use RoadRunner\Centrifugal\Proxy\DTO\V1 as DTO;
 use RoadRunner\Centrifugo\Payload\ResponseInterface;
 use RoadRunner\Centrifugo\Payload\RPCResponse;
 use Spiral\RoadRunner\WorkerInterface;
@@ -49,7 +49,7 @@ final class RPC extends AbstractRequest
     private function mapResponse(RPCResponse $response): DTO\RPCResult
     {
         return new DTO\RPCResult([
-            'data' => \json_encode($response->data),
+            'data' => \json_encode($response->data, JSON_THROW_ON_ERROR),
         ]);
     }
 

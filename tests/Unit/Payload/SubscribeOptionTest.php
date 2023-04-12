@@ -18,7 +18,7 @@ final class SubscribeOptionTest extends TestCase
         $this->assertEquals($expected, $actual);
     }
 
-    public function subscribeOptionDataProvider(): \Traversable
+    public static function subscribeOptionDataProvider(): \Traversable
     {
         yield [new SubscribeOption(null, [], [], null), new SubscribeOption()];
         yield [new SubscribeOption(1667892603, [], [], null), new SubscribeOption(expireAt: 1667892603)];
