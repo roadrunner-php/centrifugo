@@ -64,7 +64,7 @@ abstract class AbstractRequest implements RequestInterface
     {
         $response = $this->getResponseObject();
         $response->setDisconnect(
-            new Disconnect(compact('code', 'reason', 'reconnect')),
+            new Disconnect(\compact('code', 'reason', 'reconnect')),
         );
 
         $this->sendResponse($response);
@@ -72,11 +72,13 @@ abstract class AbstractRequest implements RequestInterface
 
     /**
      * @param ResponseDTO $response
+     * @psalm-suppress InternalClass
+     * @psalm-suppress InternalMethod
      */
     protected function sendResponse(object $response): void
     {
         $this->worker->respond(
-            new Payload($response->serializeToString()),
+            new Payload((string) $response->serializeToString()),
         );
     }
 }

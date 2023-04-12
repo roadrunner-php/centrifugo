@@ -18,6 +18,7 @@ final class CentrifugoWorker implements CentrifugoWorkerInterface
 
     /**
      * @throws \JsonException
+     * @psalm-suppress InternalProperty
      */
     public function waitRequest(): ?RequestInterface
     {

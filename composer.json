@@ -64,7 +64,7 @@
     "require-dev": {
         "mockery/mockery": "^1.5",
         "phpunit/phpunit": "^10.0",
-        "vimeo/psalm": "^5.0"
+        "vimeo/psalm": ">= 5.8"
     },
     "scripts": {
         "tests": "phpunit",

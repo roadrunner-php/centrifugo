@@ -27,6 +27,7 @@ final class RequestFactory
      * Create a request Payload object.
      * @throws JsonException
      * @throws InvalidRequestTypeException
+     * @psalm-suppress InternalProperty
      */
     public function createFromPayload(WorkerPayload $payload): RequestInterface
     {
