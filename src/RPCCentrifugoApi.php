@@ -17,7 +17,7 @@ use RoadRunner\Centrifugal\API\DTO\V1 as DTO;
  */
 final class RPCCentrifugoApi implements CentrifugoApiInterface
 {
-    private RPCInterface $rpc;
+    private readonly RPCInterface $rpc;
 
     public function __construct(RPCInterface $rpc)
     {
@@ -96,11 +96,11 @@ final class RPCCentrifugoApi implements CentrifugoApiInterface
         }
 
         if ($data !== []) {
-            $request->setData(\json_encode($data));
+            $request->setData(\json_encode($data, JSON_THROW_ON_ERROR));
         }
 
         if ($info !== []) {
-            $request->setInfo(\json_encode($info));
+            $request->setInfo(\json_encode($info, JSON_THROW_ON_ERROR));
         }
 
         if ($client !== null) {

@@ -49,7 +49,7 @@ final class RPC extends AbstractRequest
     private function mapResponse(RPCResponse $response): DTO\RPCResult
     {
         return new DTO\RPCResult([
-            'data' => \json_encode($response->data),
+            'data' => \json_encode($response->data, JSON_THROW_ON_ERROR),
         ]);
     }
 
