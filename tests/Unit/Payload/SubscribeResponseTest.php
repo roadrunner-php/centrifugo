@@ -18,7 +18,7 @@ final class SubscribeResponseTest extends TestCase
         $this->assertEquals($expected, $actual);
     }
 
-    public function subscribeResponseDataProvider(): \Traversable
+    public static function subscribeResponseDataProvider(): \Traversable
     {
         yield [new SubscribeResponse([], [], [], null), new SubscribeResponse()];
         yield [

@@ -17,7 +17,7 @@ final class RefreshResponseTest extends TestCase
         $this->assertEquals($expected, $actual);
     }
 
-    public function refreshResponseDataProvider(): \Traversable
+    public static function refreshResponseDataProvider(): \Traversable
     {
         yield [new RefreshResponse(false, null, []), new RefreshResponse()];
         yield [new RefreshResponse(false, 1667892603, []), new RefreshResponse(expireAt: 1667892603)];

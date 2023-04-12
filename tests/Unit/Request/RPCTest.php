@@ -55,7 +55,7 @@ final class RPCTest extends TestCase
         $this->assertSame($expected['data'], $dto->getData());
     }
 
-    public function mapResponseDataProvider(): \Traversable
+    public static function mapResponseDataProvider(): \Traversable
     {
         yield [new RPCResponse(), ['data' => '[]']];
         yield [new RPCResponse(['some']), ['data' => '["some"]']];

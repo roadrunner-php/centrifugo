@@ -17,7 +17,7 @@ final class ConnectResponseTest extends TestCase
         $this->assertEquals($expected, $actual);
     }
 
-    public function connectResponseDataProvider(): \Traversable
+    public static function connectResponseDataProvider(): \Traversable
     {
         yield [new ConnectResponse('', null, [], [], [], [], []), new ConnectResponse()];
         yield [

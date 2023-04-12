@@ -57,7 +57,7 @@ final class RefreshTest extends TestCase
         $this->assertSame($expected['info'], $dto->getInfo());
     }
 
-    public function mapResponseDataProvider(): \Traversable
+    public static function mapResponseDataProvider(): \Traversable
     {
         yield [new RefreshResponse(), ['expired' => false, 'expire_at' => 0, 'info' => '']];
         yield [new RefreshResponse(expired: true), ['expired' => true, 'expire_at' => 0, 'info' => '']];

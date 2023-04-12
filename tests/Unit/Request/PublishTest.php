@@ -56,7 +56,7 @@ final class PublishTest extends TestCase
         $this->assertSame($expected['skip_history'], $dto->getSkipHistory());
     }
 
-    public function mapResponseDataProvider(): \Traversable
+    public static function mapResponseDataProvider(): \Traversable
     {
         yield [new PublishResponse(), ['data' => '', 'skip_history' => false]];
         yield [new PublishResponse(skipHistory: true), ['data' => '', 'skip_history' => true]];

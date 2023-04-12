@@ -62,7 +62,7 @@ final class SubscribeTest extends TestCase
         $this->assertEquals($expected['override'], $dto->getOverride());
     }
 
-    public function mapResponseDataProvider(): \Traversable
+    public static function mapResponseDataProvider(): \Traversable
     {
         yield [
             new SubscribeResponse(),

@@ -107,7 +107,7 @@ final class ConnectTest extends TestCase
         $this->assertSame($expected['force_recovery'], $override->getForceRecovery()?->getValue());
     }
 
-    public function mapResponseDataProvider(): \Traversable
+    public static function mapResponseDataProvider(): \Traversable
     {
         yield [new ConnectResponse(), [
             'user' => '',
@@ -213,7 +213,7 @@ final class ConnectTest extends TestCase
         ];
     }
 
-    public function mapSubscriptionsDataProvider(): \Traversable
+    public static function mapSubscriptionsDataProvider(): \Traversable
     {
         yield [new SubscribeOption(), ['expire_at' => 0, 'data' => '', 'info' => '', 'override' => null]];
         yield [new SubscribeOption(222), ['expire_at' => 222, 'data' => '', 'info' => '', 'override' => null]];
@@ -310,7 +310,7 @@ final class ConnectTest extends TestCase
         ];
     }
 
-    public function mapSubscribeOptionDataProvider(): \Traversable
+    public static function mapSubscribeOptionDataProvider(): \Traversable
     {
         yield [new Override(), [
             'presence' => null,
