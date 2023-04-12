@@ -38,6 +38,7 @@ bidirectional and unidirectional transports.
 * `refresh` - called when a client session is going to expire, so it's possible to prolong it or just let it expire. Can
 also be used just as a periodical connection liveness callback from Centrifugo to app backend. Works for bidirectional
 and unidirectional transports.
+* `sub_refresh` - called when it's time to refresh the subscription. Centrifugo itself will ask your backend about subscription validity instead of subscription refresh workflow on the client-side.
 * `subscribe` - called when clients try to subscribe on a channel, so it's possible to check permissions and return custom
 initial subscription data. Works for bidirectional transports only.
 * `publish` - called when a client tries to publish into a channel, so it's possible to check permissions and optionally
@@ -87,6 +88,8 @@ and centrifugo config:
   "proxy_subscribe_timeout": "10s",
   "proxy_refresh_endpoint": "grpc://127.0.0.1:10001",
   "proxy_refresh_timeout": "10s",
+  "proxy_sub_refresh_endpoint": "grpc://127.0.0.1:10001",
+  "proxy_sub_refresh_timeout": "1s",
   "proxy_rpc_endpoint": "grpc://127.0.0.1:10001",
   "proxy_rpc_timeout": "10s"
 }
@@ -94,7 +97,8 @@ and centrifugo config:
 
 > **Note**
 > `proxy_connect_endpoint`, `proxy_publish_endpoint`, `proxy_subscribe_endpoint`, `proxy_refresh_endpoint`,
-> `proxy_rpc_endpoint` - endpoint address of roadrunner server with activated `centrifuge` plugin.
+> `proxy_sub_refresh_endpoint`, `proxy_rpc_endpoint` - endpoint address of roadrunner server with activated
+> `centrifuge` plugin.
 
 To init abstract RoadRunner worker:
 
@@ -195,18 +199,6 @@ while ($request = $centrifugoWorker->waitRequest()) {
 
 > **Note**
 > You can find addition information about [here](https://centrifugal.dev/docs/server/proxy).
-
-### Proto compiling
-
-At first, you need to download `protoc-gen-php-grpc binary` and then run compiler
-
-```bash
-vendor/bin/rr download-protoc-binary
-composer compile
-```
-
-- Proto files are located here: [link](https://buf.build/roadrunner-server/api/docs/main:centrifugal.centrifugo.proxy)
-
 
 <a href="https://spiral.dev/">
 <img src="https://user-images.githubusercontent.com/773481/220979012-e67b74b5-3db1-41b7-bdb0-8a042587dedc.jpg" alt="try Spiral Framework" />
