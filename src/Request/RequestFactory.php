@@ -12,8 +12,8 @@ use Spiral\RoadRunner\Payload as WorkerPayload;
 use Spiral\RoadRunner\WorkerInterface;
 
 /**
- * @psalm-type ResponseDTO = DTO\ConnectResponse|DTO\RefreshResponse|DTO\SubscribeResponse|DTO\PublishResponse|DTO\RPCResponse
- * @psalm-type RequestDTO = DTO\ConnectRequest|DTO\RefreshRequest|DTO\SubscribeRequest|DTO\PublishRequest|DTO\RPCRequest
+ * @psalm-type ResponseDTO = DTO\ConnectResponse|DTO\RefreshResponse|DTO\SubscribeResponse|DTO\PublishResponse|DTO\RPCResponse|DTO\SubRefreshResponse
+ * @psalm-type RequestDTO = DTO\ConnectRequest|DTO\RefreshRequest|DTO\SubscribeRequest|DTO\PublishRequest|DTO\RPCRequest|DTO\SubRefreshRequest
  * @psalm-type RequestHeader = array<non-empty-string, non-empty-string[]>
  */
 final class RequestFactory
