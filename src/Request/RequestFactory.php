@@ -12,8 +12,8 @@ use Spiral\RoadRunner\Payload as WorkerPayload;
 use Spiral\RoadRunner\WorkerInterface;
 
 /**
- * @psalm-type ResponseDTO = DTO\ConnectResponse|DTO\RefreshResponse|DTO\SubscribeResponse|DTO\PublishResponse|DTO\RPCResponse
- * @psalm-type RequestDTO = DTO\ConnectRequest|DTO\RefreshRequest|DTO\SubscribeRequest|DTO\PublishRequest|DTO\RPCRequest
+ * @psalm-type ResponseDTO = DTO\ConnectResponse|DTO\RefreshResponse|DTO\SubscribeResponse|DTO\PublishResponse|DTO\RPCResponse|DTO\SubRefreshResponse
+ * @psalm-type RequestDTO = DTO\ConnectRequest|DTO\RefreshRequest|DTO\SubscribeRequest|DTO\PublishRequest|DTO\RPCRequest|DTO\SubRefreshRequest
  * @psalm-type RequestHeader = array<non-empty-string, non-empty-string[]>
  */
 final class RequestFactory
@@ -49,6 +49,7 @@ final class RequestFactory
         return match ($typeEnum) {
             RequestType::Connect => $this->createConnectRequest($payload->body, $headers),
             RequestType::Refresh => $this->createRefreshRequest($payload->body, $headers),
+            RequestType::SubRefresh => $this->createSubRefreshRequest($payload->body, $headers),
             RequestType::Subscribe => $this->createSubscribeRequest($payload->body, $headers),
             RequestType::Publish => $this->createPublishRequest($payload->body, $headers),
             RequestType::RPC => $this->createRPCRequest($payload->body, $headers),
@@ -108,6 +109,28 @@ final class RequestFactory
             protocol: $request->getProtocol(),
             encoding: $request->getEncoding(),
             user: $request->getUser(),
+            meta: $request->getMeta() ? (array)\json_decode($request->getMeta(), true, 512, JSON_THROW_ON_ERROR) : [],
+            headers: $headers,
+        );
+    }
+
+    /**
+     * @param non-empty-string $body
+     * @param RequestHeader $headers
+     * @throws JsonException
+     */
+    private function createSubRefreshRequest(string $body, array $headers): SubRefresh
+    {
+        $request = $this->unmarshalRequestBody(DTO\SubRefreshRequest::class, $body);
+
+        return new SubRefresh(
+            worker: $this->worker,
+            client: $request->getClient(),
+            transport: $request->getTransport(),
+            protocol: $request->getProtocol(),
+            encoding: $request->getEncoding(),
+            user: $request->getUser(),
+            channel: $request->getChannel(),
             meta: $request->getMeta() ? (array)\json_decode($request->getMeta(), true, 512, JSON_THROW_ON_ERROR) : [],
             headers: $headers,
         );
