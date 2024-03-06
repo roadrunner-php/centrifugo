@@ -103,7 +103,7 @@ final class Connect extends AbstractRequest
         foreach ($subscriptions as $name => $subscription) {
             $sub = new DTO\SubscribeOptions();
 
-            if ($subscription->expireAt) {
+            if ($subscription->expireAt !== null) {
                 $sub->setExpireAt($this->parseExpiresAt($subscription->expireAt));
             }
 
