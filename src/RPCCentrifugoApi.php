@@ -158,7 +158,6 @@ final class RPCCentrifugoApi implements CentrifugoApiInterface
                 new DTO\Disconnect([
                     'code' => $disconnect->code,
                     'reason' => $disconnect->reason,
-                    'reconnect' => $disconnect->reconnect,
                 ])
             );
         }

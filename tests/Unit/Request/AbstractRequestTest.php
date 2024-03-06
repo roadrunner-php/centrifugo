@@ -99,7 +99,7 @@ final class AbstractRequestTest extends TestCase
     {
         $worker = $this->createWorker(function (Payload $arg) {
             $expects = new Payload((new ConnectResponse())
-                ->setDisconnect(new Disconnect(['code' => 111, 'reason' => 'some', 'reconnect' => false]))
+                ->setDisconnect(new Disconnect(['code' => 111, 'reason' => 'some']))
                 ->serializeToString()
             );
 
@@ -115,11 +115,11 @@ final class AbstractRequestTest extends TestCase
         $req->disconnect(111, 'some');
     }
 
-    public function testDisconnectWithReconnect(): void
+    public function testDisconnectWithDeprecatedReconnect(): void
     {
         $worker = $this->createWorker(function (Payload $arg) {
             $expects = new Payload((new ConnectResponse())
-                ->setDisconnect(new Disconnect(['code' => 111, 'reason' => 'some', 'reconnect' => true]))
+                ->setDisconnect(new Disconnect(['code' => 111, 'reason' => 'some']))
                 ->serializeToString()
             );
 

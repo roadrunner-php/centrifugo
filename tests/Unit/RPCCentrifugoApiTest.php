@@ -8,6 +8,7 @@ use Mockery as m;
 use PHPUnit\Framework\TestCase;
 use RoadRunner\Centrifugo\CentrifugoApiInterface;
 use RoadRunner\Centrifugo\Exception\CentrifugoApiResponseException;
+use RoadRunner\Centrifugo\Payload\Disconnect;
 use RoadRunner\Centrifugo\RPCCentrifugoApi;
 use RoadRunner\Centrifugal\API\DTO\V1 as DTO;
 use Spiral\Goridge\RPC\Codec\ProtobufCodec;
@@ -71,5 +72,57 @@ final class RPCCentrifugoApiTest extends TestCase
             );
 
         $this->api->publish(channel: 'foo-channel', message: \json_encode(['foo' => 'bar']), skipHistory: true, tags: ['baz', 'baf']);
+    }
+
+    public function testDisconnectWithDisconnectObject(): void
+    {
+        $this->rpc->shouldReceive('call')
+            ->once()
+            ->withArgs(fn(
+                string $method,
+                DTO\DisconnectRequest $request,
+                string $responseClass
+            ): bool => $method === 'centrifuge.Unsubscribe'
+                && $request->getUser() === 'foo-user'
+                && $request->getClient() === 'foo-client'
+                && $request->getSession() === 'foo-session'
+                && $request->getDisconnect()->getCode() === 400
+                && $request->getDisconnect()->getReason() === 'foo-reason'
+                && $responseClass === DTO\DisconnectResponse::class
+            )
+            ->andReturn(new DTO\DisconnectResponse);
+
+        $this->api->disconnect(
+            user: 'foo-user',
+            client: 'foo-client',
+            session: 'foo-session',
+            disconnect: new Disconnect(code: 400, reason: 'foo-reason'),
+        );
+    }
+
+    public function testDisconnectWithDisconnectObjectAndDeprecatedReconnect(): void
+    {
+        $this->rpc->shouldReceive('call')
+            ->once()
+            ->withArgs(fn(
+                string $method,
+                DTO\DisconnectRequest $request,
+                string $responseClass
+            ): bool => $method === 'centrifuge.Unsubscribe'
+                && $request->getUser() === 'foo-user'
+                && $request->getClient() === 'foo-client'
+                && $request->getSession() === 'foo-session'
+                && $request->getDisconnect()->getCode() === 400
+                && $request->getDisconnect()->getReason() === 'foo-reason'
+                && $responseClass === DTO\DisconnectResponse::class
+            )
+            ->andReturn(new DTO\DisconnectResponse);
+
+        $this->api->disconnect(
+            user: 'foo-user',
+            client: 'foo-client',
+            session: 'foo-session',
+            disconnect: new Disconnect(code: 400, reason: 'foo-reason', reconnect: true),
+        );
     }
 }
