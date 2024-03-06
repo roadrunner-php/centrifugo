@@ -20,6 +20,7 @@ final class Disconnect
         public readonly string $reason,
         bool $reconnect = false
     ) {
+        /** @psalm-suppress DeprecatedProperty */
         $this->reconnect = $reconnect;
     }
 }
