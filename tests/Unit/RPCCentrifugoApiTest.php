@@ -46,7 +46,7 @@ final class RPCCentrifugoApiTest extends TestCase
                 && $request->getChannel() === 'foo-channel'
                 && $request->getData() === \json_encode(['foo' => 'bar'])
                 && $request->getSkipHistory() === true
-                && \iterator_to_array($request->getTags()->getIterator()) === ['baz', 'baf']
+                && self::tagsOf($request) === ['baz', 'baf']
                 && $responseClass === DTO\PublishResponse::class
             )
             ->andReturn(new DTO\PublishResponse);
@@ -124,5 +124,20 @@ final class RPCCentrifugoApiTest extends TestCase
             session: 'foo-session',
             disconnect: new Disconnect(code: 400, reason: 'foo-reason', reconnect: true),
         );
+    }
+
+    /**
+     * The iteration order of a protobuf `MapField` is an implementation detail of the runtime and differs
+     * between releases (google/protobuf 4.33 already yields the entries of a two-element map back to front),
+     * so compare the tags by key instead of by iteration order.
+     *
+     * @return array<array-key, string>
+     */
+    private static function tagsOf(DTO\PublishRequest $request): array
+    {
+        $tags = \iterator_to_array($request->getTags()->getIterator());
+        \ksort($tags);
+
+        return $tags;
     }
 }
