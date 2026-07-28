@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace RoadRunner\Centrifugo\Tests\Unit\Request;
 
 use Google\Protobuf\Internal\MapField;
-use Google\Protobuf\Internal\RepeatedField;
+use Google\Protobuf\RepeatedField;
 use RoadRunner\Centrifugal\Proxy\DTO\V1\BoolValue;
 use RoadRunner\Centrifugal\Proxy\DTO\V1\ConnectResponse as ConnectResponseDTO;
 use RoadRunner\Centrifugal\Proxy\DTO\V1\ConnectResult;
