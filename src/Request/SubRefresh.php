@@ -33,6 +33,7 @@ class SubRefresh extends AbstractRequest
      * @psalm-suppress MoreSpecificImplementedParamType
      * @throws \JsonException
      */
+    #[\Override]
     public function respond(ResponseInterface $response): void
     {
         /** @psalm-suppress RedundantConditionGivenDocblockType */
@@ -45,6 +46,7 @@ class SubRefresh extends AbstractRequest
         $this->sendResponse($responseObject);
     }
 
+    #[\Override]
     protected function getResponseObject(): DTO\SubRefreshResponse
     {
         return new DTO\SubRefreshResponse();

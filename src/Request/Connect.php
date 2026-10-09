@@ -39,6 +39,7 @@ final class Connect extends AbstractRequest
      * @psalm-suppress MoreSpecificImplementedParamType
      * @throws \JsonException
      */
+    #[\Override]
     public function respond(ResponseInterface $response): void
     {
         /** @psalm-suppress RedundantConditionGivenDocblockType */
@@ -104,6 +105,7 @@ final class Connect extends AbstractRequest
             : $expireAt;
     }
 
+    #[\Override]
     protected function getResponseObject(): DTO\ConnectResponse
     {
         return new DTO\ConnectResponse();
