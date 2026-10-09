@@ -22,7 +22,7 @@ class Refresh extends AbstractRequest
         public readonly string $encoding,
         public readonly string $user,
         public readonly array $meta,
-        public readonly array $headers
+        public readonly array $headers,
     ) {
         parent::__construct($worker);
     }

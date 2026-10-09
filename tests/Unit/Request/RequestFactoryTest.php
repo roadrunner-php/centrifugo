@@ -23,11 +23,6 @@ final class RequestFactoryTest extends TestCase
 {
     private RequestFactory $factory;
 
-    protected function setUp(): void
-    {
-        $this->factory = new RequestFactory($this->createMock(WorkerInterface::class));
-    }
-
     public function testCreateConnectRequest(): void
     {
         /** @var Connect $request */
@@ -41,7 +36,7 @@ final class RequestFactoryTest extends TestCase
                 'version' => '1',
                 'channels' => ['some'],
             ]))->serializeToString(),
-            json_encode(['type' => ['connect']])
+            json_encode(['type' => ['connect']]),
         ));
 
         $this->assertInstanceOf(Connect::class, $request);
@@ -67,7 +62,7 @@ final class RequestFactoryTest extends TestCase
                 'user' => 'n',
                 'meta' => json_encode(['some']),
             ]))->serializeToString(),
-            json_encode(['type' => ['refresh']])
+            json_encode(['type' => ['refresh']]),
         ));
 
         $this->assertInstanceOf(Refresh::class, $request);
@@ -95,7 +90,7 @@ final class RequestFactoryTest extends TestCase
                 'meta' => json_encode(['some']),
                 'data' => json_encode(['other']),
             ]))->serializeToString(),
-            json_encode(['type' => ['subscribe']])
+            json_encode(['type' => ['subscribe']]),
         ));
 
         $this->assertInstanceOf(Subscribe::class, $request);
@@ -125,7 +120,7 @@ final class RequestFactoryTest extends TestCase
                 'meta' => json_encode(['some']),
                 'data' => json_encode(['other']),
             ]))->serializeToString(),
-            json_encode(['type' => ['publish']])
+            json_encode(['type' => ['publish']]),
         ));
 
         $this->assertInstanceOf(Publish::class, $request);
@@ -154,7 +149,7 @@ final class RequestFactoryTest extends TestCase
                 'meta' => json_encode(['some']),
                 'data' => json_encode(['other']),
             ]))->serializeToString(),
-            json_encode(['type' => ['rpc']])
+            json_encode(['type' => ['rpc']]),
         ));
 
         $this->assertInstanceOf(RPC::class, $request);
@@ -167,5 +162,10 @@ final class RequestFactoryTest extends TestCase
         $this->assertSame(['some'], $request->meta);
         $this->assertSame(['other'], $request->getData());
         $this->assertSame(['type' => ['rpc']], $request->headers);
+    }
+
+    protected function setUp(): void
+    {
+        $this->factory = new RequestFactory($this->createMock(WorkerInterface::class));
     }
 }

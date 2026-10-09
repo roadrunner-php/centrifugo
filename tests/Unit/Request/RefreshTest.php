@@ -16,9 +16,20 @@ final class RefreshTest extends TestCase
 {
     private Refresh $refresh;
 
-    protected function setUp(): void
+    public static function mapResponseDataProvider(): \Traversable
     {
-        $this->refresh = new Refresh($this->createMock(WorkerInterface::class), '', '', '', '', '', [], []);
+        yield [new RefreshResponse(), ['expired' => false, 'expire_at' => 0, 'info' => '']];
+        yield [new RefreshResponse(expired: true), ['expired' => true, 'expire_at' => 0, 'info' => '']];
+        yield [new RefreshResponse(expireAt: 1111), ['expired' => false, 'expire_at' => 1111, 'info' => '']];
+        yield [
+            new RefreshResponse(expireAt: (new \DateTimeImmutable())->setTimestamp(1111)),
+            ['expired' => false, 'expire_at' => 1111, 'info' => ''],
+        ];
+        yield [new RefreshResponse(info: ['some']), ['expired' => false, 'expire_at' => 0, 'info' => '["some"]']];
+        yield [
+            new RefreshResponse(true, (new \DateTimeImmutable())->setTimestamp(1111), ['some']),
+            ['expired' => true, 'expire_at' => 1111, 'info' => '["some"]'],
+        ];
     }
 
     public function testRespond(): void
@@ -26,11 +37,11 @@ final class RefreshTest extends TestCase
         $worker = $this->createWorker(function (Payload $payload) {
             $this->assertEquals(
                 new Payload((new RefreshResponseDTO(['result' => new RefreshResult()]))->serializeToString()),
-                $payload
+                $payload,
             );
         });
 
-        $refresh = new Refresh($worker, '', '', '', '', '',  [], []);
+        $refresh = new Refresh($worker, '', '', '', '', '', [], []);
 
         $refresh->respond(new RefreshResponse());
     }
@@ -57,19 +68,8 @@ final class RefreshTest extends TestCase
         $this->assertSame($expected['info'], $dto->getInfo());
     }
 
-    public static function mapResponseDataProvider(): \Traversable
+    protected function setUp(): void
     {
-        yield [new RefreshResponse(), ['expired' => false, 'expire_at' => 0, 'info' => '']];
-        yield [new RefreshResponse(expired: true), ['expired' => true, 'expire_at' => 0, 'info' => '']];
-        yield [new RefreshResponse(expireAt: 1111), ['expired' => false, 'expire_at' => 1111, 'info' => '']];
-        yield [
-            new RefreshResponse(expireAt: (new \DateTimeImmutable())->setTimestamp(1111)),
-            ['expired' => false, 'expire_at' => 1111, 'info' => '']
-        ];
-        yield [new RefreshResponse(info: ['some']), ['expired' => false, 'expire_at' => 0, 'info' => '["some"]']];
-        yield [
-            new RefreshResponse(true, (new \DateTimeImmutable())->setTimestamp(1111), ['some']),
-            ['expired' => true, 'expire_at' => 1111, 'info' => '["some"]']
-        ];
+        $this->refresh = new Refresh($this->createMock(WorkerInterface::class), '', '', '', '', '', [], []);
     }
 }

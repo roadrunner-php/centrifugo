@@ -16,14 +16,6 @@ final class AbstractRequestTest extends TestCase
 {
     private AbstractRequest $req;
 
-    protected function setUp(): void
-    {
-        $this->req = $this->getMockForAbstractClass(AbstractRequest::class, [
-            $this->createMock(WorkerInterface::class),
-            ['foo' => 'bar']
-        ]);
-    }
-
     public function testGetData(): void
     {
         $this->assertSame(['foo' => 'bar'], $this->req->getData());
@@ -32,7 +24,7 @@ final class AbstractRequestTest extends TestCase
     public function testGetAttributes(): void
     {
         $req = $this->getMockForAbstractClass(AbstractRequest::class, [
-            $this->createMock(WorkerInterface::class)
+            $this->createMock(WorkerInterface::class),
         ]);
 
         $this->assertSame($req->withAttribute('foo', 'bar')->getAttributes(), ['foo' => 'bar']);
@@ -58,9 +50,10 @@ final class AbstractRequestTest extends TestCase
     public function testTemporaryError(): void
     {
         $worker = $this->createWorker(function (Payload $arg) {
-            $expects = new Payload((new ConnectResponse())
-                ->setError(new Error(['code' => 500, 'message' => 'some error', 'temporary' => true]))
-                ->serializeToString()
+            $expects = new Payload(
+                (new ConnectResponse())
+                    ->setError(new Error(['code' => 500, 'message' => 'some error', 'temporary' => true]))
+                    ->serializeToString(),
             );
 
             $this->assertEquals($expects, $arg);
@@ -78,9 +71,10 @@ final class AbstractRequestTest extends TestCase
     public function testError(): void
     {
         $worker = $this->createWorker(function (Payload $arg) {
-            $expects = new Payload((new ConnectResponse())
-                ->setError(new Error(['code' => 500, 'message' => 'some error', 'temporary' => false]))
-                ->serializeToString()
+            $expects = new Payload(
+                (new ConnectResponse())
+                    ->setError(new Error(['code' => 500, 'message' => 'some error', 'temporary' => false]))
+                    ->serializeToString(),
             );
 
             $this->assertEquals($expects, $arg);
@@ -98,9 +92,10 @@ final class AbstractRequestTest extends TestCase
     public function testDisconnect(): void
     {
         $worker = $this->createWorker(function (Payload $arg) {
-            $expects = new Payload((new ConnectResponse())
-                ->setDisconnect(new Disconnect(['code' => 111, 'reason' => 'some']))
-                ->serializeToString()
+            $expects = new Payload(
+                (new ConnectResponse())
+                    ->setDisconnect(new Disconnect(['code' => 111, 'reason' => 'some']))
+                    ->serializeToString(),
             );
 
             $this->assertEquals($expects, $arg);
@@ -118,9 +113,10 @@ final class AbstractRequestTest extends TestCase
     public function testDisconnectWithDeprecatedReconnect(): void
     {
         $worker = $this->createWorker(function (Payload $arg) {
-            $expects = new Payload((new ConnectResponse())
-                ->setDisconnect(new Disconnect(['code' => 111, 'reason' => 'some']))
-                ->serializeToString()
+            $expects = new Payload(
+                (new ConnectResponse())
+                    ->setDisconnect(new Disconnect(['code' => 111, 'reason' => 'some']))
+                    ->serializeToString(),
             );
 
             $this->assertEquals($expects, $arg);
@@ -133,5 +129,13 @@ final class AbstractRequestTest extends TestCase
             ->willReturn(new ConnectResponse());
 
         $req->disconnect(111, 'some', true);
+    }
+
+    protected function setUp(): void
+    {
+        $this->req = $this->getMockForAbstractClass(AbstractRequest::class, [
+            $this->createMock(WorkerInterface::class),
+            ['foo' => 'bar'],
+        ]);
     }
 }

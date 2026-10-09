@@ -16,18 +16,20 @@ final class SubRefreshTest extends TestCase
 {
     private SubRefresh $refresh;
 
-    protected function setUp(): void
+    public static function mapResponseDataProvider(): \Traversable
     {
-        $this->refresh = new SubRefresh(
-            worker: $this->createMock(WorkerInterface::class),
-            client: '',
-            transport: '',
-            protocol: '',
-            encoding: '', user: '',
-            channel: '',
-            meta: [],
-            headers: []
-        );
+        yield [new SubRefreshResponse(), ['expired' => false, 'expire_at' => 0, 'info' => '']];
+        yield [new SubRefreshResponse(expired: true), ['expired' => true, 'expire_at' => 0, 'info' => '']];
+        yield [new SubRefreshResponse(expireAt: 1111), ['expired' => false, 'expire_at' => 1111, 'info' => '']];
+        yield [
+            new SubRefreshResponse(expireAt: (new \DateTimeImmutable())->setTimestamp(1111)),
+            ['expired' => false, 'expire_at' => 1111, 'info' => ''],
+        ];
+        yield [new SubRefreshResponse(info: ['some']), ['expired' => false, 'expire_at' => 0, 'info' => '["some"]']];
+        yield [
+            new SubRefreshResponse(true, (new \DateTimeImmutable())->setTimestamp(1111), ['some']),
+            ['expired' => true, 'expire_at' => 1111, 'info' => '["some"]'],
+        ];
     }
 
     public function testRespond(): void
@@ -35,11 +37,11 @@ final class SubRefreshTest extends TestCase
         $worker = $this->createWorker(function (Payload $payload) {
             $this->assertEquals(
                 new Payload((new RefreshResponseDTO(['result' => new SubRefreshResult()]))->serializeToString()),
-                $payload
+                $payload,
             );
         });
 
-        $refresh = new SubRefresh($worker, '', '', '', '', '',  '', [], []);
+        $refresh = new SubRefresh($worker, '', '', '', '', '', '', [], []);
 
         $refresh->respond(new SubRefreshResponse());
     }
@@ -66,19 +68,18 @@ final class SubRefreshTest extends TestCase
         $this->assertSame($expected['info'], $dto->getInfo());
     }
 
-    public static function mapResponseDataProvider(): \Traversable
+    protected function setUp(): void
     {
-        yield [new SubRefreshResponse(), ['expired' => false, 'expire_at' => 0, 'info' => '']];
-        yield [new SubRefreshResponse(expired: true), ['expired' => true, 'expire_at' => 0, 'info' => '']];
-        yield [new SubRefreshResponse(expireAt: 1111), ['expired' => false, 'expire_at' => 1111, 'info' => '']];
-        yield [
-            new SubRefreshResponse(expireAt: (new \DateTimeImmutable())->setTimestamp(1111)),
-            ['expired' => false, 'expire_at' => 1111, 'info' => '']
-        ];
-        yield [new SubRefreshResponse(info: ['some']), ['expired' => false, 'expire_at' => 0, 'info' => '["some"]']];
-        yield [
-            new SubRefreshResponse(true, (new \DateTimeImmutable())->setTimestamp(1111), ['some']),
-            ['expired' => true, 'expire_at' => 1111, 'info' => '["some"]']
-        ];
+        $this->refresh = new SubRefresh(
+            worker: $this->createMock(WorkerInterface::class),
+            client: '',
+            transport: '',
+            protocol: '',
+            encoding: '',
+            user: '',
+            channel: '',
+            meta: [],
+            headers: [],
+        );
     }
 }

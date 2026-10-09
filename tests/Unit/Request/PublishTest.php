@@ -16,9 +16,12 @@ final class PublishTest extends TestCase
 {
     private Publish $publish;
 
-    protected function setUp(): void
+    public static function mapResponseDataProvider(): \Traversable
     {
-        $this->publish = new Publish($this->createMock(WorkerInterface::class), '', '', '', '', '', '', [], [], []);
+        yield [new PublishResponse(), ['data' => '', 'skip_history' => false]];
+        yield [new PublishResponse(skipHistory: true), ['data' => '', 'skip_history' => true]];
+        yield [new PublishResponse(['some']), ['data' => '["some"]', 'skip_history' => false]];
+        yield [new PublishResponse(['some'], skipHistory: true), ['data' => '["some"]', 'skip_history' => true]];
     }
 
     public function testRespond(): void
@@ -26,7 +29,7 @@ final class PublishTest extends TestCase
         $worker = $this->createWorker(function (Payload $payload) {
             $this->assertEquals(
                 new Payload((new PublishResponseDTO(['result' => new PublishResult()]))->serializeToString()),
-                $payload
+                $payload,
             );
         });
 
@@ -56,11 +59,8 @@ final class PublishTest extends TestCase
         $this->assertSame($expected['skip_history'], $dto->getSkipHistory());
     }
 
-    public static function mapResponseDataProvider(): \Traversable
+    protected function setUp(): void
     {
-        yield [new PublishResponse(), ['data' => '', 'skip_history' => false]];
-        yield [new PublishResponse(skipHistory: true), ['data' => '', 'skip_history' => true]];
-        yield [new PublishResponse(['some']), ['data' => '["some"]', 'skip_history' => false]];
-        yield [new PublishResponse(['some'], skipHistory: true), ['data' => '["some"]', 'skip_history' => true]];
+        $this->publish = new Publish($this->createMock(WorkerInterface::class), '', '', '', '', '', '', [], [], []);
     }
 }

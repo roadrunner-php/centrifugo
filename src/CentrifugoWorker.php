@@ -13,8 +13,7 @@ final class CentrifugoWorker implements CentrifugoWorkerInterface
     public function __construct(
         private readonly WorkerInterface $worker,
         private readonly RequestFactory $requestFactory,
-    ) {
-    }
+    ) {}
 
     /**
      * @throws \JsonException

@@ -20,9 +20,60 @@ final class SubscribeTest extends TestCase
 {
     private Subscribe $subscribe;
 
-    protected function setUp(): void
+    public static function mapResponseDataProvider(): \Traversable
     {
-        $this->subscribe = new Subscribe($this->createMock(WorkerInterface::class), '', '', '', '', '', '', '', [], [], []);
+        yield [
+            new SubscribeResponse(),
+            ['info' => '', 'data' => '', 'allow' => new RepeatedField(9), 'override' => null],
+        ];
+
+        yield [
+            new SubscribeResponse(['some']),
+            ['info' => '["some"]', 'data' => '', 'allow' => new RepeatedField(9), 'override' => null],
+        ];
+
+        yield [
+            new SubscribeResponse(data: ['some']),
+            ['info' => '', 'data' => '["some"]', 'allow' => new RepeatedField(9), 'override' => null],
+        ];
+
+        $allow = new RepeatedField(9);
+        $allow[] = 'some';
+        $allow[] = 'other';
+        yield [
+            new SubscribeResponse(allow: ['some', 'other']),
+            ['info' => '', 'data' => '', 'allow' => $allow, 'override' => null],
+        ];
+
+        yield [
+            new SubscribeResponse(override: new Override(true, true, true, true, true)),
+            ['info' => '', 'data' => '', 'allow' => new RepeatedField(9), 'override' => (new SubscribeOptionOverride())
+                ->setPresence(new BoolValue(['value' => true]))
+                ->setJoinLeave(new BoolValue(['value' => true]))
+                ->setForcePushJoinLeave(new BoolValue(['value' => true]))
+                ->setForcePositioning(new BoolValue(['value' => true]))
+                ->setForceRecovery(new BoolValue(['value' => true])),
+            ],
+        ];
+
+        $allow = new RepeatedField(9);
+        $allow[] = 'some';
+        $allow[] = 'other';
+        yield [
+            new SubscribeResponse(
+                ['foo'],
+                ['bar'],
+                ['some', 'other'],
+                new Override(true, true, true, true, true),
+            ),
+            ['info' => '["foo"]', 'data' => '["bar"]', 'allow' => $allow, 'override' => (new SubscribeOptionOverride())
+                ->setPresence(new BoolValue(['value' => true]))
+                ->setJoinLeave(new BoolValue(['value' => true]))
+                ->setForcePushJoinLeave(new BoolValue(['value' => true]))
+                ->setForcePositioning(new BoolValue(['value' => true]))
+                ->setForceRecovery(new BoolValue(['value' => true])),
+            ],
+        ];
     }
 
     public function testRespond(): void
@@ -30,11 +81,11 @@ final class SubscribeTest extends TestCase
         $worker = $this->createWorker(function (Payload $payload) {
             $this->assertEquals(
                 new Payload((new SubscribeResponseDTO(['result' => new SubscribeResult()]))->serializeToString()),
-                $payload
+                $payload,
             );
         });
 
-        $refresh = new Subscribe($worker, '', '', '', '', '',  '', '', [], [], []);
+        $refresh = new Subscribe($worker, '', '', '', '', '', '', '', [], [], []);
 
         $refresh->respond(new SubscribeResponse());
     }
@@ -62,59 +113,8 @@ final class SubscribeTest extends TestCase
         $this->assertEquals($expected['override'], $dto->getOverride());
     }
 
-    public static function mapResponseDataProvider(): \Traversable
+    protected function setUp(): void
     {
-        yield [
-            new SubscribeResponse(),
-            ['info' => '', 'data' => '', 'allow' => new RepeatedField(9), 'override' => null]
-        ];
-
-        yield [
-            new SubscribeResponse(['some']),
-            ['info' => '["some"]', 'data' => '', 'allow' => new RepeatedField(9), 'override' => null]
-        ];
-
-        yield [
-            new SubscribeResponse(data: ['some']),
-            ['info' => '', 'data' => '["some"]', 'allow' => new RepeatedField(9), 'override' => null]
-        ];
-
-        $allow = new RepeatedField(9);
-        $allow[] = 'some';
-        $allow[] = 'other';
-        yield [
-            new SubscribeResponse(allow: ['some', 'other']),
-            ['info' => '', 'data' => '', 'allow' => $allow, 'override' => null]
-        ];
-
-        yield [
-            new SubscribeResponse(override: new Override(true, true, true, true, true)),
-            ['info' => '', 'data' => '', 'allow' => new RepeatedField(9), 'override' => (new SubscribeOptionOverride())
-                ->setPresence(new BoolValue(['value' => true]))
-                ->setJoinLeave(new BoolValue(['value' => true]))
-                ->setForcePushJoinLeave(new BoolValue(['value' => true]))
-                ->setForcePositioning(new BoolValue(['value' => true]))
-                ->setForceRecovery(new BoolValue(['value' => true]))
-            ]
-        ];
-
-        $allow = new RepeatedField(9);
-        $allow[] = 'some';
-        $allow[] = 'other';
-        yield [
-            new SubscribeResponse(
-                ['foo'],
-                ['bar'],
-                ['some', 'other'],
-                new Override(true, true, true, true, true)
-            ),
-            ['info' => '["foo"]', 'data' => '["bar"]', 'allow' => $allow, 'override' => (new SubscribeOptionOverride())
-                ->setPresence(new BoolValue(['value' => true]))
-                ->setJoinLeave(new BoolValue(['value' => true]))
-                ->setForcePushJoinLeave(new BoolValue(['value' => true]))
-                ->setForcePositioning(new BoolValue(['value' => true]))
-                ->setForceRecovery(new BoolValue(['value' => true]))
-            ]
-        ];
+        $this->subscribe = new Subscribe($this->createMock(WorkerInterface::class), '', '', '', '', '', '', '', [], [], []);
     }
 }

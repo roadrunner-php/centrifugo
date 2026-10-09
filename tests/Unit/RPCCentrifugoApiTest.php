@@ -22,34 +22,23 @@ final class RPCCentrifugoApiTest extends TestCase
     private m\MockInterface|RPCInterface $rpc;
     private CentrifugoApiInterface $api;
 
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->rpc = m::mock(RPCInterface::class);
-        $this->rpc->shouldReceive('withCodec')->once()->withArgs(
-            static fn(CodecInterface $codec): bool => $codec instanceof ProtobufCodec
-        )->andReturnSelf();
-
-        $this->api = new RPCCentrifugoApi($this->rpc);
-    }
-
     public function testPublish(): void
     {
         $this->rpc->shouldReceive('call')
             ->once()
-            ->withArgs(fn(
-                string $method,
-                DTO\PublishRequest $request,
-                string $responseClass
-            ): bool => $method === 'centrifuge.Publish'
+            ->withArgs(
+                fn(
+                    string $method,
+                    DTO\PublishRequest $request,
+                    string $responseClass,
+                ): bool => $method === 'centrifuge.Publish'
                 && $request->getChannel() === 'foo-channel'
                 && $request->getData() === \json_encode(['foo' => 'bar'])
                 && $request->getSkipHistory() === true
                 && self::tagsOf($request) === ['baz', 'baf']
-                && $responseClass === DTO\PublishResponse::class
+                && $responseClass === DTO\PublishResponse::class,
             )
-            ->andReturn(new DTO\PublishResponse);
+            ->andReturn(new DTO\PublishResponse());
 
         $this->api->publish(channel: 'foo-channel', message: \json_encode(['foo' => 'bar']), skipHistory: true, tags: ['baz', 'baf']);
     }
@@ -68,7 +57,7 @@ final class RPCCentrifugoApiTest extends TestCase
                         'code' => 500,
                         'message' => 'Error message',
                     ]),
-                ])
+                ]),
             );
 
         $this->api->publish(channel: 'foo-channel', message: \json_encode(['foo' => 'bar']), skipHistory: true, tags: ['baz', 'baf']);
@@ -78,19 +67,20 @@ final class RPCCentrifugoApiTest extends TestCase
     {
         $this->rpc->shouldReceive('call')
             ->once()
-            ->withArgs(fn(
-                string $method,
-                DTO\DisconnectRequest $request,
-                string $responseClass
-            ): bool => $method === 'centrifuge.Unsubscribe'
+            ->withArgs(
+                fn(
+                    string $method,
+                    DTO\DisconnectRequest $request,
+                    string $responseClass,
+                ): bool => $method === 'centrifuge.Unsubscribe'
                 && $request->getUser() === 'foo-user'
                 && $request->getClient() === 'foo-client'
                 && $request->getSession() === 'foo-session'
                 && $request->getDisconnect()->getCode() === 400
                 && $request->getDisconnect()->getReason() === 'foo-reason'
-                && $responseClass === DTO\DisconnectResponse::class
+                && $responseClass === DTO\DisconnectResponse::class,
             )
-            ->andReturn(new DTO\DisconnectResponse);
+            ->andReturn(new DTO\DisconnectResponse());
 
         $this->api->disconnect(
             user: 'foo-user',
@@ -104,19 +94,20 @@ final class RPCCentrifugoApiTest extends TestCase
     {
         $this->rpc->shouldReceive('call')
             ->once()
-            ->withArgs(fn(
-                string $method,
-                DTO\DisconnectRequest $request,
-                string $responseClass
-            ): bool => $method === 'centrifuge.Unsubscribe'
+            ->withArgs(
+                fn(
+                    string $method,
+                    DTO\DisconnectRequest $request,
+                    string $responseClass,
+                ): bool => $method === 'centrifuge.Unsubscribe'
                 && $request->getUser() === 'foo-user'
                 && $request->getClient() === 'foo-client'
                 && $request->getSession() === 'foo-session'
                 && $request->getDisconnect()->getCode() === 400
                 && $request->getDisconnect()->getReason() === 'foo-reason'
-                && $responseClass === DTO\DisconnectResponse::class
+                && $responseClass === DTO\DisconnectResponse::class,
             )
-            ->andReturn(new DTO\DisconnectResponse);
+            ->andReturn(new DTO\DisconnectResponse());
 
         $this->api->disconnect(
             user: 'foo-user',
@@ -124,6 +115,18 @@ final class RPCCentrifugoApiTest extends TestCase
             session: 'foo-session',
             disconnect: new Disconnect(code: 400, reason: 'foo-reason', reconnect: true),
         );
+    }
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->rpc = m::mock(RPCInterface::class);
+        $this->rpc->shouldReceive('withCodec')->once()->withArgs(
+            static fn(CodecInterface $codec): bool => $codec instanceof ProtobufCodec,
+        )->andReturnSelf();
+
+        $this->api = new RPCCentrifugoApi($this->rpc);
     }
 
     /**

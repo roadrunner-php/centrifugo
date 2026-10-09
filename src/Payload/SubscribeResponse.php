@@ -21,6 +21,5 @@ class SubscribeResponse implements ResponseInterface
         public readonly array $data = [],
         public readonly array $allow = [],
         public readonly Override|null $override = null,
-    ) {
-    }
+    ) {}
 }

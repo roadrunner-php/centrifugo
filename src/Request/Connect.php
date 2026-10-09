@@ -29,7 +29,7 @@ final class Connect extends AbstractRequest
         public readonly ?string $name,
         public readonly ?string $version,
         public readonly array $channels,
-        public readonly array $headers
+        public readonly array $headers,
     ) {
         parent::__construct($worker, $data);
     }
@@ -49,6 +49,64 @@ final class Connect extends AbstractRequest
         $responseObject->setResult($result);
 
         $this->sendResponse($responseObject);
+    }
+
+    public function mapSubscribeOption(Override $override): DTO\SubscribeOptionOverride
+    {
+        $option = new DTO\SubscribeOptionOverride();
+
+        if ($override->presence !== null) {
+            $option->setPresence(
+                new DTO\BoolValue([
+                    'value' => $override->presence,
+                ]),
+            );
+        }
+
+        if ($override->joinLeave !== null) {
+            $option->setJoinLeave(
+                new DTO\BoolValue([
+                    'value' => $override->joinLeave,
+                ]),
+            );
+        }
+
+        if ($override->forceRecovery !== null) {
+            $option->setForceRecovery(
+                new DTO\BoolValue([
+                    'value' => $override->forceRecovery,
+                ]),
+            );
+        }
+
+        if ($override->forcePositioning !== null) {
+            $option->setForcePositioning(
+                new DTO\BoolValue([
+                    'value' => $override->forcePositioning,
+                ]),
+            );
+        }
+
+        if ($override->forcePushJoinLeave !== null) {
+            $option->setForcePushJoinLeave(
+                new DTO\BoolValue([
+                    'value' => $override->forcePushJoinLeave,
+                ]),
+            );
+        }
+        return $option;
+    }
+
+    public function parseExpiresAt(\DateTimeInterface|int $expireAt): int
+    {
+        return $expireAt instanceof \DateTimeInterface
+            ? $expireAt->getTimestamp()
+            : $expireAt;
+    }
+
+    protected function getResponseObject(): DTO\ConnectResponse
+    {
+        return new DTO\ConnectResponse();
     }
 
     /**
@@ -86,11 +144,6 @@ final class Connect extends AbstractRequest
         return $result;
     }
 
-    protected function getResponseObject(): DTO\ConnectResponse
-    {
-        return new DTO\ConnectResponse();
-    }
-
     /**
      * @param array<non-empty-string, SubscribeOption> $subscriptions
      * @return array<non-empty-string, DTO\SubscribeOptions>
@@ -123,58 +176,5 @@ final class Connect extends AbstractRequest
         }
 
         return $subs;
-    }
-
-    public function mapSubscribeOption(Override $override): DTO\SubscribeOptionOverride
-    {
-        $option = new DTO\SubscribeOptionOverride();
-
-        if ($override->presence !== null) {
-            $option->setPresence(
-                new DTO\BoolValue([
-                    'value' => $override->presence,
-                ])
-            );
-        }
-
-        if ($override->joinLeave !== null) {
-            $option->setJoinLeave(
-                new DTO\BoolValue([
-                    'value' => $override->joinLeave,
-                ])
-            );
-        }
-
-        if ($override->forceRecovery !== null) {
-            $option->setForceRecovery(
-                new DTO\BoolValue([
-                    'value' => $override->forceRecovery,
-                ])
-            );
-        }
-
-        if ($override->forcePositioning !== null) {
-            $option->setForcePositioning(
-                new DTO\BoolValue([
-                    'value' => $override->forcePositioning,
-                ])
-            );
-        }
-
-        if ($override->forcePushJoinLeave !== null) {
-            $option->setForcePushJoinLeave(
-                new DTO\BoolValue([
-                    'value' => $override->forcePushJoinLeave,
-                ])
-            );
-        }
-        return $option;
-    }
-
-    public function parseExpiresAt(\DateTimeInterface|int $expireAt): int
-    {
-        return $expireAt instanceof \DateTimeInterface
-            ? $expireAt->getTimestamp()
-            : $expireAt;
     }
 }

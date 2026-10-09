@@ -11,6 +11,5 @@ class SubscribeOption
         public readonly array $info = [],
         public readonly array $data = [],
         public readonly Override|null $override = null,
-    ) {
-    }
+    ) {}
 }

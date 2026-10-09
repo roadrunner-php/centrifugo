@@ -24,7 +24,7 @@ final class Publish extends AbstractRequest
         public readonly string $channel,
         public readonly array $meta,
         array $data,
-        public readonly array $headers
+        public readonly array $headers,
     ) {
         parent::__construct($worker, $data);
     }

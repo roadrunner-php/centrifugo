@@ -24,7 +24,7 @@ final class RPCCentrifugoApi implements CentrifugoApiInterface
         $this->rpc = $rpc->withCodec(new ProtobufCodec());
     }
 
-    public function publish(string $channel, string $message, bool $skipHistory = true, array $tags = [],): void
+    public function publish(string $channel, string $message, bool $skipHistory = true, array $tags = []): void
     {
         $request = new DTO\PublishRequest();
         $request->setChannel($channel);
@@ -38,7 +38,7 @@ final class RPCCentrifugoApi implements CentrifugoApiInterface
         $this->call('centrifuge.Publish', $request, DTO\PublishResponse::class);
     }
 
-    public function broadcast(array $channels, string $message, bool $skipHistory = true, array $tags = [],): void
+    public function broadcast(array $channels, string $message, bool $skipHistory = true, array $tags = []): void
     {
         $request = new DTO\BroadcastRequest();
         $request->setChannels($channels);
@@ -114,7 +114,7 @@ final class RPCCentrifugoApi implements CentrifugoApiInterface
         $this->call('centrifuge.Subscribe', $request, DTO\SubscribeResponse::class);
     }
 
-    public function unsubscribe(string $channel, string $user, ?string $client = null, ?string $session = null,): void
+    public function unsubscribe(string $channel, string $user, ?string $client = null, ?string $session = null): void
     {
         $request = new DTO\UnsubscribeRequest();
         $request->setChannel($channel);
@@ -158,7 +158,7 @@ final class RPCCentrifugoApi implements CentrifugoApiInterface
                 new DTO\Disconnect([
                     'code' => $disconnect->code,
                     'reason' => $disconnect->reason,
-                ])
+                ]),
             );
         }
 
@@ -174,7 +174,7 @@ final class RPCCentrifugoApi implements CentrifugoApiInterface
         $response = $this->call(
             'centrifuge.Presence',
             $request,
-            DTO\PresenceResponse::class
+            DTO\PresenceResponse::class,
         );
 
         /** @var array<non-empty-string, DTO\ClientInfo> $result */
@@ -200,7 +200,7 @@ final class RPCCentrifugoApi implements CentrifugoApiInterface
         $response = $this->call(
             'centrifuge.PresenceStats',
             $request,
-            DTO\PresenceStatsResponse::class
+            DTO\PresenceStatsResponse::class,
         );
 
         return [
@@ -219,7 +219,7 @@ final class RPCCentrifugoApi implements CentrifugoApiInterface
         $response = $this->call(
             'centrifuge.Channels',
             $request,
-            DTO\ChannelsResponse::class
+            DTO\ChannelsResponse::class,
         );
 
         $data = [];
