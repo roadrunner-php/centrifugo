@@ -1,28 +1,38 @@
-<a href="https://roadrunner.dev" target="_blank">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://github.com/roadrunner-server/.github/assets/8040338/e6bde856-4ec6-4a52-bd5b-bfe78736c1ff">
-    <img align="center" src="https://github.com/roadrunner-server/.github/assets/8040338/040fb694-1dd3-4865-9d29-8e0748c2c8b8">
-  </picture>
-</a>
+<p align="center">
+    <a href="https://roadrunner.dev"><picture>
+        <source media="(prefers-color-scheme: dark)" srcset="https://github.com/roadrunner-server/.github/assets/8040338/e6bde856-4ec6-4a52-bd5b-bfe78736c1ff">
+        <img alt="RoadRunner" src="https://github.com/roadrunner-server/.github/assets/8040338/040fb694-1dd3-4865-9d29-8e0748c2c8b8" style="width: 6in; display: block">
+    </picture></a>
+</p>
 
-# RoadRunner Centrifugo Bridge
+<p align="center">Centrifugo bridge for RoadRunner: proxy events and server API</p>
 
-[![PHP Version Require](https://poser.pugx.org/roadrunner-php/centrifugo/require/php)](https://packagist.org/packages/roadrunner-php/centrifugo)
-[![Latest Stable Version](https://poser.pugx.org/roadrunner-php/centrifugo/v/stable)](https://packagist.org/packages/roadrunner-php/centrifugo)
-[![phpunit](https://github.com/roadrunner-php/centrifugo/actions/workflows/phpunit.yml/badge.svg)](https://github.com/roadrunner-php/centrifugo/actions)
-[![psalm](https://github.com/roadrunner-php/centrifugo/actions/workflows/psalm.yml/badge.svg)](https://github.com/roadrunner-php/centrifugo/actions)
-[![Codecov](https://codecov.io/gh/roadrunner-php/centrifugo/branch/master/graph/badge.svg)](https://codecov.io/gh/roadrunner-php/centrifugo/)
-[![Total Downloads](https://poser.pugx.org/roadrunner-php/centrifugo/downloads)](https://packagist.org/packages/roadrunner-php/centrifugo)
+<div align="center">
 
-This repository contains the codebase PHP bridge using RoadRunner centrifuge plugin.
+[![Documentation](https://img.shields.io/badge/Documentation-blue?style=for-the-badge&logo=gitbook&logoColor=white)](https://docs.roadrunner.dev/docs/plugins/centrifuge)
+[![Sponsor](https://img.shields.io/static/v1?style=for-the-badge&label=&message=Sponsor&logo=githubsponsors&logoColor=white&color=%23EA4AAA)](https://github.com/sponsors/roadrunner-server)
 
-## Installation
+[![Psalm Level](https://shepherd.dev/github/roadrunner-php/centrifugo/level.svg)](https://shepherd.dev/github/roadrunner-php/centrifugo)
+[![Type Coverage](https://shepherd.dev/github/roadrunner-php/centrifugo/coverage.svg)](https://shepherd.dev/github/roadrunner-php/centrifugo)
 
-To install application server and Jobs codebase
+</div>
+
+<br />
+
+PHP bridge for the RoadRunner [`centrifuge`](https://docs.roadrunner.dev/docs/plugins/centrifuge) plugin: handle [Centrifugo](https://centrifugal.dev) proxy events (connect, subscribe, publish, RPC, …) in PHP workers and call the Centrifugo server API over RoadRunner RPC.
+
+## Get Started
+
+### Installation
 
 ```bash
 composer require roadrunner-php/centrifugo
 ```
+
+[![PHP](https://img.shields.io/packagist/php-v/roadrunner-php/centrifugo.svg?style=flat-square&logo=php)](https://packagist.org/packages/roadrunner-php/centrifugo)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/roadrunner-php/centrifugo.svg?style=flat-square&logo=packagist)](https://packagist.org/packages/roadrunner-php/centrifugo)
+[![License](https://img.shields.io/packagist/l/roadrunner-php/centrifugo.svg?style=flat-square)](LICENSE)
+[![Total Downloads](https://img.shields.io/packagist/dt/roadrunner-php/centrifugo.svg?style=flat-square)](https://packagist.org/packages/roadrunner-php/centrifugo/stats)
 
 You can use the convenient installer to download the latest available compatible version of RoadRunner assembly:
 
@@ -31,30 +41,9 @@ composer require spiral/roadrunner-cli --dev
 vendor/bin/rr get
 ```
 
-## Proxy Centrifugo requests to a PHP application
+### Configuration
 
-It's possible to proxy some client connection events from Centrifugo to the RoadRunner application server and react to
-them in a custom way. For example, it's possible to authenticate connection via request from Centrifugo to application
-backend, refresh client sessions and answer to RPC calls sent by a client over bidirectional connection.
-
-The list of events that can be proxied:
-
-* `connect` – called when a client connects to Centrifugo, so it's possible to authenticate user, return custom data to a
-client, subscribe connection to several channels, attach meta information to the connection, and so on. Works for
-bidirectional and unidirectional transports.
-* `refresh` - called when a client session is going to expire, so it's possible to prolong it or just let it expire. Can
-also be used just as a periodical connection liveness callback from Centrifugo to app backend. Works for bidirectional
-and unidirectional transports.
-* `sub_refresh` - called when it's time to refresh the subscription. Centrifugo itself will ask your backend about subscription validity instead of subscription refresh workflow on the client-side.
-* `subscribe` - called when clients try to subscribe on a channel, so it's possible to check permissions and return custom
-initial subscription data. Works for bidirectional transports only.
-* `publish` - called when a client tries to publish into a channel, so it's possible to check permissions and optionally
-modify publication data. Works for bidirectional transports only.
-* `rpc` - called when a client sends RPC, you can do whatever logic you need based on a client-provided RPC method and
-params. Works for bidirectional transports only.
-
-First you need to add `centrifuge` section to your RoadRunner configuration. For example, such a configuration
-would be quite feasible to run:
+Add the `centrifuge` section to your RoadRunner configuration (`.rr.yaml`):
 
 ```yaml
 rpc:
@@ -65,10 +54,13 @@ server:
   relay: pipes
 
 centrifuge:
-  proxy_address: "tcp://0.0.0.0:10001" # Centrifugo address
+  # RoadRunner listens here for proxy requests from Centrifugo
+  proxy_address: "tcp://0.0.0.0:10001"
+  # Centrifugo gRPC API address (used by the server API client)
+  grpc_api_address: "tcp://127.0.0.1:10000"
 ```
 
-and centrifugo config:
+and point the Centrifugo proxy endpoints to it:
 
 ```json
 {
@@ -105,7 +97,9 @@ and centrifugo config:
 > `proxy_sub_refresh_endpoint`, `proxy_rpc_endpoint` - endpoint address of roadrunner server with activated
 > `centrifuge` plugin.
 
-To init abstract RoadRunner worker:
+### Handling proxy events
+
+Create a worker (`app.php`) that waits for proxy requests and responds to them:
 
 ```php
 <?php
@@ -139,6 +133,20 @@ while ($request = $centrifugoWorker->waitRequest()) {
         continue;
     }
 
+    if ($request instanceof Request\Connect) {
+        try {
+            // Authenticate the connection, e.g. using $request->getData() or $request->headers
+            $request->respond(new Payload\ConnectResponse(
+                user: '1',
+                channels: ['news'],
+            ));
+        } catch (\Throwable $e) {
+            $request->error($e->getCode(), $e->getMessage());
+        }
+
+        continue;
+    }
+
     if ($request instanceof Request\Refresh) {
         try {
             // Do something
@@ -160,7 +168,7 @@ while ($request = $centrifugoWorker->waitRequest()) {
             ));
 
             // You can also disconnect connection
-            $request->disconnect('500', 'Connection is not allowed.');
+            $request->disconnect(4500, 'Connection is not allowed.');
         } catch (\Throwable $e) {
             $request->error($e->getCode(), $e->getMessage());
         }
@@ -176,7 +184,7 @@ while ($request = $centrifugoWorker->waitRequest()) {
             ));
 
             // You can also disconnect connection
-            $request->disconnect('500', 'Connection is not allowed.');
+            $request->disconnect(4500, 'Connection is not allowed.');
         } catch (\Throwable $e) {
             $request->error($e->getCode(), $e->getMessage());
         }
@@ -186,12 +194,11 @@ while ($request = $centrifugoWorker->waitRequest()) {
 
     if ($request instanceof Request\RPC) {
         try {
-            $response = $router->handle(
-                new Request(uri: $request->method, data: $request->data),
-            ); // ['user' => ['id' => 1, 'username' => 'john_smith']]
+            // Handle $request->method with $request->getData() as params
+            $response = ['user' => ['id' => 1, 'username' => 'john_smith']];
 
             $request->respond(new Payload\RPCResponse(
-                data: $response
+                data: $response,
             ));
         } catch (\Throwable $e) {
             $request->error($e->getCode(), $e->getMessage());
@@ -202,16 +209,49 @@ while ($request = $centrifugoWorker->waitRequest()) {
 }
 ```
 
+## Proxy events
+
+It's possible to proxy some client connection events from Centrifugo to the RoadRunner application server and react to
+them in a custom way. For example, it's possible to authenticate connection via request from Centrifugo to application
+backend, refresh client sessions and answer to RPC calls sent by a client over bidirectional connection.
+
+The list of events that can be proxied:
+
+* `connect` – called when a client connects to Centrifugo, so it's possible to authenticate user, return custom data to a
+client, subscribe connection to several channels, attach meta information to the connection, and so on. Works for
+bidirectional and unidirectional transports.
+* `refresh` - called when a client session is going to expire, so it's possible to prolong it or just let it expire. Can
+also be used just as a periodical connection liveness callback from Centrifugo to app backend. Works for bidirectional
+and unidirectional transports.
+* `sub_refresh` - called when it's time to refresh the subscription. Centrifugo itself will ask your backend about subscription validity instead of subscription refresh workflow on the client-side.
+* `subscribe` - called when clients try to subscribe on a channel, so it's possible to check permissions and return custom
+initial subscription data. Works for bidirectional transports only.
+* `publish` - called when a client tries to publish into a channel, so it's possible to check permissions and optionally
+modify publication data. Works for bidirectional transports only.
+* `rpc` - called when a client sends RPC, you can do whatever logic you need based on a client-provided RPC method and
+params. Works for bidirectional transports only.
+
 > **Note**
-> You can find addition information about [here](https://centrifugal.dev/docs/server/proxy).
+> You can find additional information about proxy events [here](https://centrifugal.dev/docs/server/proxy).
+
+## Centrifugo server API
+
+`RPCCentrifugoApi` calls the Centrifugo server API through the RoadRunner `centrifuge` plugin, so `grpc_api_address` must point to the Centrifugo gRPC API (enabled with `"grpc_api": true` in the Centrifugo config).
+
+```php
+use RoadRunner\Centrifugo\RPCCentrifugoApi;
+use Spiral\Goridge\RPC\RPC;
+
+$api = new RPCCentrifugoApi(RPC::create('tcp://127.0.0.1:6001'));
+
+$api->publish(channel: 'news', message: \json_encode(['text' => 'Hello']));
+$api->broadcast(channels: ['news', 'updates'], message: \json_encode(['text' => 'Hello']));
+$api->disconnect(user: '1');
+
+$clients = $api->presence(channel: 'news');
+$channels = $api->channels();
+```
 
 <a href="https://spiral.dev/">
 <img src="https://user-images.githubusercontent.com/773481/220979012-e67b74b5-3db1-41b7-bdb0-8a042587dedc.jpg" alt="try Spiral Framework" />
 </a>
-
-## License
-
-The MIT License (MIT). Please see [`LICENSE`](./LICENSE) for more information. Maintained
-by [Spiral Scout](https://spiralscout.com).
-
-
