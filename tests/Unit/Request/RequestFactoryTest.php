@@ -12,6 +12,7 @@ use RoadRunner\Centrifugal\Proxy\DTO\V1\ConnectRequest;
 use RoadRunner\Centrifugal\Proxy\DTO\V1\PublishRequest;
 use RoadRunner\Centrifugal\Proxy\DTO\V1\RefreshRequest;
 use RoadRunner\Centrifugal\Proxy\DTO\V1\RPCRequest;
+use RoadRunner\Centrifugal\Proxy\DTO\V1\SubRefreshRequest;
 use RoadRunner\Centrifugal\Proxy\DTO\V1\SubscribeRequest;
 use RoadRunner\Centrifugo\Exception\InvalidRequestTypeException;
 use RoadRunner\Centrifugo\Request\Connect;
@@ -19,6 +20,7 @@ use RoadRunner\Centrifugo\Request\Publish;
 use RoadRunner\Centrifugo\Request\Refresh;
 use RoadRunner\Centrifugo\Request\RequestFactory;
 use RoadRunner\Centrifugo\Request\RPC;
+use RoadRunner\Centrifugo\Request\SubRefresh;
 use RoadRunner\Centrifugo\Request\Subscribe;
 use RoadRunner\Centrifugo\Tests\Unit\TestCase;
 use Spiral\RoadRunner\Payload;
@@ -168,6 +170,36 @@ final class RequestFactoryTest extends TestCase
         Assert::same($request->meta, ['some']);
         Assert::same($request->getData(), ['other']);
         Assert::same($request->headers, ['type' => ['rpc']]);
+    }
+
+    /**
+     * RoadRunner sends the `subrefresh` type header for sub refresh proxy requests.
+     */
+    public function testCreateSubRefreshRequest(): void
+    {
+        /** @var SubRefresh $request */
+        $request = $this->factory->createFromPayload(new Payload(
+            (new SubRefreshRequest([
+                'client' => 'a',
+                'transport' => 'b',
+                'protocol' => 'f',
+                'encoding' => 'h',
+                'user' => 'n',
+                'channel' => 'c',
+                'meta' => json_encode(['some']),
+            ]))->serializeToString(),
+            json_encode(['type' => ['subrefresh']]),
+        ));
+
+        Assert::instanceOf($request, SubRefresh::class);
+        Assert::same($request->client, 'a');
+        Assert::same($request->transport, 'b');
+        Assert::same($request->protocol, 'f');
+        Assert::same($request->encoding, 'h');
+        Assert::same($request->user, 'n');
+        Assert::same($request->channel, 'c');
+        Assert::same($request->meta, ['some']);
+        Assert::same($request->headers, ['type' => ['subrefresh']]);
     }
 
     public function testInvalidRequestTypeIsRejected(): void
