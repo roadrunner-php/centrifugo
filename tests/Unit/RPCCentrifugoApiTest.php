@@ -6,7 +6,6 @@ namespace RoadRunner\Centrifugo\Tests\Unit;
 
 use Google\Protobuf\Internal\Message;
 use Testo\Assert;
-use Testo\Skip;
 use Testo\Test;
 use Testo\Expect;
 use Testo\Lifecycle\BeforeTest;
@@ -75,7 +74,7 @@ final class RPCCentrifugoApiTest
                     string $method,
                     DTO\DisconnectRequest $request,
                     string $responseClass,
-                ): bool => $method === 'centrifuge.Unsubscribe'
+                ): bool => $method === 'centrifuge.Disconnect'
                 && $request->getUser() === 'foo-user'
                 && $request->getClient() === 'foo-client'
                 && $request->getSession() === 'foo-session'
@@ -102,7 +101,7 @@ final class RPCCentrifugoApiTest
                     string $method,
                     DTO\DisconnectRequest $request,
                     string $responseClass,
-                ): bool => $method === 'centrifuge.Unsubscribe'
+                ): bool => $method === 'centrifuge.Disconnect'
                 && $request->getUser() === 'foo-user'
                 && $request->getClient() === 'foo-client'
                 && $request->getSession() === 'foo-session'
@@ -251,12 +250,9 @@ final class RPCCentrifugoApiTest
         Assert::same($this->request->getSession(), '');
     }
 
-    /**
-     * The RPC method name is not checked here: see {@see self::testDisconnectCallsDisconnectMethod()}.
-     */
     public function testDisconnectWithWhitelist(): void
     {
-        $this->expectCall(m::any(), DTO\DisconnectResponse::class, new DTO\DisconnectResponse());
+        $this->expectCall('centrifuge.Disconnect', DTO\DisconnectResponse::class, new DTO\DisconnectResponse());
 
         $this->api->disconnect(user: 'foo-user', whitelist: ['client-1', 'client-2']);
 
@@ -266,7 +262,6 @@ final class RPCCentrifugoApiTest
         Assert::null($this->request->getDisconnect());
     }
 
-    #[Skip('Bug: disconnect() calls the centrifuge.Unsubscribe RPC method instead of centrifuge.Disconnect')]
     public function testDisconnectCallsDisconnectMethod(): void
     {
         $this->expectCall('centrifuge.Disconnect', DTO\DisconnectResponse::class, new DTO\DisconnectResponse());
@@ -433,10 +428,10 @@ final class RPCCentrifugoApiTest
     /**
      * Expects exactly one RPC call and keeps the request message it was given in {@see self::$request}.
      *
-     * @param non-empty-string|m\Matcher\MatcherAbstract $method
+     * @param non-empty-string $method
      * @param class-string<Message> $responseClass
      */
-    private function expectCall(string|m\Matcher\MatcherAbstract $method, string $responseClass, Message $response): void
+    private function expectCall(string $method, string $responseClass, Message $response): void
     {
         $this->rpc->shouldReceive('call')
             ->once()

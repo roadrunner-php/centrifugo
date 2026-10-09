@@ -168,7 +168,7 @@ final class RPCCentrifugoApi implements CentrifugoApiInterface
             );
         }
 
-        $this->call('centrifuge.Unsubscribe', $request, DTO\DisconnectResponse::class);
+        $this->call('centrifuge.Disconnect', $request, DTO\DisconnectResponse::class);
     }
 
     #[\Override]
