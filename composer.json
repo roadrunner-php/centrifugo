@@ -43,7 +43,7 @@
         }
     ],
     "require": {
-        "php": ">=8.1",
+        "php": ">=8.2",
         "ext-json": "*",
         "roadrunner-php/roadrunner-api-dto": "^1.0",
         "spiral/goridge": "^4.0",
@@ -65,7 +65,7 @@
         "mockery/mockery": "^1.5",
         "phpunit/phpunit": "^10.0",
         "spiral/code-style": "^2.3.1",
-        "vimeo/psalm": ">= 5.8"
+        "vimeo/psalm": "^6 || ^7"
     },
     "scripts": {
         "cs:diff": "php-cs-fixer fix --dry-run -v --diff",
