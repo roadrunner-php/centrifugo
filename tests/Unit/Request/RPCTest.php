@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace RoadRunner\Centrifugo\Tests\Unit\Request;
 
+use Testo\Test;
+use Testo\Assert;
+use Testo\Data\DataProvider;
+use Testo\Lifecycle\BeforeTest;
 use RoadRunner\Centrifugal\Proxy\DTO\V1\RPCResult;
 use RoadRunner\Centrifugo\Payload\RPCResponse;
 use RoadRunner\Centrifugo\Request\RPC;
@@ -12,6 +16,7 @@ use Spiral\RoadRunner\Payload;
 use RoadRunner\Centrifugal\Proxy\DTO\V1\RPCResponse as RPCResponseDTO;
 use Spiral\RoadRunner\WorkerInterface;
 
+#[Test]
 final class RPCTest extends TestCase
 {
     private RPC $rpc;
@@ -25,10 +30,7 @@ final class RPCTest extends TestCase
     public function testRespond(): void
     {
         $worker = $this->createWorker(function (Payload $payload) {
-            $this->assertEquals(
-                new Payload((new RPCResponseDTO(['result' => new RPCResult(['data' => json_encode([])])]))->serializeToString()),
-                $payload,
-            );
+            Assert::equals($payload, new Payload((new RPCResponseDTO(['result' => new RPCResult(['data' => json_encode([])])]))->serializeToString()));
         });
 
         $refresh = new RPC($worker, '', '', '', '', '', '', [], [], []);
@@ -40,12 +42,10 @@ final class RPCTest extends TestCase
     {
         $ref = new \ReflectionMethod($this->rpc, 'getResponseObject');
 
-        $this->assertInstanceOf(RPCResponseDTO::class, $ref->invoke($this->rpc));
+        Assert::instanceOf($ref->invoke($this->rpc), RPCResponseDTO::class);
     }
 
-    /**
-     * @dataProvider mapResponseDataProvider
-     */
+    #[DataProvider('mapResponseDataProvider')]
     public function testMapResponse(RPCResponse $response, array $expected): void
     {
         $ref = new \ReflectionMethod($this->rpc, 'mapResponse');
@@ -53,11 +53,12 @@ final class RPCTest extends TestCase
         /** @var RPCResult $dto */
         $dto = $ref->invoke($this->rpc, $response);
 
-        $this->assertSame($expected['data'], $dto->getData());
+        Assert::same($dto->getData(), $expected['data']);
     }
 
+    #[BeforeTest]
     protected function setUp(): void
     {
-        $this->rpc = new RPC($this->createMock(WorkerInterface::class), '', '', '', '', '', '', [], [], []);
+        $this->rpc = new RPC(\Mockery::mock(WorkerInterface::class)->shouldIgnoreMissing(), '', '', '', '', '', '', [], [], []);
     }
 }

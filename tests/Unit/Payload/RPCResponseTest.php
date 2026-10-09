@@ -4,15 +4,17 @@ declare(strict_types=1);
 
 namespace RoadRunner\Centrifugo\Tests\Unit\Payload;
 
-use PHPUnit\Framework\TestCase;
+use Testo\Test;
+use Testo\Assert;
 use RoadRunner\Centrifugo\Payload\RPCResponse;
 
-final class RPCResponseTest extends TestCase
+#[Test]
+final class RPCResponseTest
 {
     public function testDefaultValue(): void
     {
         $rpc = new RPCResponse();
 
-        $this->assertSame([], $rpc->data);
+        Assert::same($rpc->data, []);
     }
 }

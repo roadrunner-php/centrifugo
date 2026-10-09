@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace RoadRunner\Centrifugo\Tests\Unit\Payload;
 
-use PHPUnit\Framework\TestCase;
+use Testo\Test;
+use Testo\Data\DataProvider;
+use Testo\Assert;
 use RoadRunner\Centrifugo\Payload\SubRefreshResponse;
 
-final class SubRefreshResponseTest extends TestCase
+#[Test]
+final class SubRefreshResponseTest
 {
     public static function refreshResponseDataProvider(): \Traversable
     {
@@ -19,11 +22,9 @@ final class SubRefreshResponseTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider refreshResponseDataProvider
-     */
+    #[DataProvider('refreshResponseDataProvider')]
     public function testRefreshResponse(SubRefreshResponse $expected, SubRefreshResponse $actual): void
     {
-        $this->assertEquals($expected, $actual);
+        Assert::equals($actual, $expected);
     }
 }

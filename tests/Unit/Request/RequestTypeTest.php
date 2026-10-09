@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace RoadRunner\Centrifugo\Tests\Unit\Request;
 
-use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\TestCase;
+use Testo\Test;
+use Testo\Data\DataProvider;
+use Testo\Assert;
 use RoadRunner\Centrifugo\Request\Connect;
 use RoadRunner\Centrifugo\Request\Invalid;
 use RoadRunner\Centrifugo\Request\Publish;
@@ -16,7 +17,8 @@ use RoadRunner\Centrifugo\Request\RPC;
 use RoadRunner\Centrifugo\Request\SubRefresh;
 use RoadRunner\Centrifugo\Request\Subscribe;
 
-final class RequestTypeTest extends TestCase
+#[Test]
+final class RequestTypeTest
 {
     public static function requestTypeDataProvider(): \Traversable
     {
@@ -61,6 +63,6 @@ final class RequestTypeTest extends TestCase
     #[DataProvider('requestTypeDataProvider')]
     public function testRequestType(RequestInterface $request, RequestType $expected): void
     {
-        $this->assertSame($expected, RequestType::createFrom($request));
+        Assert::same(RequestType::createFrom($request), $expected);
     }
 }

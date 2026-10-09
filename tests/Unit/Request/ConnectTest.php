@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace RoadRunner\Centrifugo\Tests\Unit\Request;
 
+use Testo\Test;
+use Testo\Assert;
+use Testo\Data\DataProvider;
+use Testo\Lifecycle\BeforeTest;
 use Google\Protobuf\Internal\MapField;
 use Google\Protobuf\RepeatedField;
 use RoadRunner\Centrifugal\Proxy\DTO\V1\BoolValue;
@@ -19,6 +23,7 @@ use RoadRunner\Centrifugo\Tests\Unit\TestCase;
 use Spiral\RoadRunner\Payload;
 use Spiral\RoadRunner\WorkerInterface;
 
+#[Test]
 final class ConnectTest extends TestCase
 {
     private Connect $connect;
@@ -282,10 +287,7 @@ final class ConnectTest extends TestCase
     public function testRespond(): void
     {
         $worker = $this->createWorker(function (Payload $payload) {
-            $this->assertEquals(
-                new Payload((new ConnectResponseDTO(['result' => new ConnectResult()]))->serializeToString()),
-                $payload,
-            );
+            Assert::equals($payload, new Payload((new ConnectResponseDTO(['result' => new ConnectResult()]))->serializeToString()));
         });
 
         $connect = new Connect($worker, '', '', '', '', [], '', '', [], []);
@@ -297,18 +299,16 @@ final class ConnectTest extends TestCase
     {
         $ref = new \ReflectionMethod($this->connect, 'getResponseObject');
 
-        $this->assertInstanceOf(ConnectResponseDTO::class, $ref->invoke($this->connect));
+        Assert::instanceOf($ref->invoke($this->connect), ConnectResponseDTO::class);
     }
 
     public function testParseExpiresAt(): void
     {
-        $this->assertSame(1111, $this->connect->parseExpiresAt(1111));
-        $this->assertSame(1111, $this->connect->parseExpiresAt((new \DateTimeImmutable())->setTimestamp(1111)));
+        Assert::same($this->connect->parseExpiresAt(1111), 1111);
+        Assert::same($this->connect->parseExpiresAt((new \DateTimeImmutable())->setTimestamp(1111)), 1111);
     }
 
-    /**
-     * @dataProvider mapResponseDataProvider
-     */
+    #[DataProvider('mapResponseDataProvider')]
     public function testMapResponse(ConnectResponse $response, array $expected): void
     {
         $ref = new \ReflectionMethod($this->connect, 'mapResponse');
@@ -316,18 +316,16 @@ final class ConnectTest extends TestCase
         /** @var ConnectResult $dto */
         $dto = $ref->invoke($this->connect, $response);
 
-        $this->assertSame($expected['user'], $dto->getUser());
-        $this->assertSame($expected['expire_at'], $dto->getExpireAt());
-        $this->assertSame($expected['data'], $dto->getData());
-        $this->assertSame($expected['info'], $dto->getInfo());
-        $this->assertSame($expected['meta'], $dto->getMeta());
-        $this->assertEquals($expected['channels'], $dto->getChannels());
-        $this->assertEquals($expected['subs'], $dto->getSubs());
+        Assert::same($dto->getUser(), $expected['user']);
+        Assert::same($dto->getExpireAt(), $expected['expire_at']);
+        Assert::same($dto->getData(), $expected['data']);
+        Assert::same($dto->getInfo(), $expected['info']);
+        Assert::same($dto->getMeta(), $expected['meta']);
+        Assert::equals($dto->getChannels(), $expected['channels']);
+        Assert::equals($dto->getSubs(), $expected['subs']);
     }
 
-    /**
-     * @dataProvider mapSubscriptionsDataProvider
-     */
+    #[DataProvider('mapSubscriptionsDataProvider')]
     public function testMapSubscriptions(SubscribeOption $options, array $expected): void
     {
         $ref = new \ReflectionMethod($this->connect, 'mapSubscriptions');
@@ -338,28 +336,27 @@ final class ConnectTest extends TestCase
         /** @var SubscribeOptions $mapped */
         $mapped = $subs['a'];
 
-        $this->assertSame($expected['expire_at'], $mapped->getExpireAt());
-        $this->assertSame($expected['data'], $mapped->getData());
-        $this->assertSame($expected['info'], $mapped->getInfo());
-        $this->assertEquals($expected['override'], $mapped->getOverride());
+        Assert::same($mapped->getExpireAt(), $expected['expire_at']);
+        Assert::same($mapped->getData(), $expected['data']);
+        Assert::same($mapped->getInfo(), $expected['info']);
+        Assert::equals($mapped->getOverride(), $expected['override']);
     }
 
-    /**
-     * @dataProvider mapSubscribeOptionDataProvider
-     */
+    #[DataProvider('mapSubscribeOptionDataProvider')]
     public function testMapSubscribeOption(Override $override, array $expected): void
     {
         $override = $this->connect->mapSubscribeOption($override);
 
-        $this->assertSame($expected['presence'], $override->getPresence()?->getValue());
-        $this->assertSame($expected['join_leave'], $override->getJoinLeave()?->getValue());
-        $this->assertSame($expected['force_push_join_leave'], $override->getForcePushJoinLeave()?->getValue());
-        $this->assertSame($expected['force_positioning'], $override->getForcePositioning()?->getValue());
-        $this->assertSame($expected['force_recovery'], $override->getForceRecovery()?->getValue());
+        Assert::same($override->getPresence()?->getValue(), $expected['presence']);
+        Assert::same($override->getJoinLeave()?->getValue(), $expected['join_leave']);
+        Assert::same($override->getForcePushJoinLeave()?->getValue(), $expected['force_push_join_leave']);
+        Assert::same($override->getForcePositioning()?->getValue(), $expected['force_positioning']);
+        Assert::same($override->getForceRecovery()?->getValue(), $expected['force_recovery']);
     }
 
+    #[BeforeTest]
     protected function setUp(): void
     {
-        $this->connect = new Connect($this->createMock(WorkerInterface::class), '', '', '', '', [], '', '', [], []);
+        $this->connect = new Connect(\Mockery::mock(WorkerInterface::class)->shouldIgnoreMissing(), '', '', '', '', [], '', '', [], []);
     }
 }
