@@ -23,7 +23,7 @@ class SubRefresh extends AbstractRequest
         public readonly string $user,
         public readonly string $channel,
         public readonly array $meta,
-        public readonly array $headers
+        public readonly array $headers,
     ) {
         parent::__construct($worker);
     }

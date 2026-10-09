@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace RoadRunner\Centrifugo\Request;
 
-use JsonException;
 use RoadRunner\Centrifugal\Proxy\DTO\V1 as DTO;
 use Google\Protobuf\Internal\Message;
 use RoadRunner\Centrifugo\Exception\InvalidRequestTypeException;
@@ -19,13 +18,12 @@ use Spiral\RoadRunner\WorkerInterface;
 final class RequestFactory
 {
     public function __construct(
-        private readonly WorkerInterface $worker
-    ) {
-    }
+        private readonly WorkerInterface $worker,
+    ) {}
 
     /**
      * Create a request Payload object.
-     * @throws JsonException
+     * @throws \JsonException
      * @throws InvalidRequestTypeException
      * @psalm-suppress InternalProperty
      */
@@ -40,7 +38,7 @@ final class RequestFactory
         } catch (\Throwable) {
             throw new InvalidRequestTypeException(
                 $payload,
-                \sprintf('Request type `%s` is not supported', $type)
+                \sprintf('Request type `%s` is not supported', $type),
             );
         }
 
@@ -55,8 +53,8 @@ final class RequestFactory
             RequestType::RPC => $this->createRPCRequest($payload->body, $headers),
             RequestType::Invalid => throw new InvalidRequestTypeException(
                 $payload,
-                \sprintf('Request type `%s` is not supported', $type)
-            )
+                \sprintf('Request type `%s` is not supported', $type),
+            ),
         };
     }
 
@@ -70,7 +68,7 @@ final class RequestFactory
     /**
      * @param non-empty-string $body
      * @param RequestHeader $headers
-     * @throws JsonException
+     * @throws \JsonException
      */
     private function createConnectRequest(string $body, array $headers): Connect
     {
@@ -85,7 +83,7 @@ final class RequestFactory
             transport: $request->getTransport(),
             protocol: $request->getProtocol(),
             encoding: $request->getEncoding(),
-            data: $request->getData() ? (array)\json_decode($request->getData(), true, 512, JSON_THROW_ON_ERROR) : [],
+            data: $request->getData() ? (array) \json_decode($request->getData(), true, 512, JSON_THROW_ON_ERROR) : [],
             name: $request->getName(),
             version: $request->getVersion(),
             channels: $channels,
@@ -96,7 +94,7 @@ final class RequestFactory
     /**
      * @param non-empty-string $body
      * @param RequestHeader $headers
-     * @throws JsonException
+     * @throws \JsonException
      */
     private function createRefreshRequest(string $body, array $headers): Refresh
     {
@@ -109,7 +107,7 @@ final class RequestFactory
             protocol: $request->getProtocol(),
             encoding: $request->getEncoding(),
             user: $request->getUser(),
-            meta: $request->getMeta() ? (array)\json_decode($request->getMeta(), true, 512, JSON_THROW_ON_ERROR) : [],
+            meta: $request->getMeta() ? (array) \json_decode($request->getMeta(), true, 512, JSON_THROW_ON_ERROR) : [],
             headers: $headers,
         );
     }
@@ -117,7 +115,7 @@ final class RequestFactory
     /**
      * @param non-empty-string $body
      * @param RequestHeader $headers
-     * @throws JsonException
+     * @throws \JsonException
      */
     private function createSubRefreshRequest(string $body, array $headers): SubRefresh
     {
@@ -131,7 +129,7 @@ final class RequestFactory
             encoding: $request->getEncoding(),
             user: $request->getUser(),
             channel: $request->getChannel(),
-            meta: $request->getMeta() ? (array)\json_decode($request->getMeta(), true, 512, JSON_THROW_ON_ERROR) : [],
+            meta: $request->getMeta() ? (array) \json_decode($request->getMeta(), true, 512, JSON_THROW_ON_ERROR) : [],
             headers: $headers,
         );
     }
@@ -139,7 +137,7 @@ final class RequestFactory
     /**
      * @param non-empty-string $body
      * @param RequestHeader $headers
-     * @throws JsonException
+     * @throws \JsonException
      */
     private function createSubscribeRequest(string $body, array $headers): Subscribe
     {
@@ -154,8 +152,8 @@ final class RequestFactory
             user: $request->getUser(),
             channel: $request->getChannel(),
             token: $request->getToken(),
-            meta: $request->getMeta() ? (array)\json_decode($request->getMeta(), true, 512, JSON_THROW_ON_ERROR) : [],
-            data: $request->getData() ? (array)\json_decode($request->getData(), true, 512, JSON_THROW_ON_ERROR) : [],
+            meta: $request->getMeta() ? (array) \json_decode($request->getMeta(), true, 512, JSON_THROW_ON_ERROR) : [],
+            data: $request->getData() ? (array) \json_decode($request->getData(), true, 512, JSON_THROW_ON_ERROR) : [],
             headers: $headers,
         );
     }
@@ -163,7 +161,7 @@ final class RequestFactory
     /**
      * @param non-empty-string $body
      * @param RequestHeader $headers
-     * @throws JsonException
+     * @throws \JsonException
      */
     private function createPublishRequest(string $body, array $headers): Publish
     {
@@ -177,8 +175,8 @@ final class RequestFactory
             encoding: $request->getEncoding(),
             user: $request->getUser(),
             channel: $request->getChannel(),
-            meta: $request->getMeta() ? (array)\json_decode($request->getMeta(), true, 512, JSON_THROW_ON_ERROR) : [],
-            data: $request->getData() ? (array)\json_decode($request->getData(), true, 512, JSON_THROW_ON_ERROR) : [],
+            meta: $request->getMeta() ? (array) \json_decode($request->getMeta(), true, 512, JSON_THROW_ON_ERROR) : [],
+            data: $request->getData() ? (array) \json_decode($request->getData(), true, 512, JSON_THROW_ON_ERROR) : [],
             headers: $headers,
         );
     }
@@ -186,7 +184,7 @@ final class RequestFactory
     /**
      * @param non-empty-string $body
      * @param RequestHeader $headers
-     * @throws JsonException
+     * @throws \JsonException
      */
     private function createRPCRequest(string $body, array $headers): RPC
     {
@@ -200,8 +198,8 @@ final class RequestFactory
             encoding: $request->getEncoding(),
             user: $request->getUser(),
             method: $request->getMethod(),
-            meta: $request->getMeta() ? (array)\json_decode($request->getMeta(), true, 512, JSON_THROW_ON_ERROR) : [],
-            data: $request->getData() ? (array)\json_decode($request->getData(), true, 512, JSON_THROW_ON_ERROR) : [],
+            meta: $request->getMeta() ? (array) \json_decode($request->getMeta(), true, 512, JSON_THROW_ON_ERROR) : [],
+            data: $request->getData() ? (array) \json_decode($request->getData(), true, 512, JSON_THROW_ON_ERROR) : [],
             headers: $headers,
         );
     }

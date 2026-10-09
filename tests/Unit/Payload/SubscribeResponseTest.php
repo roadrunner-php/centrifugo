@@ -10,20 +10,20 @@ use RoadRunner\Centrifugo\Payload\SubscribeResponse;
 
 final class SubscribeResponseTest extends TestCase
 {
+    public static function subscribeResponseDataProvider(): \Traversable
+    {
+        yield [new SubscribeResponse([], [], [], null), new SubscribeResponse()];
+        yield [
+            new SubscribeResponse([], [], [], new Override()),
+            new SubscribeResponse(override: new Override()),
+        ];
+    }
+
     /**
      * @dataProvider subscribeResponseDataProvider
      */
     public function testSubscribeResponse(SubscribeResponse $expected, SubscribeResponse $actual): void
     {
         $this->assertEquals($expected, $actual);
-    }
-
-    public static function subscribeResponseDataProvider(): \Traversable
-    {
-        yield [new SubscribeResponse([], [], [], null), new SubscribeResponse()];
-        yield [
-            new SubscribeResponse([], [], [], new Override()),
-            new SubscribeResponse(override: new Override())
-        ];
     }
 }

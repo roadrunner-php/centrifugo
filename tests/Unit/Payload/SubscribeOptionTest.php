@@ -10,22 +10,22 @@ use RoadRunner\Centrifugo\Payload\SubscribeOption;
 
 final class SubscribeOptionTest extends TestCase
 {
-    /**
-     * @dataProvider subscribeOptionDataProvider
-     */
-    public function testSubscribeOption(SubscribeOption $expected, SubscribeOption $actual): void
-    {
-        $this->assertEquals($expected, $actual);
-    }
-
     public static function subscribeOptionDataProvider(): \Traversable
     {
         yield [new SubscribeOption(null, [], [], null), new SubscribeOption()];
         yield [new SubscribeOption(1667892603, [], [], null), new SubscribeOption(expireAt: 1667892603)];
         yield [
             new SubscribeOption((new \DateTimeImmutable())->setTimestamp(1667892603), [], [], null),
-            new SubscribeOption(expireAt: (new \DateTimeImmutable())->setTimestamp(1667892603))
+            new SubscribeOption(expireAt: (new \DateTimeImmutable())->setTimestamp(1667892603)),
         ];
         yield [new SubscribeOption(null, [], [], new Override()), new SubscribeOption(override: new Override())];
+    }
+
+    /**
+     * @dataProvider subscribeOptionDataProvider
+     */
+    public function testSubscribeOption(SubscribeOption $expected, SubscribeOption $actual): void
+    {
+        $this->assertEquals($expected, $actual);
     }
 }

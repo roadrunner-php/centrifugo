@@ -23,9 +23,260 @@ final class ConnectTest extends TestCase
 {
     private Connect $connect;
 
-    protected function setUp(): void
+    public static function mapResponseDataProvider(): \Traversable
     {
-        $this->connect = new Connect($this->createMock(WorkerInterface::class), '', '', '', '', [], '', '', [], []);
+        yield [new ConnectResponse(), [
+            'user' => '',
+            'expire_at' => 0,
+            'data' => '',
+            'info' => '',
+            'meta' => '',
+            'channels' => new RepeatedField(9),
+            'subs' => new MapField(9, 11, SubscribeOptions::class),
+        ]];
+        yield [new ConnectResponse('some-user'), [
+            'user' => 'some-user',
+            'expire_at' => 0,
+            'data' => '',
+            'info' => '',
+            'meta' => '',
+            'channels' => new RepeatedField(9),
+            'subs' => new MapField(9, 11, SubscribeOptions::class),
+        ]];
+        yield [new ConnectResponse(expireAt: 11111), [
+            'user' => '',
+            'expire_at' => 11111,
+            'data' => '',
+            'info' => '',
+            'meta' => '',
+            'channels' => new RepeatedField(9),
+            'subs' => new MapField(9, 11, SubscribeOptions::class),
+        ]];
+        yield [new ConnectResponse(data: ['foo' => 'bar']), [
+            'user' => '',
+            'expire_at' => 0,
+            'data' => '{"foo":"bar"}',
+            'info' => '',
+            'meta' => '',
+            'channels' => new RepeatedField(9),
+            'subs' => new MapField(9, 11, SubscribeOptions::class),
+        ]];
+        yield [new ConnectResponse(info: ['foo' => 'bar']), [
+            'user' => '',
+            'expire_at' => 0,
+            'data' => '',
+            'info' => '{"foo":"bar"}',
+            'meta' => '',
+            'channels' => new RepeatedField(9),
+            'subs' => new MapField(9, 11, SubscribeOptions::class),
+        ]];
+        yield [new ConnectResponse(meta: ['foo' => 'bar']), [
+            'user' => '',
+            'expire_at' => 0,
+            'data' => '',
+            'info' => '',
+            'meta' => '{"foo":"bar"}',
+            'channels' => new RepeatedField(9),
+            'subs' => new MapField(9, 11, SubscribeOptions::class),
+        ]];
+
+        $channels = new RepeatedField(9);
+        $channels[] = 'foo';
+        $channels[] = 'bar';
+        yield [new ConnectResponse(channels: ['foo', 'bar']), [
+            'user' => '',
+            'expire_at' => 0,
+            'data' => '',
+            'info' => '',
+            'meta' => '',
+            'channels' => $channels,
+            'subs' => new MapField(9, 11, SubscribeOptions::class),
+        ]];
+
+        $subs = new MapField(9, 11, SubscribeOptions::class);
+        $subs['foo'] = new SubscribeOptions();
+        $subs['bar'] = new SubscribeOptions();
+        $subs['bar']->setExpireAt(11111);
+        $subs['bar']->setData(json_encode(['foo' => 'bar']));
+        $subs['bar']->setInfo(json_encode(['foo', 'bar']));
+        $subs['bar']->setOverride(
+            (new SubscribeOptionOverride())
+                ->setPresence(new BoolValue(['value' => true]))
+                ->setJoinLeave(new BoolValue(['value' => true]))
+                ->setForcePushJoinLeave(new BoolValue(['value' => true]))
+                ->setForcePositioning(new BoolValue(['value' => true]))
+                ->setForceRecovery(new BoolValue(['value' => true])),
+        );
+        yield [
+            new ConnectResponse(subscriptions: [
+                'foo' => new SubscribeOption(),
+                'bar' => new SubscribeOption(
+                    11111,
+                    ['foo', 'bar'],
+                    ['foo' => 'bar'],
+                    new Override(true, true, true, true, true),
+                ),
+            ]),
+            [
+                'user' => '',
+                'expire_at' => 0,
+                'data' => '',
+                'info' => '',
+                'meta' => '',
+                'channels' => new RepeatedField(9),
+                'subs' => $subs,
+            ],
+        ];
+    }
+
+    public static function mapSubscriptionsDataProvider(): \Traversable
+    {
+        yield [new SubscribeOption(), ['expire_at' => 0, 'data' => '', 'info' => '', 'override' => null]];
+        yield [new SubscribeOption(222), ['expire_at' => 222, 'data' => '', 'info' => '', 'override' => null]];
+        yield [
+            new SubscribeOption((new \DateTimeImmutable())->setTimestamp(222)),
+            ['expire_at' => 222, 'data' => '', 'info' => '', 'override' => null],
+        ];
+        yield [
+            new SubscribeOption(data: ['foo' => 'bar']),
+            ['expire_at' => 0, 'data' => '{"foo":"bar"}', 'info' => '', 'override' => null],
+        ];
+        yield [
+            new SubscribeOption(info: ['foo' => 'bar']),
+            ['expire_at' => 0, 'data' => '', 'info' => '{"foo":"bar"}', 'override' => null],
+        ];
+        yield [
+            new SubscribeOption(override: new Override()),
+            ['expire_at' => 0, 'data' => '', 'info' => '', 'override' => new SubscribeOptionOverride()],
+        ];
+        yield [
+            new SubscribeOption(override: new Override(true)),
+            [
+                'expire_at' => 0,
+                'data' => '',
+                'info' => '',
+                'override' => new SubscribeOptionOverride(['presence' => new BoolValue(['value' => true])]),
+            ],
+        ];
+        yield [
+            new SubscribeOption(override: new Override(joinLeave: true)),
+            [
+                'expire_at' => 0,
+                'data' => '',
+                'info' => '',
+                'override' => new SubscribeOptionOverride(['join_leave' => new BoolValue(['value' => true])]),
+            ],
+        ];
+        yield [
+            new SubscribeOption(override: new Override(forcePushJoinLeave: true)),
+            [
+                'expire_at' => 0,
+                'data' => '',
+                'info' => '',
+                'override' => new SubscribeOptionOverride(['force_push_join_leave' => new BoolValue(['value' => true])]),
+            ],
+        ];
+        yield [
+            new SubscribeOption(override: new Override(forcePositioning: true)),
+            [
+                'expire_at' => 0,
+                'data' => '',
+                'info' => '',
+                'override' => new SubscribeOptionOverride(['force_positioning' => new BoolValue(['value' => true])]),
+            ],
+        ];
+        yield [
+            new SubscribeOption(override: new Override(forceRecovery: true)),
+            [
+                'expire_at' => 0,
+                'data' => '',
+                'info' => '',
+                'override' => new SubscribeOptionOverride(['force_recovery' => new BoolValue(['value' => true])]),
+            ],
+        ];
+        yield [
+            new SubscribeOption(override: new Override(true, true, true, true, true)),
+            [
+                'expire_at' => 0,
+                'data' => '',
+                'info' => '',
+                'override' => new SubscribeOptionOverride([
+                    'presence' => new BoolValue(['value' => true]),
+                    'join_leave' => new BoolValue(['value' => true]),
+                    'force_push_join_leave' => new BoolValue(['value' => true]),
+                    'force_positioning' => new BoolValue(['value' => true]),
+                    'force_recovery' => new BoolValue(['value' => true]),
+                ]),
+            ],
+        ];
+        yield [
+            new SubscribeOption(111, ['some'], ['other'], new Override(true, true, true, true, true)),
+            [
+                'expire_at' => 111,
+                'data' => '["other"]',
+                'info' => '["some"]',
+                'override' => new SubscribeOptionOverride([
+                    'presence' => new BoolValue(['value' => true]),
+                    'join_leave' => new BoolValue(['value' => true]),
+                    'force_push_join_leave' => new BoolValue(['value' => true]),
+                    'force_positioning' => new BoolValue(['value' => true]),
+                    'force_recovery' => new BoolValue(['value' => true]),
+                ]),
+            ],
+        ];
+    }
+
+    public static function mapSubscribeOptionDataProvider(): \Traversable
+    {
+        yield [new Override(), [
+            'presence' => null,
+            'join_leave' => null,
+            'force_push_join_leave' => null,
+            'force_positioning' => null,
+            'force_recovery' => null,
+        ]];
+        yield [new Override(true), [
+            'presence' => true,
+            'join_leave' => null,
+            'force_push_join_leave' => null,
+            'force_positioning' => null,
+            'force_recovery' => null,
+        ]];
+        yield [new Override(joinLeave: true), [
+            'presence' => null,
+            'join_leave' => true,
+            'force_push_join_leave' => null,
+            'force_positioning' => null,
+            'force_recovery' => null,
+        ]];
+        yield [new Override(forcePushJoinLeave: true), [
+            'presence' => null,
+            'join_leave' => null,
+            'force_push_join_leave' => true,
+            'force_positioning' => null,
+            'force_recovery' => null,
+        ]];
+        yield [new Override(forcePositioning: true), [
+            'presence' => null,
+            'join_leave' => null,
+            'force_push_join_leave' => null,
+            'force_positioning' => true,
+            'force_recovery' => null,
+        ]];
+        yield [new Override(forceRecovery: true), [
+            'presence' => null,
+            'join_leave' => null,
+            'force_push_join_leave' => null,
+            'force_positioning' => null,
+            'force_recovery' => true,
+        ]];
+        yield [new Override(true, true, true, true, true), [
+            'presence' => true,
+            'join_leave' => true,
+            'force_push_join_leave' => true,
+            'force_positioning' => true,
+            'force_recovery' => true,
+        ]];
     }
 
     public function testRespond(): void
@@ -33,7 +284,7 @@ final class ConnectTest extends TestCase
         $worker = $this->createWorker(function (Payload $payload) {
             $this->assertEquals(
                 new Payload((new ConnectResponseDTO(['result' => new ConnectResult()]))->serializeToString()),
-                $payload
+                $payload,
             );
         });
 
@@ -107,259 +358,8 @@ final class ConnectTest extends TestCase
         $this->assertSame($expected['force_recovery'], $override->getForceRecovery()?->getValue());
     }
 
-    public static function mapResponseDataProvider(): \Traversable
+    protected function setUp(): void
     {
-        yield [new ConnectResponse(), [
-            'user' => '',
-            'expire_at' => 0,
-            'data' => '',
-            'info' => '',
-            'meta' => '',
-            'channels' => new RepeatedField(9),
-            'subs' => new MapField(9, 11, SubscribeOptions::class)
-        ]];
-        yield [new ConnectResponse('some-user'), [
-            'user' => 'some-user',
-            'expire_at' => 0,
-            'data' => '',
-            'info' => '',
-            'meta' => '',
-            'channels' => new RepeatedField(9),
-            'subs' => new MapField(9, 11, SubscribeOptions::class)
-        ]];
-        yield [new ConnectResponse(expireAt: 11111), [
-            'user' => '',
-            'expire_at' => 11111,
-            'data' => '',
-            'info' => '',
-            'meta' => '',
-            'channels' => new RepeatedField(9),
-            'subs' => new MapField(9, 11, SubscribeOptions::class)
-        ]];
-        yield [new ConnectResponse(data: ['foo' => 'bar']), [
-            'user' => '',
-            'expire_at' => 0,
-            'data' => '{"foo":"bar"}',
-            'info' => '',
-            'meta' => '',
-            'channels' => new RepeatedField(9),
-            'subs' => new MapField(9, 11, SubscribeOptions::class)
-        ]];
-        yield [new ConnectResponse(info: ['foo' => 'bar']), [
-            'user' => '',
-            'expire_at' => 0,
-            'data' => '',
-            'info' => '{"foo":"bar"}',
-            'meta' => '',
-            'channels' => new RepeatedField(9),
-            'subs' => new MapField(9, 11, SubscribeOptions::class)
-        ]];
-        yield [new ConnectResponse(meta: ['foo' => 'bar']), [
-            'user' => '',
-            'expire_at' => 0,
-            'data' => '',
-            'info' => '',
-            'meta' => '{"foo":"bar"}',
-            'channels' => new RepeatedField(9),
-            'subs' => new MapField(9, 11, SubscribeOptions::class)
-        ]];
-
-        $channels = new RepeatedField(9);
-        $channels[] = 'foo';
-        $channels[] = 'bar';
-        yield [new ConnectResponse(channels: ['foo', 'bar']), [
-            'user' => '',
-            'expire_at' => 0,
-            'data' => '',
-            'info' => '',
-            'meta' => '',
-            'channels' => $channels,
-            'subs' => new MapField(9, 11, SubscribeOptions::class)
-        ]];
-
-        $subs = new MapField(9, 11, SubscribeOptions::class);
-        $subs['foo'] = new SubscribeOptions();
-        $subs['bar'] = new SubscribeOptions();
-        $subs['bar']->setExpireAt(11111);
-        $subs['bar']->setData(json_encode(['foo' => 'bar']));
-        $subs['bar']->setInfo(json_encode(['foo', 'bar']));
-        $subs['bar']->setOverride(
-            (new SubscribeOptionOverride())
-                ->setPresence(new BoolValue(['value' => true]))
-                ->setJoinLeave(new BoolValue(['value' => true]))
-                ->setForcePushJoinLeave(new BoolValue(['value' => true]))
-                ->setForcePositioning(new BoolValue(['value' => true]))
-                ->setForceRecovery(new BoolValue(['value' => true]))
-        );
-        yield [
-            new ConnectResponse(subscriptions: [
-                'foo' => new SubscribeOption(),
-                'bar' => new SubscribeOption(
-                    11111,
-                    ['foo', 'bar'],
-                    ['foo' => 'bar'],
-                    new Override(true, true, true, true, true)
-                )
-            ]),
-            [
-                'user' => '',
-                'expire_at' => 0,
-                'data' => '',
-                'info' => '',
-                'meta' => '',
-                'channels' => new RepeatedField(9),
-                'subs' => $subs
-            ]
-        ];
-    }
-
-    public static function mapSubscriptionsDataProvider(): \Traversable
-    {
-        yield [new SubscribeOption(), ['expire_at' => 0, 'data' => '', 'info' => '', 'override' => null]];
-        yield [new SubscribeOption(222), ['expire_at' => 222, 'data' => '', 'info' => '', 'override' => null]];
-        yield [
-            new SubscribeOption((new \DateTimeImmutable())->setTimestamp(222)),
-            ['expire_at' => 222, 'data' => '', 'info' => '', 'override' => null]
-        ];
-        yield [
-            new SubscribeOption(data: ['foo' => 'bar']),
-            ['expire_at' => 0, 'data' => '{"foo":"bar"}', 'info' => '', 'override' => null]
-        ];
-        yield [
-            new SubscribeOption(info: ['foo' => 'bar']),
-            ['expire_at' => 0, 'data' => '', 'info' => '{"foo":"bar"}', 'override' => null]
-        ];
-        yield [
-            new SubscribeOption(override: new Override()),
-            ['expire_at' => 0, 'data' => '', 'info' => '', 'override' => new SubscribeOptionOverride()]
-        ];
-        yield [
-            new SubscribeOption(override: new Override(true)),
-            [
-                'expire_at' => 0,
-                'data' => '',
-                'info' => '',
-                'override' => new SubscribeOptionOverride(['presence' => new BoolValue(['value' => true])])
-            ]
-        ];
-        yield [
-            new SubscribeOption(override: new Override(joinLeave: true)),
-            [
-                'expire_at' => 0,
-                'data' => '',
-                'info' => '',
-                'override' => new SubscribeOptionOverride(['join_leave' => new BoolValue(['value' => true])])
-            ]
-        ];
-        yield [
-            new SubscribeOption(override: new Override(forcePushJoinLeave: true)),
-            [
-                'expire_at' => 0,
-                'data' => '',
-                'info' => '',
-                'override' => new SubscribeOptionOverride(['force_push_join_leave' => new BoolValue(['value' => true])])
-            ]
-        ];
-        yield [
-            new SubscribeOption(override: new Override(forcePositioning: true)),
-            [
-                'expire_at' => 0,
-                'data' => '',
-                'info' => '',
-                'override' => new SubscribeOptionOverride(['force_positioning' => new BoolValue(['value' => true])])
-            ]
-        ];
-        yield [
-            new SubscribeOption(override: new Override(forceRecovery: true)),
-            [
-                'expire_at' => 0,
-                'data' => '',
-                'info' => '',
-                'override' => new SubscribeOptionOverride(['force_recovery' => new BoolValue(['value' => true])])
-            ]
-        ];
-        yield [
-            new SubscribeOption(override: new Override(true, true, true, true, true)),
-            [
-                'expire_at' => 0,
-                'data' => '',
-                'info' => '',
-                'override' => new SubscribeOptionOverride([
-                    'presence' => new BoolValue(['value' => true]),
-                    'join_leave' => new BoolValue(['value' => true]),
-                    'force_push_join_leave' => new BoolValue(['value' => true]),
-                    'force_positioning' => new BoolValue(['value' => true]),
-                    'force_recovery' => new BoolValue(['value' => true])
-                ])
-            ]
-        ];
-        yield [
-            new SubscribeOption(111, ['some'], ['other'], new Override(true, true, true, true, true)),
-            [
-                'expire_at' => 111,
-                'data' => '["other"]',
-                'info' => '["some"]',
-                'override' => new SubscribeOptionOverride([
-                    'presence' => new BoolValue(['value' => true]),
-                    'join_leave' => new BoolValue(['value' => true]),
-                    'force_push_join_leave' => new BoolValue(['value' => true]),
-                    'force_positioning' => new BoolValue(['value' => true]),
-                    'force_recovery' => new BoolValue(['value' => true])
-                ])
-            ]
-        ];
-    }
-
-    public static function mapSubscribeOptionDataProvider(): \Traversable
-    {
-        yield [new Override(), [
-            'presence' => null,
-            'join_leave' => null,
-            'force_push_join_leave' => null,
-            'force_positioning' => null,
-            'force_recovery' => null
-        ]];
-        yield [new Override(true), [
-            'presence' => true,
-            'join_leave' => null,
-            'force_push_join_leave' => null,
-            'force_positioning' => null,
-            'force_recovery' => null
-        ]];
-        yield [new Override(joinLeave: true), [
-            'presence' => null,
-            'join_leave' => true,
-            'force_push_join_leave' => null,
-            'force_positioning' => null,
-            'force_recovery' => null
-        ]];
-        yield [new Override(forcePushJoinLeave: true), [
-            'presence' => null,
-            'join_leave' => null,
-            'force_push_join_leave' => true,
-            'force_positioning' => null,
-            'force_recovery' => null
-        ]];
-        yield [new Override(forcePositioning: true), [
-            'presence' => null,
-            'join_leave' => null,
-            'force_push_join_leave' => null,
-            'force_positioning' => true,
-            'force_recovery' => null
-        ]];
-        yield [new Override(forceRecovery: true), [
-            'presence' => null,
-            'join_leave' => null,
-            'force_push_join_leave' => null,
-            'force_positioning' => null,
-            'force_recovery' => true
-        ]];
-        yield [new Override(true, true, true, true, true), [
-            'presence' => true,
-            'join_leave' => true,
-            'force_push_join_leave' => true,
-            'force_positioning' => true,
-            'force_recovery' => true
-        ]];
+        $this->connect = new Connect($this->createMock(WorkerInterface::class), '', '', '', '', [], '', '', [], []);
     }
 }

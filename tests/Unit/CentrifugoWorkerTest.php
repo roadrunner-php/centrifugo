@@ -293,12 +293,12 @@ final class CentrifugoWorkerTest extends TestCase
             $request instanceof DTO\RefreshRequest => RequestType::Refresh,
             $request instanceof DTO\SubRefreshRequest => RequestType::SubRefresh,
             $request instanceof DTO\RPCRequest => RequestType::RPC,
-            default => throw new \InvalidArgumentException('Invalid request object ' . $request::class)
+            default => throw new \InvalidArgumentException('Invalid request object ' . $request::class),
         };
 
         return new Payload(
             $request->serializeToString(),
-            \json_encode(['type' => [$type->value]])
+            \json_encode(['type' => [$type->value]]),
         );
     }
 }

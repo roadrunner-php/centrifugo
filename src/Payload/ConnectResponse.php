@@ -29,6 +29,5 @@ class ConnectResponse implements ResponseInterface
         public readonly array $channels = [],
         public readonly array $meta = [],
         public readonly array $subscriptions = [],
-    ) {
-    }
+    ) {}
 }

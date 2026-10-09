@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace RoadRunner\Centrifugo\Request;
 
-use RoadRunner\Centrifugo\Exception\InvalidRequestTypeException;
-
 enum RequestType: string
 {
     case Connect = 'connect';

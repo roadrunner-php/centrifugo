@@ -112,7 +112,7 @@ interface CentrifugoApiInterface
      * }>
      */
     public function presence(
-        string $channel
+        string $channel,
     ): array;
 
     /**
@@ -126,7 +126,7 @@ interface CentrifugoApiInterface
      * }
      */
     public function presenceStats(
-        string $channel
+        string $channel,
     ): array;
 
     /**
@@ -136,7 +136,7 @@ interface CentrifugoApiInterface
      * @return array<non-empty-string, array{num_clients: int}>
      */
     public function channels(
-        ?string $pattern = null
+        ?string $pattern = null,
     ): array;
 
     /**

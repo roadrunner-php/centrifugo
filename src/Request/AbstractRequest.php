@@ -19,8 +19,7 @@ abstract class AbstractRequest implements RequestInterface
     public function __construct(
         private readonly WorkerInterface $worker,
         private readonly array $data = [],
-    ) {
-    }
+    ) {}
 
     public function getAttributes(): array
     {
@@ -45,11 +44,6 @@ abstract class AbstractRequest implements RequestInterface
         return $self;
     }
 
-    /**
-     * @return ResponseDTO
-     */
-    abstract protected function getResponseObject(): object;
-
     final public function error(int $code, string $message, bool $temporary = false): void
     {
         $response = $this->getResponseObject();
@@ -73,6 +67,11 @@ abstract class AbstractRequest implements RequestInterface
 
         $this->sendResponse($response);
     }
+
+    /**
+     * @return ResponseDTO
+     */
+    abstract protected function getResponseObject(): object;
 
     /**
      * @param ResponseDTO $response

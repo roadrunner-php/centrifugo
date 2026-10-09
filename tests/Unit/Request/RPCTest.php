@@ -16,9 +16,10 @@ final class RPCTest extends TestCase
 {
     private RPC $rpc;
 
-    protected function setUp(): void
+    public static function mapResponseDataProvider(): \Traversable
     {
-        $this->rpc = new RPC($this->createMock(WorkerInterface::class), '', '', '', '', '', '', [], [], []);
+        yield [new RPCResponse(), ['data' => '[]']];
+        yield [new RPCResponse(['some']), ['data' => '["some"]']];
     }
 
     public function testRespond(): void
@@ -26,11 +27,11 @@ final class RPCTest extends TestCase
         $worker = $this->createWorker(function (Payload $payload) {
             $this->assertEquals(
                 new Payload((new RPCResponseDTO(['result' => new RPCResult(['data' => json_encode([])])]))->serializeToString()),
-                $payload
+                $payload,
             );
         });
 
-        $refresh = new RPC($worker, '', '', '', '', '',  '', [], [], []);
+        $refresh = new RPC($worker, '', '', '', '', '', '', [], [], []);
 
         $refresh->respond(new RPCResponse());
     }
@@ -55,9 +56,8 @@ final class RPCTest extends TestCase
         $this->assertSame($expected['data'], $dto->getData());
     }
 
-    public static function mapResponseDataProvider(): \Traversable
+    protected function setUp(): void
     {
-        yield [new RPCResponse(), ['data' => '[]']];
-        yield [new RPCResponse(['some']), ['data' => '["some"]']];
+        $this->rpc = new RPC($this->createMock(WorkerInterface::class), '', '', '', '', '', '', [], [], []);
     }
 }

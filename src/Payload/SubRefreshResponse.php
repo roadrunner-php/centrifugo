@@ -18,6 +18,5 @@ class SubRefreshResponse implements ResponseInterface
         public readonly bool $expired = false,
         public readonly int|\DateTimeInterface|null $expireAt = null,
         public readonly array $info = [],
-    ) {
-    }
+    ) {}
 }
