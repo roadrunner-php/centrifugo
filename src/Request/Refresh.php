@@ -32,6 +32,7 @@ class Refresh extends AbstractRequest
      * @psalm-suppress MoreSpecificImplementedParamType
      * @throws \JsonException
      */
+    #[\Override]
     public function respond(ResponseInterface $response): void
     {
         /** @psalm-suppress RedundantConditionGivenDocblockType */
@@ -44,6 +45,7 @@ class Refresh extends AbstractRequest
         $this->sendResponse($responseObject);
     }
 
+    #[\Override]
     protected function getResponseObject(): DTO\RefreshResponse
     {
         return new DTO\RefreshResponse();

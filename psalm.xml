@@ -8,20 +8,9 @@
     findUnusedBaselineEntry="true"
     findUnusedCode="false"
 >
-    <!-- Temporary: new psalm 6 findings, addressed in a follow-up static analysis PR -->
     <issueHandlers>
-        <MissingOverrideAttribute errorLevel="suppress" />
+        <!-- Making public classes final would break extending code -->
         <ClassMustBeFinal errorLevel="suppress" />
-        <MixedArgument>
-            <errorLevel type="suppress">
-                <file name="src/Request/AbstractRequest.php" />
-            </errorLevel>
-        </MixedArgument>
-        <TooManyTemplateParams>
-            <errorLevel type="suppress">
-                <file name="src/Request/RequestFactory.php" />
-            </errorLevel>
-        </TooManyTemplateParams>
     </issueHandlers>
     <projectFiles>
         <directory name="src" />

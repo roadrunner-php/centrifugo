@@ -24,6 +24,7 @@ final class RPCCentrifugoApi implements CentrifugoApiInterface
         $this->rpc = $rpc->withCodec(new ProtobufCodec());
     }
 
+    #[\Override]
     public function publish(string $channel, string $message, bool $skipHistory = true, array $tags = []): void
     {
         $request = new DTO\PublishRequest();
@@ -38,6 +39,7 @@ final class RPCCentrifugoApi implements CentrifugoApiInterface
         $this->call('centrifuge.Publish', $request, DTO\PublishResponse::class);
     }
 
+    #[\Override]
     public function broadcast(array $channels, string $message, bool $skipHistory = true, array $tags = []): void
     {
         $request = new DTO\BroadcastRequest();
@@ -52,6 +54,7 @@ final class RPCCentrifugoApi implements CentrifugoApiInterface
         $this->call('centrifuge.Broadcast', $request, DTO\BroadcastResponse::class);
     }
 
+    #[\Override]
     public function refresh(
         string $user,
         ?string $client = null,
@@ -78,6 +81,7 @@ final class RPCCentrifugoApi implements CentrifugoApiInterface
         $this->call('centrifuge.Refresh', $request, DTO\RefreshResponse::class);
     }
 
+    #[\Override]
     public function subscribe(
         string $channel,
         string $user,
@@ -114,6 +118,7 @@ final class RPCCentrifugoApi implements CentrifugoApiInterface
         $this->call('centrifuge.Subscribe', $request, DTO\SubscribeResponse::class);
     }
 
+    #[\Override]
     public function unsubscribe(string $channel, string $user, ?string $client = null, ?string $session = null): void
     {
         $request = new DTO\UnsubscribeRequest();
@@ -131,6 +136,7 @@ final class RPCCentrifugoApi implements CentrifugoApiInterface
         $this->call('centrifuge.Unsubscribe', $request, DTO\UnsubscribeResponse::class);
     }
 
+    #[\Override]
     public function disconnect(
         string $user,
         ?string $client = null,
@@ -165,6 +171,7 @@ final class RPCCentrifugoApi implements CentrifugoApiInterface
         $this->call('centrifuge.Unsubscribe', $request, DTO\DisconnectResponse::class);
     }
 
+    #[\Override]
     public function presence(string $channel): array
     {
         $request = new DTO\PresenceRequest();
@@ -192,6 +199,7 @@ final class RPCCentrifugoApi implements CentrifugoApiInterface
         return $data;
     }
 
+    #[\Override]
     public function presenceStats(string $channel): array
     {
         $request = new DTO\PresenceStatsRequest();
@@ -209,6 +217,7 @@ final class RPCCentrifugoApi implements CentrifugoApiInterface
         ];
     }
 
+    #[\Override]
     public function channels(?string $pattern = null): array
     {
         $request = new DTO\ChannelsRequest();
@@ -236,6 +245,7 @@ final class RPCCentrifugoApi implements CentrifugoApiInterface
         return $data;
     }
 
+    #[\Override]
     public function blockUser(string $user, ?\DateTimeInterface $expireAt = null): void
     {
         $request = new DTO\BlockUserRequest();
@@ -247,6 +257,7 @@ final class RPCCentrifugoApi implements CentrifugoApiInterface
         $this->call('centrifuge.BlockUser', $request, DTO\BlockUserResponse::class);
     }
 
+    #[\Override]
     public function unblockUser(string $user): void
     {
         $request = new DTO\UnblockUserRequest();

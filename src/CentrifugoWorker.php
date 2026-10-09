@@ -19,6 +19,7 @@ final class CentrifugoWorker implements CentrifugoWorkerInterface
      * @throws \JsonException
      * @psalm-suppress InternalProperty
      */
+    #[\Override]
     public function waitRequest(): ?RequestInterface
     {
         try {
@@ -33,6 +34,7 @@ final class CentrifugoWorker implements CentrifugoWorkerInterface
         }
     }
 
+    #[\Override]
     public function getWorker(): WorkerInterface
     {
         return $this->worker;

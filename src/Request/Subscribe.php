@@ -35,6 +35,7 @@ final class Subscribe extends AbstractRequest
      * @param SubscribeResponse $response
      * @psalm-suppress MoreSpecificImplementedParamType
      */
+    #[\Override]
     public function respond(ResponseInterface $response): void
     {
         /** @psalm-suppress RedundantConditionGivenDocblockType */
@@ -93,6 +94,7 @@ final class Subscribe extends AbstractRequest
         return $option;
     }
 
+    #[\Override]
     protected function getResponseObject(): DTO\SubscribeResponse
     {
         return new DTO\SubscribeResponse();

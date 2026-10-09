@@ -34,6 +34,7 @@ final class Publish extends AbstractRequest
      * @psalm-suppress MoreSpecificImplementedParamType
      * @throws \JsonException
      */
+    #[\Override]
     public function respond(ResponseInterface $response): void
     {
         /** @psalm-suppress RedundantConditionGivenDocblockType */
@@ -46,6 +47,7 @@ final class Publish extends AbstractRequest
         $this->sendResponse($responseObject);
     }
 
+    #[\Override]
     protected function getResponseObject(): DTO\PublishResponse
     {
         return new DTO\PublishResponse();

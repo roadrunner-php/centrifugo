@@ -33,6 +33,7 @@ final class RPC extends AbstractRequest
      * @param RPCResponse $response
      * @psalm-suppress MoreSpecificImplementedParamType
      */
+    #[\Override]
     public function respond(ResponseInterface $response): void
     {
         /** @psalm-suppress RedundantConditionGivenDocblockType */
@@ -46,6 +47,7 @@ final class RPC extends AbstractRequest
         $this->sendResponse($responseObject);
     }
 
+    #[\Override]
     protected function getResponseObject(): DTO\RPCResponse
     {
         return new DTO\RPCResponse();

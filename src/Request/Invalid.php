@@ -19,16 +19,19 @@ final class Invalid extends AbstractRequest
         return $this->exception;
     }
 
+    #[\Override]
     public function respond(ResponseInterface $response): void
     {
         throw new \RuntimeException(self::RESPONSE_EXCEPTION_MESSAGE);
     }
 
+    #[\Override]
     protected function getResponseObject(): object
     {
         throw new \RuntimeException(self::RESPONSE_EXCEPTION_MESSAGE);
     }
 
+    #[\Override]
     protected function sendResponse(object $response): void
     {
         throw new \RuntimeException(self::RESPONSE_EXCEPTION_MESSAGE);
