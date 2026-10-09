@@ -6,6 +6,7 @@ namespace RoadRunner\Centrifugo\Tests\Unit;
 
 use Testo\Test;
 use Testo\Assert;
+use Testo\Data\DataProvider;
 use RoadRunner\Centrifugal\Proxy\DTO\V1 as DTO;
 use RoadRunner\Centrifugo\CentrifugoWorker;
 use RoadRunner\Centrifugo\Exception\InvalidRequestTypeException;
@@ -25,6 +26,12 @@ use Spiral\RoadRunner\WorkerInterface;
 #[Test]
 final class CentrifugoWorkerTest
 {
+    public static function emptyPayloadDataProvider(): iterable
+    {
+        yield 'no payload' => [null];
+        yield 'empty body and header' => [new Payload('', '')];
+    }
+
     public function testConnectRequest(): void
     {
         $worker = \Mockery::mock(WorkerInterface::class);
@@ -270,6 +277,26 @@ final class CentrifugoWorkerTest
         Assert::instanceOf($request, Invalid::class);
         Assert::instanceOf($request->getException(), InvalidRequestTypeException::class);
         Assert::same($request->getException()->payload, $payload);
+    }
+
+    #[DataProvider('emptyPayloadDataProvider')]
+    public function testEmptyPayloadReturnsNull(?Payload $payload): void
+    {
+        $worker = \Mockery::mock(WorkerInterface::class);
+        $worker->shouldReceive('waitPayload')->once()->andReturn($payload);
+
+        $centrifugo = new CentrifugoWorker($worker, new RequestFactory($worker));
+
+        Assert::null($centrifugo->waitRequest());
+    }
+
+    public function testGetWorker(): void
+    {
+        $worker = \Mockery::mock(WorkerInterface::class);
+
+        $centrifugo = new CentrifugoWorker($worker, new RequestFactory($worker));
+
+        Assert::same($centrifugo->getWorker(), $worker);
     }
 
     public function testWaitPayloadExceptionRequest(): void

@@ -6,12 +6,14 @@ namespace RoadRunner\Centrifugo\Tests\Unit\Request;
 
 use Testo\Test;
 use Testo\Assert;
+use Testo\Expect;
 use Testo\Lifecycle\BeforeTest;
 use RoadRunner\Centrifugal\Proxy\DTO\V1\ConnectRequest;
 use RoadRunner\Centrifugal\Proxy\DTO\V1\PublishRequest;
 use RoadRunner\Centrifugal\Proxy\DTO\V1\RefreshRequest;
 use RoadRunner\Centrifugal\Proxy\DTO\V1\RPCRequest;
 use RoadRunner\Centrifugal\Proxy\DTO\V1\SubscribeRequest;
+use RoadRunner\Centrifugo\Exception\InvalidRequestTypeException;
 use RoadRunner\Centrifugo\Request\Connect;
 use RoadRunner\Centrifugo\Request\Publish;
 use RoadRunner\Centrifugo\Request\Refresh;
@@ -166,6 +168,21 @@ final class RequestFactoryTest extends TestCase
         Assert::same($request->meta, ['some']);
         Assert::same($request->getData(), ['other']);
         Assert::same($request->headers, ['type' => ['rpc']]);
+    }
+
+    public function testInvalidRequestTypeIsRejected(): void
+    {
+        $payload = new Payload('body', \json_encode(['type' => ['invalid']]));
+
+        Expect::exception(InvalidRequestTypeException::class)
+            ->withMessage('Request type `invalid` is not supported');
+
+        try {
+            $this->factory->createFromPayload($payload);
+        } catch (InvalidRequestTypeException $e) {
+            Assert::same($e->payload, $payload);
+            throw $e;
+        }
     }
 
     #[BeforeTest]
