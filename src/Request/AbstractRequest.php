@@ -19,24 +19,27 @@ abstract class AbstractRequest implements RequestInterface
     public function __construct(
         private readonly WorkerInterface $worker,
         private readonly array $data = [],
-    ) {
-    }
+    ) {}
 
+    #[\Override]
     public function getAttributes(): array
     {
         return $this->attributes;
     }
 
+    #[\Override]
     public function getData(): array
     {
         return $this->data;
     }
 
+    #[\Override]
     public function getAttribute(string $name, mixed $default = null): mixed
     {
         return $this->attributes[$name] ?? $default;
     }
 
+    #[\Override]
     public function withAttribute(string $name, mixed $value): self
     {
         $self = clone $this;
@@ -45,11 +48,7 @@ abstract class AbstractRequest implements RequestInterface
         return $self;
     }
 
-    /**
-     * @return ResponseDTO
-     */
-    abstract protected function getResponseObject(): object;
-
+    #[\Override]
     final public function error(int $code, string $message, bool $temporary = false): void
     {
         $response = $this->getResponseObject();
@@ -64,6 +63,7 @@ abstract class AbstractRequest implements RequestInterface
      * @param bool $reconnect This parameter is no longer used since v2.0.1 due to the removal of this option in
      * centrifugal/centrifugo v5.0.0 API. It will be removed in v3.0.0.
      */
+    #[\Override]
     final public function disconnect(int $code, string $reason, bool $reconnect = false): void
     {
         $response = $this->getResponseObject();
@@ -73,6 +73,11 @@ abstract class AbstractRequest implements RequestInterface
 
         $this->sendResponse($response);
     }
+
+    /**
+     * @return ResponseDTO
+     */
+    abstract protected function getResponseObject(): object;
 
     /**
      * @param ResponseDTO $response

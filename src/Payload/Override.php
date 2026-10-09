@@ -22,6 +22,5 @@ class Override
         public readonly ?bool $forcePushJoinLeave = null,
         public readonly ?bool $forcePositioning = null,
         public readonly ?bool $forceRecovery = null,
-    ) {
-    }
+    ) {}
 }

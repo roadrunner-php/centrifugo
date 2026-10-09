@@ -13,13 +13,13 @@ final class CentrifugoWorker implements CentrifugoWorkerInterface
     public function __construct(
         private readonly WorkerInterface $worker,
         private readonly RequestFactory $requestFactory,
-    ) {
-    }
+    ) {}
 
     /**
      * @throws \JsonException
      * @psalm-suppress InternalProperty
      */
+    #[\Override]
     public function waitRequest(): ?RequestInterface
     {
         try {
@@ -34,6 +34,7 @@ final class CentrifugoWorker implements CentrifugoWorkerInterface
         }
     }
 
+    #[\Override]
     public function getWorker(): WorkerInterface
     {
         return $this->worker;

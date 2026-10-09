@@ -24,7 +24,7 @@ final class RPC extends AbstractRequest
         public readonly ?string $method,
         public readonly array $meta,
         array $data,
-        public readonly array $headers
+        public readonly array $headers,
     ) {
         parent::__construct($worker, $data);
     }
@@ -33,6 +33,7 @@ final class RPC extends AbstractRequest
      * @param RPCResponse $response
      * @psalm-suppress MoreSpecificImplementedParamType
      */
+    #[\Override]
     public function respond(ResponseInterface $response): void
     {
         /** @psalm-suppress RedundantConditionGivenDocblockType */
@@ -46,15 +47,16 @@ final class RPC extends AbstractRequest
         $this->sendResponse($responseObject);
     }
 
+    #[\Override]
+    protected function getResponseObject(): DTO\RPCResponse
+    {
+        return new DTO\RPCResponse();
+    }
+
     private function mapResponse(RPCResponse $response): DTO\RPCResult
     {
         return new DTO\RPCResult([
             'data' => \json_encode($response->data, JSON_THROW_ON_ERROR),
         ]);
-    }
-
-    protected function getResponseObject(): DTO\RPCResponse
-    {
-        return new DTO\RPCResponse();
     }
 }

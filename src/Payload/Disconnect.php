@@ -18,7 +18,7 @@ final class Disconnect
     public function __construct(
         public readonly int $code,
         public readonly string $reason,
-        bool $reconnect = false
+        bool $reconnect = false,
     ) {
         /** @psalm-suppress DeprecatedProperty */
         $this->reconnect = $reconnect;

@@ -26,7 +26,7 @@ final class Subscribe extends AbstractRequest
         public readonly string $token,
         public readonly array $meta,
         array $data,
-        public readonly array $headers
+        public readonly array $headers,
     ) {
         parent::__construct($worker, $data);
     }
@@ -35,6 +35,7 @@ final class Subscribe extends AbstractRequest
      * @param SubscribeResponse $response
      * @psalm-suppress MoreSpecificImplementedParamType
      */
+    #[\Override]
     public function respond(ResponseInterface $response): void
     {
         /** @psalm-suppress RedundantConditionGivenDocblockType */
@@ -45,6 +46,58 @@ final class Subscribe extends AbstractRequest
         $responseObject->setResult($result);
 
         $this->sendResponse($responseObject);
+    }
+
+    public function mapSubscribeOption(Override $override): DTO\SubscribeOptionOverride
+    {
+        $option = new DTO\SubscribeOptionOverride();
+
+        if ($override->presence !== null) {
+            $option->setPresence(
+                new DTO\BoolValue([
+                    'value' => $override->presence,
+                ]),
+            );
+        }
+
+        if ($override->joinLeave !== null) {
+            $option->setJoinLeave(
+                new DTO\BoolValue([
+                    'value' => $override->joinLeave,
+                ]),
+            );
+        }
+
+        if ($override->forceRecovery !== null) {
+            $option->setForceRecovery(
+                new DTO\BoolValue([
+                    'value' => $override->forceRecovery,
+                ]),
+            );
+        }
+
+        if ($override->forcePositioning !== null) {
+            $option->setForcePositioning(
+                new DTO\BoolValue([
+                    'value' => $override->forcePositioning,
+                ]),
+            );
+        }
+
+        if ($override->forcePushJoinLeave !== null) {
+            $option->setForcePushJoinLeave(
+                new DTO\BoolValue([
+                    'value' => $override->forcePushJoinLeave,
+                ]),
+            );
+        }
+        return $option;
+    }
+
+    #[\Override]
+    protected function getResponseObject(): DTO\SubscribeResponse
+    {
+        return new DTO\SubscribeResponse();
     }
 
     /**
@@ -71,56 +124,5 @@ final class Subscribe extends AbstractRequest
         }
 
         return $result;
-    }
-
-    protected function getResponseObject(): DTO\SubscribeResponse
-    {
-        return new DTO\SubscribeResponse();
-    }
-
-    public function mapSubscribeOption(Override $override): DTO\SubscribeOptionOverride
-    {
-        $option = new DTO\SubscribeOptionOverride();
-
-        if ($override->presence !== null) {
-            $option->setPresence(
-                new DTO\BoolValue([
-                    'value' => $override->presence,
-                ])
-            );
-        }
-
-        if ($override->joinLeave !== null) {
-            $option->setJoinLeave(
-                new DTO\BoolValue([
-                    'value' => $override->joinLeave,
-                ])
-            );
-        }
-
-        if ($override->forceRecovery !== null) {
-            $option->setForceRecovery(
-                new DTO\BoolValue([
-                    'value' => $override->forceRecovery,
-                ])
-            );
-        }
-
-        if ($override->forcePositioning !== null) {
-            $option->setForcePositioning(
-                new DTO\BoolValue([
-                    'value' => $override->forcePositioning,
-                ])
-            );
-        }
-
-        if ($override->forcePushJoinLeave !== null) {
-            $option->setForcePushJoinLeave(
-                new DTO\BoolValue([
-                    'value' => $override->forcePushJoinLeave,
-                ])
-            );
-        }
-        return $option;
     }
 }

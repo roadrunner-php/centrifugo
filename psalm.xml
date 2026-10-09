@@ -8,6 +8,10 @@
     findUnusedBaselineEntry="true"
     findUnusedCode="false"
 >
+    <issueHandlers>
+        <!-- Making public classes final would break extending code -->
+        <ClassMustBeFinal errorLevel="suppress" />
+    </issueHandlers>
     <projectFiles>
         <directory name="src" />
         <ignoreFiles>

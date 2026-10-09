@@ -4,26 +4,27 @@ declare(strict_types=1);
 
 namespace RoadRunner\Centrifugo\Tests\Unit\Payload;
 
-use PHPUnit\Framework\TestCase;
+use Testo\Test;
+use Testo\Data\DataProvider;
+use Testo\Assert;
 use RoadRunner\Centrifugo\Payload\Override;
 use RoadRunner\Centrifugo\Payload\SubscribeResponse;
 
-final class SubscribeResponseTest extends TestCase
+#[Test]
+final class SubscribeResponseTest
 {
-    /**
-     * @dataProvider subscribeResponseDataProvider
-     */
-    public function testSubscribeResponse(SubscribeResponse $expected, SubscribeResponse $actual): void
-    {
-        $this->assertEquals($expected, $actual);
-    }
-
     public static function subscribeResponseDataProvider(): \Traversable
     {
         yield [new SubscribeResponse([], [], [], null), new SubscribeResponse()];
         yield [
             new SubscribeResponse([], [], [], new Override()),
-            new SubscribeResponse(override: new Override())
+            new SubscribeResponse(override: new Override()),
         ];
+    }
+
+    #[DataProvider('subscribeResponseDataProvider')]
+    public function testSubscribeResponse(SubscribeResponse $expected, SubscribeResponse $actual): void
+    {
+        Assert::equals($actual, $expected);
     }
 }

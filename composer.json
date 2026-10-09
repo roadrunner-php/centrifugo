@@ -43,7 +43,7 @@
         }
     ],
     "require": {
-        "php": ">=8.1",
+        "php": ">=8.2",
         "ext-json": "*",
         "roadrunner-php/roadrunner-api-dto": "^1.18 || ^2.0",
         "spiral/goridge": "^4.3",
@@ -62,17 +62,26 @@
         }
     },
     "require-dev": {
-        "mockery/mockery": "^1.5",
-        "phpunit/phpunit": "^10.0",
-        "vimeo/psalm": ">= 5.8"
+        "mockery/mockery": "^1.6",
+        "spiral/code-style": "^2.3.1",
+        "testo/bridge-mockery": "^0.1.2",
+        "testo/testo": "^0.10.55",
+        "vimeo/psalm": "^6 || ^7"
     },
     "scripts": {
-        "tests": "phpunit",
+        "cs:diff": "php-cs-fixer fix --dry-run -v --diff",
+        "cs:fix": "php-cs-fixer fix -v",
+        "test": "testo",
         "psalm": "psalm --no-cache",
         "compile": "protoc --proto_path=resources/proto/v1 --php_out=generated resources/proto/v1/proxy.proto resources/proto/v1/service.proto"
     },
     "config": {
-        "sort-packages": true
+        "sort-packages": true,
+        "audit": {
+            "ignore": {
+                "GHSA-g9pc-8g42-g6vq": "False positive: the range < 2025.1.0 also matches RoadRunner 3.x, which is not affected"
+            }
+        }
     },
     "minimum-stability": "dev",
     "prefer-stable": true

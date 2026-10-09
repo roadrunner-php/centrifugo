@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace RoadRunner\Centrifugo\Tests\Unit\Request;
 
+use Testo\Test;
+use Testo\Assert;
+use Testo\Data\DataProvider;
+use Testo\Lifecycle\BeforeTest;
 use RoadRunner\Centrifugal\Proxy\DTO\V1\PublishResult;
 use RoadRunner\Centrifugo\Payload\PublishResponse;
 use RoadRunner\Centrifugo\Request\Publish;
@@ -12,22 +16,23 @@ use Spiral\RoadRunner\Payload;
 use RoadRunner\Centrifugal\Proxy\DTO\V1\PublishResponse as PublishResponseDTO;
 use Spiral\RoadRunner\WorkerInterface;
 
+#[Test]
 final class PublishTest extends TestCase
 {
     private Publish $publish;
 
-    protected function setUp(): void
+    public static function mapResponseDataProvider(): \Traversable
     {
-        $this->publish = new Publish($this->createMock(WorkerInterface::class), '', '', '', '', '', '', [], [], []);
+        yield [new PublishResponse(), ['data' => '', 'skip_history' => false]];
+        yield [new PublishResponse(skipHistory: true), ['data' => '', 'skip_history' => true]];
+        yield [new PublishResponse(['some']), ['data' => '["some"]', 'skip_history' => false]];
+        yield [new PublishResponse(['some'], skipHistory: true), ['data' => '["some"]', 'skip_history' => true]];
     }
 
     public function testRespond(): void
     {
         $worker = $this->createWorker(function (Payload $payload) {
-            $this->assertEquals(
-                new Payload((new PublishResponseDTO(['result' => new PublishResult()]))->serializeToString()),
-                $payload
-            );
+            Assert::equals($payload, new Payload((new PublishResponseDTO(['result' => new PublishResult()]))->serializeToString()));
         });
 
         $publish = new Publish($worker, '', '', '', '', '', '', [], [], []);
@@ -39,12 +44,10 @@ final class PublishTest extends TestCase
     {
         $ref = new \ReflectionMethod($this->publish, 'getResponseObject');
 
-        $this->assertInstanceOf(PublishResponseDTO::class, $ref->invoke($this->publish));
+        Assert::instanceOf($ref->invoke($this->publish), PublishResponseDTO::class);
     }
 
-    /**
-     * @dataProvider mapResponseDataProvider
-     */
+    #[DataProvider('mapResponseDataProvider')]
     public function testMapResponse(PublishResponse $response, array $expected): void
     {
         $ref = new \ReflectionMethod($this->publish, 'mapResponse');
@@ -52,15 +55,13 @@ final class PublishTest extends TestCase
         /** @var PublishResult $dto */
         $dto = $ref->invoke($this->publish, $response);
 
-        $this->assertSame($expected['data'], $dto->getData());
-        $this->assertSame($expected['skip_history'], $dto->getSkipHistory());
+        Assert::same($dto->getData(), $expected['data']);
+        Assert::same($dto->getSkipHistory(), $expected['skip_history']);
     }
 
-    public static function mapResponseDataProvider(): \Traversable
+    #[BeforeTest]
+    protected function setUp(): void
     {
-        yield [new PublishResponse(), ['data' => '', 'skip_history' => false]];
-        yield [new PublishResponse(skipHistory: true), ['data' => '', 'skip_history' => true]];
-        yield [new PublishResponse(['some']), ['data' => '["some"]', 'skip_history' => false]];
-        yield [new PublishResponse(['some'], skipHistory: true), ['data' => '["some"]', 'skip_history' => true]];
+        $this->publish = new Publish(\Mockery::mock(WorkerInterface::class)->shouldIgnoreMissing(), '', '', '', '', '', '', [], [], []);
     }
 }

@@ -14,6 +14,5 @@ class RPCResponse implements ResponseInterface
      */
     public function __construct(
         public readonly array $data = [],
-    ) {
-    }
+    ) {}
 }

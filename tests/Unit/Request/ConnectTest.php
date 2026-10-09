@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace RoadRunner\Centrifugo\Tests\Unit\Request;
 
+use Testo\Test;
+use Testo\Assert;
+use Testo\Data\DataProvider;
+use Testo\Lifecycle\BeforeTest;
 use Google\Protobuf\Internal\MapField;
 use Google\Protobuf\RepeatedField;
 use RoadRunner\Centrifugal\Proxy\DTO\V1\BoolValue;
@@ -19,93 +23,10 @@ use RoadRunner\Centrifugo\Tests\Unit\TestCase;
 use Spiral\RoadRunner\Payload;
 use Spiral\RoadRunner\WorkerInterface;
 
+#[Test]
 final class ConnectTest extends TestCase
 {
     private Connect $connect;
-
-    protected function setUp(): void
-    {
-        $this->connect = new Connect($this->createMock(WorkerInterface::class), '', '', '', '', [], '', '', [], []);
-    }
-
-    public function testRespond(): void
-    {
-        $worker = $this->createWorker(function (Payload $payload) {
-            $this->assertEquals(
-                new Payload((new ConnectResponseDTO(['result' => new ConnectResult()]))->serializeToString()),
-                $payload
-            );
-        });
-
-        $connect = new Connect($worker, '', '', '', '', [], '', '', [], []);
-
-        $connect->respond(new ConnectResponse());
-    }
-
-    public function testGetResponseObject(): void
-    {
-        $ref = new \ReflectionMethod($this->connect, 'getResponseObject');
-
-        $this->assertInstanceOf(ConnectResponseDTO::class, $ref->invoke($this->connect));
-    }
-
-    public function testParseExpiresAt(): void
-    {
-        $this->assertSame(1111, $this->connect->parseExpiresAt(1111));
-        $this->assertSame(1111, $this->connect->parseExpiresAt((new \DateTimeImmutable())->setTimestamp(1111)));
-    }
-
-    /**
-     * @dataProvider mapResponseDataProvider
-     */
-    public function testMapResponse(ConnectResponse $response, array $expected): void
-    {
-        $ref = new \ReflectionMethod($this->connect, 'mapResponse');
-
-        /** @var ConnectResult $dto */
-        $dto = $ref->invoke($this->connect, $response);
-
-        $this->assertSame($expected['user'], $dto->getUser());
-        $this->assertSame($expected['expire_at'], $dto->getExpireAt());
-        $this->assertSame($expected['data'], $dto->getData());
-        $this->assertSame($expected['info'], $dto->getInfo());
-        $this->assertSame($expected['meta'], $dto->getMeta());
-        $this->assertEquals($expected['channels'], $dto->getChannels());
-        $this->assertEquals($expected['subs'], $dto->getSubs());
-    }
-
-    /**
-     * @dataProvider mapSubscriptionsDataProvider
-     */
-    public function testMapSubscriptions(SubscribeOption $options, array $expected): void
-    {
-        $ref = new \ReflectionMethod($this->connect, 'mapSubscriptions');
-
-        /** @var array<non-empty-string, SubscribeOptions> $subs */
-        $subs = $ref->invoke($this->connect, ['a' => $options]);
-
-        /** @var SubscribeOptions $mapped */
-        $mapped = $subs['a'];
-
-        $this->assertSame($expected['expire_at'], $mapped->getExpireAt());
-        $this->assertSame($expected['data'], $mapped->getData());
-        $this->assertSame($expected['info'], $mapped->getInfo());
-        $this->assertEquals($expected['override'], $mapped->getOverride());
-    }
-
-    /**
-     * @dataProvider mapSubscribeOptionDataProvider
-     */
-    public function testMapSubscribeOption(Override $override, array $expected): void
-    {
-        $override = $this->connect->mapSubscribeOption($override);
-
-        $this->assertSame($expected['presence'], $override->getPresence()?->getValue());
-        $this->assertSame($expected['join_leave'], $override->getJoinLeave()?->getValue());
-        $this->assertSame($expected['force_push_join_leave'], $override->getForcePushJoinLeave()?->getValue());
-        $this->assertSame($expected['force_positioning'], $override->getForcePositioning()?->getValue());
-        $this->assertSame($expected['force_recovery'], $override->getForceRecovery()?->getValue());
-    }
 
     public static function mapResponseDataProvider(): \Traversable
     {
@@ -116,7 +37,7 @@ final class ConnectTest extends TestCase
             'info' => '',
             'meta' => '',
             'channels' => new RepeatedField(9),
-            'subs' => new MapField(9, 11, SubscribeOptions::class)
+            'subs' => new MapField(9, 11, SubscribeOptions::class),
         ]];
         yield [new ConnectResponse('some-user'), [
             'user' => 'some-user',
@@ -125,7 +46,7 @@ final class ConnectTest extends TestCase
             'info' => '',
             'meta' => '',
             'channels' => new RepeatedField(9),
-            'subs' => new MapField(9, 11, SubscribeOptions::class)
+            'subs' => new MapField(9, 11, SubscribeOptions::class),
         ]];
         yield [new ConnectResponse(expireAt: 11111), [
             'user' => '',
@@ -134,7 +55,7 @@ final class ConnectTest extends TestCase
             'info' => '',
             'meta' => '',
             'channels' => new RepeatedField(9),
-            'subs' => new MapField(9, 11, SubscribeOptions::class)
+            'subs' => new MapField(9, 11, SubscribeOptions::class),
         ]];
         yield [new ConnectResponse(data: ['foo' => 'bar']), [
             'user' => '',
@@ -143,7 +64,7 @@ final class ConnectTest extends TestCase
             'info' => '',
             'meta' => '',
             'channels' => new RepeatedField(9),
-            'subs' => new MapField(9, 11, SubscribeOptions::class)
+            'subs' => new MapField(9, 11, SubscribeOptions::class),
         ]];
         yield [new ConnectResponse(info: ['foo' => 'bar']), [
             'user' => '',
@@ -152,7 +73,7 @@ final class ConnectTest extends TestCase
             'info' => '{"foo":"bar"}',
             'meta' => '',
             'channels' => new RepeatedField(9),
-            'subs' => new MapField(9, 11, SubscribeOptions::class)
+            'subs' => new MapField(9, 11, SubscribeOptions::class),
         ]];
         yield [new ConnectResponse(meta: ['foo' => 'bar']), [
             'user' => '',
@@ -161,7 +82,7 @@ final class ConnectTest extends TestCase
             'info' => '',
             'meta' => '{"foo":"bar"}',
             'channels' => new RepeatedField(9),
-            'subs' => new MapField(9, 11, SubscribeOptions::class)
+            'subs' => new MapField(9, 11, SubscribeOptions::class),
         ]];
 
         $channels = new RepeatedField(9);
@@ -174,7 +95,7 @@ final class ConnectTest extends TestCase
             'info' => '',
             'meta' => '',
             'channels' => $channels,
-            'subs' => new MapField(9, 11, SubscribeOptions::class)
+            'subs' => new MapField(9, 11, SubscribeOptions::class),
         ]];
 
         $subs = new MapField(9, 11, SubscribeOptions::class);
@@ -189,7 +110,7 @@ final class ConnectTest extends TestCase
                 ->setJoinLeave(new BoolValue(['value' => true]))
                 ->setForcePushJoinLeave(new BoolValue(['value' => true]))
                 ->setForcePositioning(new BoolValue(['value' => true]))
-                ->setForceRecovery(new BoolValue(['value' => true]))
+                ->setForceRecovery(new BoolValue(['value' => true])),
         );
         yield [
             new ConnectResponse(subscriptions: [
@@ -198,8 +119,8 @@ final class ConnectTest extends TestCase
                     11111,
                     ['foo', 'bar'],
                     ['foo' => 'bar'],
-                    new Override(true, true, true, true, true)
-                )
+                    new Override(true, true, true, true, true),
+                ),
             ]),
             [
                 'user' => '',
@@ -208,8 +129,8 @@ final class ConnectTest extends TestCase
                 'info' => '',
                 'meta' => '',
                 'channels' => new RepeatedField(9),
-                'subs' => $subs
-            ]
+                'subs' => $subs,
+            ],
         ];
     }
 
@@ -219,19 +140,19 @@ final class ConnectTest extends TestCase
         yield [new SubscribeOption(222), ['expire_at' => 222, 'data' => '', 'info' => '', 'override' => null]];
         yield [
             new SubscribeOption((new \DateTimeImmutable())->setTimestamp(222)),
-            ['expire_at' => 222, 'data' => '', 'info' => '', 'override' => null]
+            ['expire_at' => 222, 'data' => '', 'info' => '', 'override' => null],
         ];
         yield [
             new SubscribeOption(data: ['foo' => 'bar']),
-            ['expire_at' => 0, 'data' => '{"foo":"bar"}', 'info' => '', 'override' => null]
+            ['expire_at' => 0, 'data' => '{"foo":"bar"}', 'info' => '', 'override' => null],
         ];
         yield [
             new SubscribeOption(info: ['foo' => 'bar']),
-            ['expire_at' => 0, 'data' => '', 'info' => '{"foo":"bar"}', 'override' => null]
+            ['expire_at' => 0, 'data' => '', 'info' => '{"foo":"bar"}', 'override' => null],
         ];
         yield [
             new SubscribeOption(override: new Override()),
-            ['expire_at' => 0, 'data' => '', 'info' => '', 'override' => new SubscribeOptionOverride()]
+            ['expire_at' => 0, 'data' => '', 'info' => '', 'override' => new SubscribeOptionOverride()],
         ];
         yield [
             new SubscribeOption(override: new Override(true)),
@@ -239,8 +160,8 @@ final class ConnectTest extends TestCase
                 'expire_at' => 0,
                 'data' => '',
                 'info' => '',
-                'override' => new SubscribeOptionOverride(['presence' => new BoolValue(['value' => true])])
-            ]
+                'override' => new SubscribeOptionOverride(['presence' => new BoolValue(['value' => true])]),
+            ],
         ];
         yield [
             new SubscribeOption(override: new Override(joinLeave: true)),
@@ -248,8 +169,8 @@ final class ConnectTest extends TestCase
                 'expire_at' => 0,
                 'data' => '',
                 'info' => '',
-                'override' => new SubscribeOptionOverride(['join_leave' => new BoolValue(['value' => true])])
-            ]
+                'override' => new SubscribeOptionOverride(['join_leave' => new BoolValue(['value' => true])]),
+            ],
         ];
         yield [
             new SubscribeOption(override: new Override(forcePushJoinLeave: true)),
@@ -257,8 +178,8 @@ final class ConnectTest extends TestCase
                 'expire_at' => 0,
                 'data' => '',
                 'info' => '',
-                'override' => new SubscribeOptionOverride(['force_push_join_leave' => new BoolValue(['value' => true])])
-            ]
+                'override' => new SubscribeOptionOverride(['force_push_join_leave' => new BoolValue(['value' => true])]),
+            ],
         ];
         yield [
             new SubscribeOption(override: new Override(forcePositioning: true)),
@@ -266,8 +187,8 @@ final class ConnectTest extends TestCase
                 'expire_at' => 0,
                 'data' => '',
                 'info' => '',
-                'override' => new SubscribeOptionOverride(['force_positioning' => new BoolValue(['value' => true])])
-            ]
+                'override' => new SubscribeOptionOverride(['force_positioning' => new BoolValue(['value' => true])]),
+            ],
         ];
         yield [
             new SubscribeOption(override: new Override(forceRecovery: true)),
@@ -275,8 +196,8 @@ final class ConnectTest extends TestCase
                 'expire_at' => 0,
                 'data' => '',
                 'info' => '',
-                'override' => new SubscribeOptionOverride(['force_recovery' => new BoolValue(['value' => true])])
-            ]
+                'override' => new SubscribeOptionOverride(['force_recovery' => new BoolValue(['value' => true])]),
+            ],
         ];
         yield [
             new SubscribeOption(override: new Override(true, true, true, true, true)),
@@ -289,9 +210,9 @@ final class ConnectTest extends TestCase
                     'join_leave' => new BoolValue(['value' => true]),
                     'force_push_join_leave' => new BoolValue(['value' => true]),
                     'force_positioning' => new BoolValue(['value' => true]),
-                    'force_recovery' => new BoolValue(['value' => true])
-                ])
-            ]
+                    'force_recovery' => new BoolValue(['value' => true]),
+                ]),
+            ],
         ];
         yield [
             new SubscribeOption(111, ['some'], ['other'], new Override(true, true, true, true, true)),
@@ -304,9 +225,9 @@ final class ConnectTest extends TestCase
                     'join_leave' => new BoolValue(['value' => true]),
                     'force_push_join_leave' => new BoolValue(['value' => true]),
                     'force_positioning' => new BoolValue(['value' => true]),
-                    'force_recovery' => new BoolValue(['value' => true])
-                ])
-            ]
+                    'force_recovery' => new BoolValue(['value' => true]),
+                ]),
+            ],
         ];
     }
 
@@ -317,49 +238,125 @@ final class ConnectTest extends TestCase
             'join_leave' => null,
             'force_push_join_leave' => null,
             'force_positioning' => null,
-            'force_recovery' => null
+            'force_recovery' => null,
         ]];
         yield [new Override(true), [
             'presence' => true,
             'join_leave' => null,
             'force_push_join_leave' => null,
             'force_positioning' => null,
-            'force_recovery' => null
+            'force_recovery' => null,
         ]];
         yield [new Override(joinLeave: true), [
             'presence' => null,
             'join_leave' => true,
             'force_push_join_leave' => null,
             'force_positioning' => null,
-            'force_recovery' => null
+            'force_recovery' => null,
         ]];
         yield [new Override(forcePushJoinLeave: true), [
             'presence' => null,
             'join_leave' => null,
             'force_push_join_leave' => true,
             'force_positioning' => null,
-            'force_recovery' => null
+            'force_recovery' => null,
         ]];
         yield [new Override(forcePositioning: true), [
             'presence' => null,
             'join_leave' => null,
             'force_push_join_leave' => null,
             'force_positioning' => true,
-            'force_recovery' => null
+            'force_recovery' => null,
         ]];
         yield [new Override(forceRecovery: true), [
             'presence' => null,
             'join_leave' => null,
             'force_push_join_leave' => null,
             'force_positioning' => null,
-            'force_recovery' => true
+            'force_recovery' => true,
         ]];
         yield [new Override(true, true, true, true, true), [
             'presence' => true,
             'join_leave' => true,
             'force_push_join_leave' => true,
             'force_positioning' => true,
-            'force_recovery' => true
+            'force_recovery' => true,
         ]];
+    }
+
+    public function testRespond(): void
+    {
+        $worker = $this->createWorker(function (Payload $payload) {
+            Assert::equals($payload, new Payload((new ConnectResponseDTO(['result' => new ConnectResult()]))->serializeToString()));
+        });
+
+        $connect = new Connect($worker, '', '', '', '', [], '', '', [], []);
+
+        $connect->respond(new ConnectResponse());
+    }
+
+    public function testGetResponseObject(): void
+    {
+        $ref = new \ReflectionMethod($this->connect, 'getResponseObject');
+
+        Assert::instanceOf($ref->invoke($this->connect), ConnectResponseDTO::class);
+    }
+
+    public function testParseExpiresAt(): void
+    {
+        Assert::same($this->connect->parseExpiresAt(1111), 1111);
+        Assert::same($this->connect->parseExpiresAt((new \DateTimeImmutable())->setTimestamp(1111)), 1111);
+    }
+
+    #[DataProvider('mapResponseDataProvider')]
+    public function testMapResponse(ConnectResponse $response, array $expected): void
+    {
+        $ref = new \ReflectionMethod($this->connect, 'mapResponse');
+
+        /** @var ConnectResult $dto */
+        $dto = $ref->invoke($this->connect, $response);
+
+        Assert::same($dto->getUser(), $expected['user']);
+        Assert::same($dto->getExpireAt(), $expected['expire_at']);
+        Assert::same($dto->getData(), $expected['data']);
+        Assert::same($dto->getInfo(), $expected['info']);
+        Assert::same($dto->getMeta(), $expected['meta']);
+        Assert::equals($dto->getChannels(), $expected['channels']);
+        Assert::equals($dto->getSubs(), $expected['subs']);
+    }
+
+    #[DataProvider('mapSubscriptionsDataProvider')]
+    public function testMapSubscriptions(SubscribeOption $options, array $expected): void
+    {
+        $ref = new \ReflectionMethod($this->connect, 'mapSubscriptions');
+
+        /** @var array<non-empty-string, SubscribeOptions> $subs */
+        $subs = $ref->invoke($this->connect, ['a' => $options]);
+
+        /** @var SubscribeOptions $mapped */
+        $mapped = $subs['a'];
+
+        Assert::same($mapped->getExpireAt(), $expected['expire_at']);
+        Assert::same($mapped->getData(), $expected['data']);
+        Assert::same($mapped->getInfo(), $expected['info']);
+        Assert::equals($mapped->getOverride(), $expected['override']);
+    }
+
+    #[DataProvider('mapSubscribeOptionDataProvider')]
+    public function testMapSubscribeOption(Override $override, array $expected): void
+    {
+        $override = $this->connect->mapSubscribeOption($override);
+
+        Assert::same($override->getPresence()?->getValue(), $expected['presence']);
+        Assert::same($override->getJoinLeave()?->getValue(), $expected['join_leave']);
+        Assert::same($override->getForcePushJoinLeave()?->getValue(), $expected['force_push_join_leave']);
+        Assert::same($override->getForcePositioning()?->getValue(), $expected['force_positioning']);
+        Assert::same($override->getForceRecovery()?->getValue(), $expected['force_recovery']);
+    }
+
+    #[BeforeTest]
+    protected function setUp(): void
+    {
+        $this->connect = new Connect(\Mockery::mock(WorkerInterface::class)->shouldIgnoreMissing(), '', '', '', '', [], '', '', [], []);
     }
 }

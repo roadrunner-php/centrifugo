@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace RoadRunner\Centrifugo\Tests\Unit\Request;
 
+use Testo\Test;
+use Testo\Assert;
+use Testo\Data\DataProvider;
+use Testo\Lifecycle\BeforeTest;
 use Google\Protobuf\RepeatedField;
 use RoadRunner\Centrifugal\Proxy\DTO\V1\BoolValue;
 use RoadRunner\Centrifugal\Proxy\DTO\V1\SubscribeOptionOverride;
@@ -16,67 +20,26 @@ use Spiral\RoadRunner\Payload;
 use RoadRunner\Centrifugal\Proxy\DTO\V1\SubscribeResponse as SubscribeResponseDTO;
 use Spiral\RoadRunner\WorkerInterface;
 
+#[Test]
 final class SubscribeTest extends TestCase
 {
     private Subscribe $subscribe;
-
-    protected function setUp(): void
-    {
-        $this->subscribe = new Subscribe($this->createMock(WorkerInterface::class), '', '', '', '', '', '', '', [], [], []);
-    }
-
-    public function testRespond(): void
-    {
-        $worker = $this->createWorker(function (Payload $payload) {
-            $this->assertEquals(
-                new Payload((new SubscribeResponseDTO(['result' => new SubscribeResult()]))->serializeToString()),
-                $payload
-            );
-        });
-
-        $refresh = new Subscribe($worker, '', '', '', '', '',  '', '', [], [], []);
-
-        $refresh->respond(new SubscribeResponse());
-    }
-
-    public function testGetResponseObject(): void
-    {
-        $ref = new \ReflectionMethod($this->subscribe, 'getResponseObject');
-
-        $this->assertInstanceOf(SubscribeResponseDTO::class, $ref->invoke($this->subscribe));
-    }
-
-    /**
-     * @dataProvider mapResponseDataProvider
-     */
-    public function testMapResponse(SubscribeResponse $response, array $expected): void
-    {
-        $ref = new \ReflectionMethod($this->subscribe, 'mapResponse');
-
-        /** @var SubscribeResult $dto */
-        $dto = $ref->invoke($this->subscribe, $response);
-
-        $this->assertSame($expected['info'], $dto->getInfo());
-        $this->assertSame($expected['data'], $dto->getData());
-        $this->assertEquals($expected['allow'], $dto->getAllow());
-        $this->assertEquals($expected['override'], $dto->getOverride());
-    }
 
     public static function mapResponseDataProvider(): \Traversable
     {
         yield [
             new SubscribeResponse(),
-            ['info' => '', 'data' => '', 'allow' => new RepeatedField(9), 'override' => null]
+            ['info' => '', 'data' => '', 'allow' => new RepeatedField(9), 'override' => null],
         ];
 
         yield [
             new SubscribeResponse(['some']),
-            ['info' => '["some"]', 'data' => '', 'allow' => new RepeatedField(9), 'override' => null]
+            ['info' => '["some"]', 'data' => '', 'allow' => new RepeatedField(9), 'override' => null],
         ];
 
         yield [
             new SubscribeResponse(data: ['some']),
-            ['info' => '', 'data' => '["some"]', 'allow' => new RepeatedField(9), 'override' => null]
+            ['info' => '', 'data' => '["some"]', 'allow' => new RepeatedField(9), 'override' => null],
         ];
 
         $allow = new RepeatedField(9);
@@ -84,7 +47,7 @@ final class SubscribeTest extends TestCase
         $allow[] = 'other';
         yield [
             new SubscribeResponse(allow: ['some', 'other']),
-            ['info' => '', 'data' => '', 'allow' => $allow, 'override' => null]
+            ['info' => '', 'data' => '', 'allow' => $allow, 'override' => null],
         ];
 
         yield [
@@ -94,8 +57,8 @@ final class SubscribeTest extends TestCase
                 ->setJoinLeave(new BoolValue(['value' => true]))
                 ->setForcePushJoinLeave(new BoolValue(['value' => true]))
                 ->setForcePositioning(new BoolValue(['value' => true]))
-                ->setForceRecovery(new BoolValue(['value' => true]))
-            ]
+                ->setForceRecovery(new BoolValue(['value' => true])),
+            ],
         ];
 
         $allow = new RepeatedField(9);
@@ -106,15 +69,53 @@ final class SubscribeTest extends TestCase
                 ['foo'],
                 ['bar'],
                 ['some', 'other'],
-                new Override(true, true, true, true, true)
+                new Override(true, true, true, true, true),
             ),
             ['info' => '["foo"]', 'data' => '["bar"]', 'allow' => $allow, 'override' => (new SubscribeOptionOverride())
                 ->setPresence(new BoolValue(['value' => true]))
                 ->setJoinLeave(new BoolValue(['value' => true]))
                 ->setForcePushJoinLeave(new BoolValue(['value' => true]))
                 ->setForcePositioning(new BoolValue(['value' => true]))
-                ->setForceRecovery(new BoolValue(['value' => true]))
-            ]
+                ->setForceRecovery(new BoolValue(['value' => true])),
+            ],
         ];
+    }
+
+    public function testRespond(): void
+    {
+        $worker = $this->createWorker(function (Payload $payload) {
+            Assert::equals($payload, new Payload((new SubscribeResponseDTO(['result' => new SubscribeResult()]))->serializeToString()));
+        });
+
+        $refresh = new Subscribe($worker, '', '', '', '', '', '', '', [], [], []);
+
+        $refresh->respond(new SubscribeResponse());
+    }
+
+    public function testGetResponseObject(): void
+    {
+        $ref = new \ReflectionMethod($this->subscribe, 'getResponseObject');
+
+        Assert::instanceOf($ref->invoke($this->subscribe), SubscribeResponseDTO::class);
+    }
+
+    #[DataProvider('mapResponseDataProvider')]
+    public function testMapResponse(SubscribeResponse $response, array $expected): void
+    {
+        $ref = new \ReflectionMethod($this->subscribe, 'mapResponse');
+
+        /** @var SubscribeResult $dto */
+        $dto = $ref->invoke($this->subscribe, $response);
+
+        Assert::same($dto->getInfo(), $expected['info']);
+        Assert::same($dto->getData(), $expected['data']);
+        Assert::equals($dto->getAllow(), $expected['allow']);
+        Assert::equals($dto->getOverride(), $expected['override']);
+    }
+
+    #[BeforeTest]
+    protected function setUp(): void
+    {
+        $this->subscribe = new Subscribe(\Mockery::mock(WorkerInterface::class)->shouldIgnoreMissing(), '', '', '', '', '', '', '', [], [], []);
     }
 }

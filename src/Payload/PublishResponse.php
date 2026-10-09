@@ -16,6 +16,5 @@ class PublishResponse implements ResponseInterface
     public function __construct(
         public readonly array $data = [],
         public readonly bool $skipHistory = false,
-    ) {
-    }
+    ) {}
 }

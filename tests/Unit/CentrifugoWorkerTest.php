@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace RoadRunner\Centrifugo\Tests\Unit;
 
-use PHPUnit\Framework\TestCase;
+use Testo\Test;
+use Testo\Assert;
+use Testo\Data\DataProvider;
 use RoadRunner\Centrifugal\Proxy\DTO\V1 as DTO;
 use RoadRunner\Centrifugo\CentrifugoWorker;
 use RoadRunner\Centrifugo\Exception\InvalidRequestTypeException;
@@ -21,8 +23,15 @@ use Spiral\RoadRunner\Exception\RoadRunnerException;
 use Spiral\RoadRunner\Payload;
 use Spiral\RoadRunner\WorkerInterface;
 
-final class CentrifugoWorkerTest extends TestCase
+#[Test]
+final class CentrifugoWorkerTest
 {
+    public static function emptyPayloadDataProvider(): iterable
+    {
+        yield 'no payload' => [null];
+        yield 'empty body and header' => [new Payload('', '')];
+    }
+
     public function testConnectRequest(): void
     {
         $worker = \Mockery::mock(WorkerInterface::class);
@@ -47,17 +56,17 @@ final class CentrifugoWorkerTest extends TestCase
 
         $request = $centrifugo->waitRequest();
 
-        $this->assertInstanceOf(Connect::class, $request);
+        Assert::instanceOf($request, Connect::class);
 
-        $this->assertSame('client-id', $request->client);
-        $this->assertSame('webscoket', $request->transport);
-        $this->assertSame('http', $request->protocol);
-        $this->assertSame('utf8', $request->encoding);
-        $this->assertSame(['foo' => 'bar'], $request->getData());
-        $this->assertSame('request-name', $request->name);
-        $this->assertSame('1.0.0', $request->version);
-        $this->assertSame(['public', 'private'], $request->channels);
-        $this->assertSame(['type' => ['connect']], $request->headers);
+        Assert::same($request->client, 'client-id');
+        Assert::same($request->transport, 'webscoket');
+        Assert::same($request->protocol, 'http');
+        Assert::same($request->encoding, 'utf8');
+        Assert::same($request->getData(), ['foo' => 'bar']);
+        Assert::same($request->name, 'request-name');
+        Assert::same($request->version, '1.0.0');
+        Assert::same($request->channels, ['public', 'private']);
+        Assert::same($request->headers, ['type' => ['connect']]);
     }
 
     public function testRefreshRequest(): void
@@ -82,15 +91,15 @@ final class CentrifugoWorkerTest extends TestCase
 
         $request = $centrifugo->waitRequest();
 
-        $this->assertInstanceOf(Refresh::class, $request);
+        Assert::instanceOf($request, Refresh::class);
 
-        $this->assertSame('client-id', $request->client);
-        $this->assertSame('webscoket', $request->transport);
-        $this->assertSame('http', $request->protocol);
-        $this->assertSame('utf8', $request->encoding);
-        $this->assertSame('user-1', $request->user);
-        $this->assertSame(['foo' => 'bar'], $request->meta);
-        $this->assertSame(['type' => ['refresh']], $request->headers);
+        Assert::same($request->client, 'client-id');
+        Assert::same($request->transport, 'webscoket');
+        Assert::same($request->protocol, 'http');
+        Assert::same($request->encoding, 'utf8');
+        Assert::same($request->user, 'user-1');
+        Assert::same($request->meta, ['foo' => 'bar']);
+        Assert::same($request->headers, ['type' => ['refresh']]);
     }
 
     public function testSubRefreshRequest(): void
@@ -116,16 +125,16 @@ final class CentrifugoWorkerTest extends TestCase
 
         $request = $centrifugo->waitRequest();
 
-        $this->assertInstanceOf(SubRefresh::class, $request);
+        Assert::instanceOf($request, SubRefresh::class);
 
-        $this->assertSame('client-id', $request->client);
-        $this->assertSame('webscoket', $request->transport);
-        $this->assertSame('http', $request->protocol);
-        $this->assertSame('utf8', $request->encoding);
-        $this->assertSame('user-1', $request->user);
-        $this->assertSame('channel-1', $request->channel);
-        $this->assertSame(['foo' => 'bar'], $request->meta);
-        $this->assertSame(['type' => ['sub_refresh']], $request->headers);
+        Assert::same($request->client, 'client-id');
+        Assert::same($request->transport, 'webscoket');
+        Assert::same($request->protocol, 'http');
+        Assert::same($request->encoding, 'utf8');
+        Assert::same($request->user, 'user-1');
+        Assert::same($request->channel, 'channel-1');
+        Assert::same($request->meta, ['foo' => 'bar']);
+        Assert::same($request->headers, ['type' => ['sub_refresh']]);
     }
 
     public function testSubscribeRequest(): void
@@ -153,18 +162,18 @@ final class CentrifugoWorkerTest extends TestCase
 
         $request = $centrifugo->waitRequest();
 
-        $this->assertInstanceOf(Subscribe::class, $request);
+        Assert::instanceOf($request, Subscribe::class);
 
-        $this->assertSame('client-id', $request->client);
-        $this->assertSame('webscoket', $request->transport);
-        $this->assertSame('http', $request->protocol);
-        $this->assertSame('utf8', $request->encoding);
-        $this->assertSame('user-1', $request->user);
-        $this->assertSame('public', $request->channel);
-        $this->assertSame('foo-token', $request->token);
-        $this->assertSame(['foo' => 'bar'], $request->meta);
-        $this->assertSame(['baz' => 'bar'], $request->getData());
-        $this->assertSame(['type' => ['subscribe']], $request->headers);
+        Assert::same($request->client, 'client-id');
+        Assert::same($request->transport, 'webscoket');
+        Assert::same($request->protocol, 'http');
+        Assert::same($request->encoding, 'utf8');
+        Assert::same($request->user, 'user-1');
+        Assert::same($request->channel, 'public');
+        Assert::same($request->token, 'foo-token');
+        Assert::same($request->meta, ['foo' => 'bar']);
+        Assert::same($request->getData(), ['baz' => 'bar']);
+        Assert::same($request->headers, ['type' => ['subscribe']]);
     }
 
     public function testPublishRequest(): void
@@ -191,17 +200,17 @@ final class CentrifugoWorkerTest extends TestCase
 
         $request = $centrifugo->waitRequest();
 
-        $this->assertInstanceOf(Publish::class, $request);
+        Assert::instanceOf($request, Publish::class);
 
-        $this->assertSame('client-id', $request->client);
-        $this->assertSame('webscoket', $request->transport);
-        $this->assertSame('http', $request->protocol);
-        $this->assertSame('utf8', $request->encoding);
-        $this->assertSame('user-1', $request->user);
-        $this->assertSame('private', $request->channel);
-        $this->assertSame(['foo' => 'bar'], $request->meta);
-        $this->assertSame(['baz' => 'bar'], $request->getData());
-        $this->assertSame(['type' => ['publish']], $request->headers);
+        Assert::same($request->client, 'client-id');
+        Assert::same($request->transport, 'webscoket');
+        Assert::same($request->protocol, 'http');
+        Assert::same($request->encoding, 'utf8');
+        Assert::same($request->user, 'user-1');
+        Assert::same($request->channel, 'private');
+        Assert::same($request->meta, ['foo' => 'bar']);
+        Assert::same($request->getData(), ['baz' => 'bar']);
+        Assert::same($request->headers, ['type' => ['publish']]);
     }
 
     public function testRPCRequest(): void
@@ -228,17 +237,17 @@ final class CentrifugoWorkerTest extends TestCase
 
         $request = $centrifugo->waitRequest();
 
-        $this->assertInstanceOf(RPC::class, $request);
+        Assert::instanceOf($request, RPC::class);
 
-        $this->assertSame('client-id', $request->client);
-        $this->assertSame('webscoket', $request->transport);
-        $this->assertSame('http', $request->protocol);
-        $this->assertSame('utf8', $request->encoding);
-        $this->assertSame('user-1', $request->user);
-        $this->assertSame('user.show', $request->method);
-        $this->assertSame(['foo' => 'bar'], $request->meta);
-        $this->assertSame(['baz' => 'bar'], $request->getData());
-        $this->assertSame(['type' => ['rpc']], $request->headers);
+        Assert::same($request->client, 'client-id');
+        Assert::same($request->transport, 'webscoket');
+        Assert::same($request->protocol, 'http');
+        Assert::same($request->encoding, 'utf8');
+        Assert::same($request->user, 'user-1');
+        Assert::same($request->method, 'user.show');
+        Assert::same($request->meta, ['foo' => 'bar']);
+        Assert::same($request->getData(), ['baz' => 'bar']);
+        Assert::same($request->headers, ['type' => ['rpc']]);
     }
 
     public function testInvalidPayloadRequest(): void
@@ -251,8 +260,8 @@ final class CentrifugoWorkerTest extends TestCase
         $centrifugo = new CentrifugoWorker($worker, new RequestFactory($worker));
         $request = $centrifugo->waitRequest();
 
-        $this->assertInstanceOf(Invalid::class, $request);
-        $this->assertInstanceOf(\TypeError::class, $request->getException());
+        Assert::instanceOf($request, Invalid::class);
+        Assert::instanceOf($request->getException(), \TypeError::class);
     }
 
     public function testInvalidPayloadTypeRequest(): void
@@ -265,9 +274,29 @@ final class CentrifugoWorkerTest extends TestCase
         $centrifugo = new CentrifugoWorker($worker, new RequestFactory($worker));
         $request = $centrifugo->waitRequest();
 
-        $this->assertInstanceOf(Invalid::class, $request);
-        $this->assertInstanceOf(InvalidRequestTypeException::class, $request->getException());
-        $this->assertSame($payload, $request->getException()->payload);
+        Assert::instanceOf($request, Invalid::class);
+        Assert::instanceOf($request->getException(), InvalidRequestTypeException::class);
+        Assert::same($request->getException()->payload, $payload);
+    }
+
+    #[DataProvider('emptyPayloadDataProvider')]
+    public function testEmptyPayloadReturnsNull(?Payload $payload): void
+    {
+        $worker = \Mockery::mock(WorkerInterface::class);
+        $worker->shouldReceive('waitPayload')->once()->andReturn($payload);
+
+        $centrifugo = new CentrifugoWorker($worker, new RequestFactory($worker));
+
+        Assert::null($centrifugo->waitRequest());
+    }
+
+    public function testGetWorker(): void
+    {
+        $worker = \Mockery::mock(WorkerInterface::class);
+
+        $centrifugo = new CentrifugoWorker($worker, new RequestFactory($worker));
+
+        Assert::same($centrifugo->getWorker(), $worker);
     }
 
     public function testWaitPayloadExceptionRequest(): void
@@ -280,8 +309,8 @@ final class CentrifugoWorkerTest extends TestCase
         $centrifugo = new CentrifugoWorker($worker, new RequestFactory($worker));
         $request = $centrifugo->waitRequest();
 
-        $this->assertInstanceOf(Invalid::class, $request);
-        $this->assertSame($e, $request->getException());
+        Assert::instanceOf($request, Invalid::class);
+        Assert::same($request->getException(), $e);
     }
 
     private function createPayload(object $request): Payload
@@ -293,12 +322,12 @@ final class CentrifugoWorkerTest extends TestCase
             $request instanceof DTO\RefreshRequest => RequestType::Refresh,
             $request instanceof DTO\SubRefreshRequest => RequestType::SubRefresh,
             $request instanceof DTO\RPCRequest => RequestType::RPC,
-            default => throw new \InvalidArgumentException('Invalid request object ' . $request::class)
+            default => throw new \InvalidArgumentException('Invalid request object ' . $request::class),
         };
 
         return new Payload(
             $request->serializeToString(),
-            \json_encode(['type' => [$type->value]])
+            \json_encode(['type' => [$type->value]]),
         );
     }
 }
