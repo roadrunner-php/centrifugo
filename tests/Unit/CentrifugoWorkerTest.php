@@ -134,7 +134,7 @@ final class CentrifugoWorkerTest
         Assert::same($request->user, 'user-1');
         Assert::same($request->channel, 'channel-1');
         Assert::same($request->meta, ['foo' => 'bar']);
-        Assert::same($request->headers, ['type' => ['sub_refresh']]);
+        Assert::same($request->headers, ['type' => ['subrefresh']]);
     }
 
     public function testSubscribeRequest(): void
