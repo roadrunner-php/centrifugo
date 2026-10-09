@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace RoadRunner\Centrifugo\Tests\Unit\Payload;
 
-use PHPUnit\Framework\TestCase;
+use Testo\Test;
+use Testo\Data\DataProvider;
+use Testo\Assert;
 use RoadRunner\Centrifugo\Payload\Override;
 use RoadRunner\Centrifugo\Payload\SubscribeResponse;
 
-final class SubscribeResponseTest extends TestCase
+#[Test]
+final class SubscribeResponseTest
 {
     public static function subscribeResponseDataProvider(): \Traversable
     {
@@ -19,11 +22,9 @@ final class SubscribeResponseTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider subscribeResponseDataProvider
-     */
+    #[DataProvider('subscribeResponseDataProvider')]
     public function testSubscribeResponse(SubscribeResponse $expected, SubscribeResponse $actual): void
     {
-        $this->assertEquals($expected, $actual);
+        Assert::equals($actual, $expected);
     }
 }

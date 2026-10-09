@@ -4,10 +4,14 @@ declare(strict_types=1);
 
 namespace RoadRunner\Centrifugo\Tests\Unit\Request;
 
+use Testo\Test;
+use Testo\Assert;
+use Testo\Expect;
 use RoadRunner\Centrifugo\Request\Invalid;
 use RoadRunner\Centrifugo\Tests\Unit\TestCase;
 use RoadRunner\Centrifugo\Payload\ResponseInterface;
 
+#[Test]
 final class InvalidTest extends TestCase
 {
     public function testGetExceptionReturnsThrowable(): void
@@ -15,13 +19,12 @@ final class InvalidTest extends TestCase
         $exception = new \Exception('Test Exception');
         $request = new Invalid($exception);
 
-        $this->assertSame($exception, $request->getException());
+        Assert::same($request->getException(), $exception);
     }
 
     public function testGetResponseObjectThrowsRuntimeException(): void
     {
-        $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('Invalid request cannot be responded');
+        Expect::exception(\RuntimeException::class)->withMessageContaining('Invalid request cannot be responded');
 
         $request = new Invalid(new \Exception('Test Exception'));
 
@@ -33,19 +36,17 @@ final class InvalidTest extends TestCase
 
     public function testRespondThrowsRuntimeException(): void
     {
-        $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('Invalid request cannot be responded');
+        Expect::exception(\RuntimeException::class)->withMessageContaining('Invalid request cannot be responded');
 
         $request = new Invalid(new \Exception('Test Exception'));
-        $response = $this->createMock(ResponseInterface::class);
+        $response = \Mockery::mock(ResponseInterface::class)->shouldIgnoreMissing();
 
         $request->respond($response);
     }
 
     public function testSendResponseThrowsRuntimeException(): void
     {
-        $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('Invalid request cannot be responded');
+        Expect::exception(\RuntimeException::class)->withMessageContaining('Invalid request cannot be responded');
 
         $request = new Invalid(new \Exception('Test Exception'));
         $response = new \stdClass();

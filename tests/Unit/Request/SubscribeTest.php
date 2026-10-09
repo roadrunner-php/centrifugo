@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace RoadRunner\Centrifugo\Tests\Unit\Request;
 
+use Testo\Test;
+use Testo\Assert;
+use Testo\Data\DataProvider;
+use Testo\Lifecycle\BeforeTest;
 use Google\Protobuf\RepeatedField;
 use RoadRunner\Centrifugal\Proxy\DTO\V1\BoolValue;
 use RoadRunner\Centrifugal\Proxy\DTO\V1\SubscribeOptionOverride;
@@ -16,6 +20,7 @@ use Spiral\RoadRunner\Payload;
 use RoadRunner\Centrifugal\Proxy\DTO\V1\SubscribeResponse as SubscribeResponseDTO;
 use Spiral\RoadRunner\WorkerInterface;
 
+#[Test]
 final class SubscribeTest extends TestCase
 {
     private Subscribe $subscribe;
@@ -79,10 +84,7 @@ final class SubscribeTest extends TestCase
     public function testRespond(): void
     {
         $worker = $this->createWorker(function (Payload $payload) {
-            $this->assertEquals(
-                new Payload((new SubscribeResponseDTO(['result' => new SubscribeResult()]))->serializeToString()),
-                $payload,
-            );
+            Assert::equals($payload, new Payload((new SubscribeResponseDTO(['result' => new SubscribeResult()]))->serializeToString()));
         });
 
         $refresh = new Subscribe($worker, '', '', '', '', '', '', '', [], [], []);
@@ -94,12 +96,10 @@ final class SubscribeTest extends TestCase
     {
         $ref = new \ReflectionMethod($this->subscribe, 'getResponseObject');
 
-        $this->assertInstanceOf(SubscribeResponseDTO::class, $ref->invoke($this->subscribe));
+        Assert::instanceOf($ref->invoke($this->subscribe), SubscribeResponseDTO::class);
     }
 
-    /**
-     * @dataProvider mapResponseDataProvider
-     */
+    #[DataProvider('mapResponseDataProvider')]
     public function testMapResponse(SubscribeResponse $response, array $expected): void
     {
         $ref = new \ReflectionMethod($this->subscribe, 'mapResponse');
@@ -107,14 +107,15 @@ final class SubscribeTest extends TestCase
         /** @var SubscribeResult $dto */
         $dto = $ref->invoke($this->subscribe, $response);
 
-        $this->assertSame($expected['info'], $dto->getInfo());
-        $this->assertSame($expected['data'], $dto->getData());
-        $this->assertEquals($expected['allow'], $dto->getAllow());
-        $this->assertEquals($expected['override'], $dto->getOverride());
+        Assert::same($dto->getInfo(), $expected['info']);
+        Assert::same($dto->getData(), $expected['data']);
+        Assert::equals($dto->getAllow(), $expected['allow']);
+        Assert::equals($dto->getOverride(), $expected['override']);
     }
 
+    #[BeforeTest]
     protected function setUp(): void
     {
-        $this->subscribe = new Subscribe($this->createMock(WorkerInterface::class), '', '', '', '', '', '', '', [], [], []);
+        $this->subscribe = new Subscribe(\Mockery::mock(WorkerInterface::class)->shouldIgnoreMissing(), '', '', '', '', '', '', '', [], [], []);
     }
 }

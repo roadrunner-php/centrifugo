@@ -4,15 +4,17 @@ declare(strict_types=1);
 
 namespace RoadRunner\Centrifugo\Tests\Unit\Payload;
 
-use PHPUnit\Framework\TestCase;
+use Testo\Test;
+use Testo\Assert;
 use RoadRunner\Centrifugo\Payload\Disconnect;
 
-final class DisconnectTest extends TestCase
+#[Test]
+final class DisconnectTest
 {
     public function testReconnectDefaultFalse(): void
     {
         $disconnect = new Disconnect(1, 'foo');
 
-        $this->assertFalse($disconnect->reconnect);
+        Assert::false($disconnect->reconnect);
     }
 }

@@ -4,16 +4,18 @@ declare(strict_types=1);
 
 namespace RoadRunner\Centrifugo\Tests\Unit\Payload;
 
-use PHPUnit\Framework\TestCase;
+use Testo\Test;
+use Testo\Assert;
 use RoadRunner\Centrifugo\Payload\PublishResponse;
 
-final class PublishResponseTest extends TestCase
+#[Test]
+final class PublishResponseTest
 {
     public function testDefaultValues(): void
     {
         $publish = new PublishResponse();
 
-        $this->assertSame([], $publish->data);
-        $this->assertFalse($publish->skipHistory);
+        Assert::same($publish->data, []);
+        Assert::false($publish->skipHistory);
     }
 }

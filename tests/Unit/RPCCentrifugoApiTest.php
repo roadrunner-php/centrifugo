@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace RoadRunner\Centrifugo\Tests\Unit;
 
+use Testo\Test;
+use Testo\Expect;
+use Testo\Lifecycle\BeforeTest;
 use Mockery as m;
-use PHPUnit\Framework\TestCase;
 use RoadRunner\Centrifugo\CentrifugoApiInterface;
 use RoadRunner\Centrifugo\Exception\CentrifugoApiResponseException;
 use RoadRunner\Centrifugo\Payload\Disconnect;
@@ -15,10 +17,9 @@ use Spiral\Goridge\RPC\Codec\ProtobufCodec;
 use Spiral\Goridge\RPC\CodecInterface;
 use Spiral\Goridge\RPC\RPCInterface;
 
-final class RPCCentrifugoApiTest extends TestCase
+#[Test]
+final class RPCCentrifugoApiTest
 {
-    use m\Adapter\Phpunit\MockeryPHPUnitIntegration;
-
     private m\MockInterface|RPCInterface $rpc;
     private CentrifugoApiInterface $api;
 
@@ -45,9 +46,7 @@ final class RPCCentrifugoApiTest extends TestCase
 
     public function testPublishErrorHandling(): void
     {
-        $this->expectException(CentrifugoApiResponseException::class);
-        $this->expectExceptionMessage('Error message');
-        $this->expectExceptionCode(500);
+        Expect::exception(CentrifugoApiResponseException::class)->withMessageContaining('Error message')->withCode(500);
 
         $this->rpc->shouldReceive('call')
             ->once()
@@ -117,10 +116,9 @@ final class RPCCentrifugoApiTest extends TestCase
         );
     }
 
+    #[BeforeTest]
     protected function setUp(): void
     {
-        parent::setUp();
-
         $this->rpc = m::mock(RPCInterface::class);
         $this->rpc->shouldReceive('withCodec')->once()->withArgs(
             static fn(CodecInterface $codec): bool => $codec instanceof ProtobufCodec,

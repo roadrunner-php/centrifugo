@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace RoadRunner\Centrifugo\Tests\Unit\Request;
 
+use Testo\Test;
+use Testo\Assert;
+use Testo\Data\DataProvider;
+use Testo\Lifecycle\BeforeTest;
 use RoadRunner\Centrifugal\Proxy\DTO\V1\RefreshResult;
 use RoadRunner\Centrifugo\Payload\RefreshResponse;
 use RoadRunner\Centrifugo\Request\Refresh;
@@ -12,6 +16,7 @@ use Spiral\RoadRunner\Payload;
 use RoadRunner\Centrifugal\Proxy\DTO\V1\RefreshResponse as RefreshResponseDTO;
 use Spiral\RoadRunner\WorkerInterface;
 
+#[Test]
 final class RefreshTest extends TestCase
 {
     private Refresh $refresh;
@@ -35,10 +40,7 @@ final class RefreshTest extends TestCase
     public function testRespond(): void
     {
         $worker = $this->createWorker(function (Payload $payload) {
-            $this->assertEquals(
-                new Payload((new RefreshResponseDTO(['result' => new RefreshResult()]))->serializeToString()),
-                $payload,
-            );
+            Assert::equals($payload, new Payload((new RefreshResponseDTO(['result' => new RefreshResult()]))->serializeToString()));
         });
 
         $refresh = new Refresh($worker, '', '', '', '', '', [], []);
@@ -50,12 +52,10 @@ final class RefreshTest extends TestCase
     {
         $ref = new \ReflectionMethod($this->refresh, 'getResponseObject');
 
-        $this->assertInstanceOf(RefreshResponseDTO::class, $ref->invoke($this->refresh));
+        Assert::instanceOf($ref->invoke($this->refresh), RefreshResponseDTO::class);
     }
 
-    /**
-     * @dataProvider mapResponseDataProvider
-     */
+    #[DataProvider('mapResponseDataProvider')]
     public function testMapResponse(RefreshResponse $response, array $expected): void
     {
         $ref = new \ReflectionMethod($this->refresh, 'mapResponse');
@@ -63,13 +63,14 @@ final class RefreshTest extends TestCase
         /** @var RefreshResult $dto */
         $dto = $ref->invoke($this->refresh, $response);
 
-        $this->assertSame($expected['expired'], $dto->getExpired());
-        $this->assertSame($expected['expire_at'], $dto->getExpireAt());
-        $this->assertSame($expected['info'], $dto->getInfo());
+        Assert::same($dto->getExpired(), $expected['expired']);
+        Assert::same($dto->getExpireAt(), $expected['expire_at']);
+        Assert::same($dto->getInfo(), $expected['info']);
     }
 
+    #[BeforeTest]
     protected function setUp(): void
     {
-        $this->refresh = new Refresh($this->createMock(WorkerInterface::class), '', '', '', '', '', [], []);
+        $this->refresh = new Refresh(\Mockery::mock(WorkerInterface::class)->shouldIgnoreMissing(), '', '', '', '', '', [], []);
     }
 }

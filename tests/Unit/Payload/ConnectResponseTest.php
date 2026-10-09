@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace RoadRunner\Centrifugo\Tests\Unit\Payload;
 
-use PHPUnit\Framework\TestCase;
+use Testo\Test;
+use Testo\Data\DataProvider;
+use Testo\Assert;
 use RoadRunner\Centrifugo\Payload\ConnectResponse;
 
-final class ConnectResponseTest extends TestCase
+#[Test]
+final class ConnectResponseTest
 {
     public static function connectResponseDataProvider(): \Traversable
     {
@@ -22,11 +25,9 @@ final class ConnectResponseTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider connectResponseDataProvider
-     */
+    #[DataProvider('connectResponseDataProvider')]
     public function testConnectResponse(ConnectResponse $expected, ConnectResponse $actual): void
     {
-        $this->assertEquals($expected, $actual);
+        Assert::equals($actual, $expected);
     }
 }
