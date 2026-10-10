@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.5.0](https://github.com/roadrunner-php/centrifugo/compare/2.4.0...2.5.0) (2026-10-10)
+
+
+### Features
+
+* rename the package to roadrunner/centrifugo ([97e864e](https://github.com/roadrunner-php/centrifugo/commit/97e864e4ebd242cec23c05f0a64563ea4a30bc57))
+* support RoadRunner v3 ([55884a8](https://github.com/roadrunner-php/centrifugo/commit/55884a88d546fa39e3c8064efbf2c0d3a0d8d347))
+
 ## [2.4.0](https://github.com/roadrunner-php/centrifugo/compare/2.3.0...2.4.0) (2026-10-09)
 
 
