@@ -27,18 +27,18 @@ PHP bridge for the RoadRunner [`centrifuge`](https://docs.roadrunner.dev/docs/pl
 ### Installation
 
 ```bash
-composer require roadrunner-php/centrifugo
+composer require roadrunner/centrifugo
 ```
 
-[![PHP](https://img.shields.io/packagist/php-v/roadrunner-php/centrifugo.svg?style=flat-square&logo=php)](https://packagist.org/packages/roadrunner-php/centrifugo)
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/roadrunner-php/centrifugo.svg?style=flat-square&logo=packagist)](https://packagist.org/packages/roadrunner-php/centrifugo)
-[![License](https://img.shields.io/packagist/l/roadrunner-php/centrifugo.svg?style=flat-square)](LICENSE)
-[![Total Downloads](https://img.shields.io/packagist/dt/roadrunner-php/centrifugo.svg?style=flat-square)](https://packagist.org/packages/roadrunner-php/centrifugo/stats)
+[![PHP](https://img.shields.io/packagist/php-v/roadrunner/centrifugo.svg?style=flat-square&logo=php)](https://packagist.org/packages/roadrunner/centrifugo)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/roadrunner/centrifugo.svg?style=flat-square&logo=packagist)](https://packagist.org/packages/roadrunner/centrifugo)
+[![License](https://img.shields.io/packagist/l/roadrunner/centrifugo.svg?style=flat-square)](LICENSE)
+[![Total Downloads](https://img.shields.io/packagist/dt/roadrunner/centrifugo.svg?style=flat-square)](https://packagist.org/packages/roadrunner/centrifugo/stats)
 
 You can use the convenient installer to download the latest available compatible version of RoadRunner assembly:
 
 ```bash
-composer require spiral/roadrunner-cli --dev
+composer require roadrunner/cli --dev
 vendor/bin/rr get
 ```
 
