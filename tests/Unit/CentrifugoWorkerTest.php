@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace RoadRunner\Centrifugo\Tests\Unit;
 
-use Testo\Test;
-use Testo\Assert;
-use Testo\Data\DataProvider;
 use RoadRunner\Centrifugal\Proxy\DTO\V1 as DTO;
 use RoadRunner\Centrifugo\CentrifugoWorker;
 use RoadRunner\Centrifugo\Exception\InvalidRequestTypeException;
@@ -22,6 +19,9 @@ use RoadRunner\Centrifugo\Request\Subscribe;
 use Spiral\RoadRunner\Exception\RoadRunnerException;
 use Spiral\RoadRunner\Payload;
 use Spiral\RoadRunner\WorkerInterface;
+use Testo\Assert;
+use Testo\Data\DataProvider;
+use Testo\Test;
 
 #[Test]
 final class CentrifugoWorkerTest

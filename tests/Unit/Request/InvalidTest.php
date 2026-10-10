@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace RoadRunner\Centrifugo\Tests\Unit\Request;
 
-use Testo\Test;
-use Testo\Assert;
-use Testo\Expect;
+use RoadRunner\Centrifugo\Payload\ResponseInterface;
 use RoadRunner\Centrifugo\Request\Invalid;
 use RoadRunner\Centrifugo\Tests\Unit\TestCase;
-use RoadRunner\Centrifugo\Payload\ResponseInterface;
+use Testo\Assert;
+use Testo\Expect;
+use Testo\Test;
 
 #[Test]
 final class InvalidTest extends TestCase

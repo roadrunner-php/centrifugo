@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace RoadRunner\Centrifugo\Tests\Unit\Request;
 
-use Testo\Test;
-use Testo\Assert;
-use Testo\Data\DataProvider;
-use Testo\Lifecycle\BeforeTest;
 use Google\Protobuf\Internal\MapField;
 use Google\Protobuf\RepeatedField;
 use RoadRunner\Centrifugal\Proxy\DTO\V1\BoolValue;
@@ -22,6 +18,10 @@ use RoadRunner\Centrifugo\Request\Connect;
 use RoadRunner\Centrifugo\Tests\Unit\TestCase;
 use Spiral\RoadRunner\Payload;
 use Spiral\RoadRunner\WorkerInterface;
+use Testo\Assert;
+use Testo\Data\DataProvider;
+use Testo\Lifecycle\BeforeTest;
+use Testo\Test;
 
 #[Test]
 final class ConnectTest extends TestCase

@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace RoadRunner\Centrifugo\Tests\Unit\Payload;
 
-use Testo\Test;
-use Testo\Data\DataProvider;
-use Testo\Assert;
 use RoadRunner\Centrifugo\Payload\Override;
 use RoadRunner\Centrifugo\Payload\SubscribeResponse;
+use Testo\Assert;
+use Testo\Data\DataProvider;
+use Testo\Test;
 
 #[Test]
 final class SubscribeResponseTest

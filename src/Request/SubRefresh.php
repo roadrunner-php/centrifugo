@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace RoadRunner\Centrifugo\Request;
 
 use RoadRunner\Centrifugal\Proxy\DTO\V1 as DTO;
-use RoadRunner\Centrifugo\Payload\SubRefreshResponse;
 use RoadRunner\Centrifugo\Payload\ResponseInterface;
+use RoadRunner\Centrifugo\Payload\SubRefreshResponse;
 use Spiral\RoadRunner\WorkerInterface;
 
 /**
