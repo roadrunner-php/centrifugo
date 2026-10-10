@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace RoadRunner\Centrifugo\Request;
 
-use RoadRunner\Centrifugal\Proxy\DTO\V1 as DTO;
 use Google\Protobuf\Internal\Message;
+use RoadRunner\Centrifugal\Proxy\DTO\V1 as DTO;
 use RoadRunner\Centrifugo\Exception\InvalidRequestTypeException;
 use Spiral\RoadRunner\Payload as WorkerPayload;
 use Spiral\RoadRunner\WorkerInterface;

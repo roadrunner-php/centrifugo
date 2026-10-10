@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace RoadRunner\Centrifugo\Tests\Unit\Request;
 
-use Testo\Test;
-use Testo\Assert;
-use Testo\Expect;
-use Testo\Lifecycle\BeforeTest;
 use RoadRunner\Centrifugal\Proxy\DTO\V1\ConnectRequest;
 use RoadRunner\Centrifugal\Proxy\DTO\V1\PublishRequest;
 use RoadRunner\Centrifugal\Proxy\DTO\V1\RefreshRequest;
@@ -25,6 +21,10 @@ use RoadRunner\Centrifugo\Request\Subscribe;
 use RoadRunner\Centrifugo\Tests\Unit\TestCase;
 use Spiral\RoadRunner\Payload;
 use Spiral\RoadRunner\WorkerInterface;
+use Testo\Assert;
+use Testo\Expect;
+use Testo\Lifecycle\BeforeTest;
+use Testo\Test;
 
 #[Test]
 final class RequestFactoryTest extends TestCase

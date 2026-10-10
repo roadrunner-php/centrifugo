@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace RoadRunner\Centrifugo\Tests\Unit\Request;
 
-use Testo\Test;
-use Testo\Data\DataProvider;
-use Testo\Assert;
 use RoadRunner\Centrifugo\Request\Connect;
 use RoadRunner\Centrifugo\Request\Invalid;
 use RoadRunner\Centrifugo\Request\Publish;
@@ -16,6 +13,9 @@ use RoadRunner\Centrifugo\Request\RequestType;
 use RoadRunner\Centrifugo\Request\RPC;
 use RoadRunner\Centrifugo\Request\SubRefresh;
 use RoadRunner\Centrifugo\Request\Subscribe;
+use Testo\Assert;
+use Testo\Data\DataProvider;
+use Testo\Test;
 
 #[Test]
 final class RequestTypeTest

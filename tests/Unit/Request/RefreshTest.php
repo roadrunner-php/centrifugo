@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace RoadRunner\Centrifugo\Tests\Unit\Request;
 
-use Testo\Test;
-use Testo\Assert;
-use Testo\Data\DataProvider;
-use Testo\Lifecycle\BeforeTest;
+use RoadRunner\Centrifugal\Proxy\DTO\V1\RefreshResponse as RefreshResponseDTO;
 use RoadRunner\Centrifugal\Proxy\DTO\V1\RefreshResult;
 use RoadRunner\Centrifugo\Payload\RefreshResponse;
 use RoadRunner\Centrifugo\Request\Refresh;
 use RoadRunner\Centrifugo\Tests\Unit\TestCase;
 use Spiral\RoadRunner\Payload;
-use RoadRunner\Centrifugal\Proxy\DTO\V1\RefreshResponse as RefreshResponseDTO;
 use Spiral\RoadRunner\WorkerInterface;
+use Testo\Assert;
+use Testo\Data\DataProvider;
+use Testo\Lifecycle\BeforeTest;
+use Testo\Test;
 
 #[Test]
 final class RefreshTest extends TestCase

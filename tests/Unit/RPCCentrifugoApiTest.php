@@ -5,19 +5,19 @@ declare(strict_types=1);
 namespace RoadRunner\Centrifugo\Tests\Unit;
 
 use Google\Protobuf\Internal\Message;
-use Testo\Assert;
-use Testo\Test;
-use Testo\Expect;
-use Testo\Lifecycle\BeforeTest;
 use Mockery as m;
+use RoadRunner\Centrifugal\API\DTO\V1 as DTO;
 use RoadRunner\Centrifugo\CentrifugoApiInterface;
 use RoadRunner\Centrifugo\Exception\CentrifugoApiResponseException;
 use RoadRunner\Centrifugo\Payload\Disconnect;
 use RoadRunner\Centrifugo\RPCCentrifugoApi;
-use RoadRunner\Centrifugal\API\DTO\V1 as DTO;
 use Spiral\Goridge\RPC\Codec\ProtobufCodec;
 use Spiral\Goridge\RPC\CodecInterface;
 use Spiral\Goridge\RPC\RPCInterface;
+use Testo\Assert;
+use Testo\Expect;
+use Testo\Lifecycle\BeforeTest;
+use Testo\Test;
 
 #[Test]
 final class RPCCentrifugoApiTest

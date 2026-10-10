@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace RoadRunner\Centrifugo\Tests\Unit\Request;
 
-use Testo\Test;
-use Testo\Assert;
-use Testo\Data\DataProvider;
-use Testo\Lifecycle\BeforeTest;
+use RoadRunner\Centrifugal\Proxy\DTO\V1\RPCResponse as RPCResponseDTO;
 use RoadRunner\Centrifugal\Proxy\DTO\V1\RPCResult;
 use RoadRunner\Centrifugo\Payload\RPCResponse;
 use RoadRunner\Centrifugo\Request\RPC;
 use RoadRunner\Centrifugo\Tests\Unit\TestCase;
 use Spiral\RoadRunner\Payload;
-use RoadRunner\Centrifugal\Proxy\DTO\V1\RPCResponse as RPCResponseDTO;
 use Spiral\RoadRunner\WorkerInterface;
+use Testo\Assert;
+use Testo\Data\DataProvider;
+use Testo\Lifecycle\BeforeTest;
+use Testo\Test;
 
 #[Test]
 final class RPCTest extends TestCase
