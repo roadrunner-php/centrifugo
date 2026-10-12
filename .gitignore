@@ -1,5 +1,7 @@
-.idea
-vendor
-composer.lock
-protoc-gen-php-grpc
-runtime
+/.*/
+!/.github/
+/runtime/
+/vendor/
+/composer.lock
+/.env
+*.log
