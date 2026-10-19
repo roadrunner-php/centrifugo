@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.5.1](https://github.com/roadrunner-php/centrifugo/compare/2.5.0...2.5.1) (2026-10-19)
+
+
+### Bug Fixes
+
+* require roadrunner/roadrunner instead of spiral/roadrunner ([26dae5d](https://github.com/roadrunner-php/centrifugo/commit/26dae5d2fb77c3bf66a5ba83554c7ed20bbd7ab5))
+
 ## [2.5.0](https://github.com/roadrunner-php/centrifugo/compare/2.4.0...2.5.0) (2026-10-10)
 
 
